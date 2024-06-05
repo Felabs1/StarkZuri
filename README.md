@@ -1,4 +1,6 @@
-# StarkJumuia
+# StarkZuri
+![WhatsApp Image 2024-06-05 at 19 25 47 (1)](https://github.com/Felabs1/StarkZuri/assets/92982964/42080aa7-d2d9-464d-9b0a-f49532d311f5)
+
 Enhancing Social Media Engagement and Rewards through Decentralized Technology
 
 ## Background
