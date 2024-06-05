@@ -58,7 +58,7 @@ Interoperability and Integration: StarkZuri can integrate with other dApps on St
 
 ### 5. Economic Impact:
 
-Token Economy: The introduction of Jumuia Token (JMT) will add to the economic activity within StarkNet, creating new opportunities for liquidity and trade.
+Token Economy: The introduction of Zuri Token (ZRT) will add to the economic activity within StarkNet, creating new opportunities for liquidity and trade.
 Revenue Streams: The ad revenue sharing model and NFT marketplace can create additional revenue streams within the StarkNet ecosystem.
 
 ### 6. Community Building:
