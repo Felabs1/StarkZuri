@@ -1,0 +1,42 @@
+.top-nav {
+  background-color: #181818;
+}
+
+.connect-button {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  border-radius: 10px;
+  color: white;
+  flex: 2;
+}
+
+.right-objects {
+  display: flex;
+}
+
+.search-input {
+  display: flex;
+  background-color: #0f0f0f;
+  margin-right: 30px;
+  flex: 2;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+}
+
+.search-font {
+  background-color: transparent;
+}
+
+.logo {
+  width: 150px;
+}
+
+.navname {
+  font-weight: 500;
+  color: white;
+  padding: 12px;
+}
