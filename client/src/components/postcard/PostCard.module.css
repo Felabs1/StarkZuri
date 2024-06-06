@@ -1,0 +1,56 @@
+.postcard_border {
+  border: 3px solid #181818;
+  padding: 12px;
+  border-radius: 20px;
+}
+
+.logo_image {
+  width: 40px;
+}
+
+.form_container {
+  display: flex;
+}
+
+.form_container button {
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  padding: 15px;
+}
+
+.form_container img {
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  margin-right: 12px;
+}
+
+.form_container input {
+  width: 90%;
+  margin-right: 12px;
+  border-radius: 20px;
+  padding: 15px;
+  background-color: #222222;
+  border: none;
+  outline: none;
+  color: white;
+}
+
+.form_helpers_holder {
+  display: flex;
+}
+
+.form_helpers {
+  width: 50px;
+  background-color: #222222;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 8px;
+}

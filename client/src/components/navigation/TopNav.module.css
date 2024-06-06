@@ -1,8 +1,8 @@
-.top-nav {
+.top_nav {
   background-color: #181818;
 }
 
-.connect-button {
+.connect_button {
   background: linear-gradient(
     90deg,
     rgba(15, 172, 252, 1) 35%,
@@ -13,11 +13,11 @@
   flex: 2;
 }
 
-.right-objects {
+.right_objects {
   display: flex;
 }
 
-.search-input {
+.search_input {
   display: flex;
   background-color: #0f0f0f;
   margin-right: 30px;
@@ -27,7 +27,7 @@
   border-radius: 10px;
 }
 
-.search-font {
+.search_font {
   background-color: transparent;
 }
 
