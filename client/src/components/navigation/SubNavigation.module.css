@@ -1,0 +1,10 @@
+.side_navigations a {
+  color: #0297d5;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: 0.4s ease;
+}
+
+.side_navigations a:hover {
+  border: 1px solid #0297d5;
+}
