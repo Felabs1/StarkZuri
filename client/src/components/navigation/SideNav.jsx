@@ -5,7 +5,7 @@ import styles from "./SideNav.module.css";
 import { sideNavigations } from "../../utils/AppUtils";
 const SideNav = () => {
   return (
-    <div className={`w3-sidebar w3-bar-block ${styles.sidebar}`}>
+    <div className={`w3-sidebar w3-text-white w3-bar-block ${styles.sidebar}`}>
       {sideNavigations.map(({ navName, icon }) => {
         return (
           <a className={`w3-bar-item w3-block ${styles.navname}`}>

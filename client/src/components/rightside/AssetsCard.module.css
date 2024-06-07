@@ -1,0 +1,18 @@
+.asset_card {
+  padding: 15px;
+  border: 1px solid #181818;
+  border-radius: 20px;
+}
+
+.table {
+  width: 100%;
+}
+
+.key {
+  color: #929292;
+}
+
+.value {
+  text-align: right;
+  color: #0297d5;
+}

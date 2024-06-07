@@ -8,6 +8,7 @@ import Post from "../components/middlepage/Post";
 import MobileSidenav from "../components/navigation/MobileSidenav";
 import FloatingButton from "../components/navigation/FloatingButton";
 import ProfileCard from "../components/rightside/ProfileCard";
+import AssetsCard from "../components/rightside/AssetsCard";
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -37,6 +38,9 @@ const Home = () => {
 
           <div className="w3-col l4">
             <ProfileCard />
+            <br />
+
+            <AssetsCard />
           </div>
         </div>
         <FloatingButton />
