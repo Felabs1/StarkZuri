@@ -19,7 +19,7 @@ const Post = () => {
       <div className={styles.post_navigation}>
         <div className={styles.profile}>
           <img src={profile} />
-          <div class={styles.profile_details}>
+          <div className={styles.profile_details}>
             <span>Felabs</span>
             <br />
             <small>1 hr ago</small>

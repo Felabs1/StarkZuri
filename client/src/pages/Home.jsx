@@ -6,6 +6,7 @@ import PostCard from "../components/postcard/PostCard";
 import SubNavigation from "../components/navigation/SubNavigation";
 import Post from "../components/middlepage/Post";
 import MobileSidenav from "../components/navigation/MobileSidenav";
+import FloatingButton from "../components/navigation/FloatingButton";
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -35,6 +36,7 @@ const Home = () => {
 
           <div className="w3-col l4">something</div>
         </div>
+        <FloatingButton />
       </Main>
     </>
   );
