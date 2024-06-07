@@ -1,0 +1,61 @@
+.profile_card {
+  border: 1px solid #181818;
+  border-radius: 20px;
+}
+
+.profile_image {
+  height: 200px;
+  width: 100%;
+  background-position: center;
+  background-size: cover;
+  border-radius: inherit;
+}
+
+.profile_avatar {
+  width: 100px;
+  height: 100px; /* set a fixed width */
+  margin: 0 auto;
+  background-position: center;
+  border-radius: 20px;
+  margin-top: -50px;
+  background-size: cover;
+}
+
+.avatar_description {
+  /* set a fixed width */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.profile_more_info {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 300px;
+}
+
+.avatar_description .profile_name {
+  font-weight: 600;
+}
+
+.postButton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+}
+
+.followers_div {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -40px;
+}
+
+.followers {
+  text-align: center;
+  padding: 12px;
+}
