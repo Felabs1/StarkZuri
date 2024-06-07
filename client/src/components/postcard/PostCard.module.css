@@ -54,3 +54,9 @@
   padding: 15px;
   margin: 8px;
 }
+
+@media (max-width: 600px) {
+  .postcard_border {
+    display: none;
+  }
+}

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faNavicon } from "@fortawesome/free-solid-svg-icons";
 import { connect, disconnect } from "starknetkit";
 import styles from "./TopNav.module.css";
 import Logo from "../../assets/logo.png";
 
-const TopNav = () => {
+const TopNav = ({ onMobileMenuClick }) => {
+  // const [navOpen, setNavOpen] = useState(false);
   const connectWallet = async () => {
     const { wallet } = await connect();
 
@@ -17,6 +18,12 @@ const TopNav = () => {
   };
   return (
     <div className={`w3-bar ${styles.top_nav} w3-padding`}>
+      <button
+        className={`${styles.mobile_nav_button} w3-hide-large w3-hide-medium w3-bar-item`}
+        onClick={onMobileMenuClick}
+      >
+        <FontAwesomeIcon className="w3-text-white" icon={faNavicon} />
+      </button>
       <span>
         <img src={Logo} className={styles.logo} />
       </span>

@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: inherit;
+  background-color: #181818;
   color: white;
   width: 200px;
 }
@@ -17,11 +17,4 @@
 .sidebar a:hover,
 .search_font:hover {
   color: #0297d5;
-}
-
-@media (max-width: 600px) {
-  .sidebar {
-    display: none;
-    z-index: 5;
-  }
 }

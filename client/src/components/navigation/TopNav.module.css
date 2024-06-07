@@ -40,3 +40,18 @@
   color: white;
   padding: 12px;
 }
+
+.mobile_nav_button {
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+@media (max-width: 600px) {
+  .search_input {
+    display: none;
+  }
+
+  .logo {
+    width: 90px;
+  }
+}
