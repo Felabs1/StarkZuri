@@ -9,6 +9,7 @@ import MobileSidenav from "../components/navigation/MobileSidenav";
 import FloatingButton from "../components/navigation/FloatingButton";
 import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
+import FollowersCard from "../components/rightside/FollowersCard";
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -41,6 +42,8 @@ const Home = () => {
             <br />
 
             <AssetsCard />
+            <br />
+            <FollowersCard />
           </div>
         </div>
         <FloatingButton />

@@ -1,0 +1,18 @@
+.followers_card {
+  padding: 15px;
+  border: 1px solid #181818;
+  border-radius: 20px;
+}
+
+.followers_card_header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left_heading {
+  color: #efefef;
+}
+
+.right_heading {
+  color: #0297d5;
+}
