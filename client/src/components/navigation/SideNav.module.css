@@ -18,6 +18,26 @@
   color: #0297d5;
 }
 
+.sidebar button {
+  display: block;
+  margin: 12px auto;
+
+  width: 90%;
+}
+
+.post_button {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  border-radius: 20px;
+}
+
+.blog_post_button {
+  border: 1px solid rgba(32, 127, 252, 1);
+  border-radius: 20px;
+}
 @media (max-width: 600px) {
   .sidebar {
     display: none;

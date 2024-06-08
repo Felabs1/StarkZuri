@@ -17,6 +17,11 @@ const SideNav = () => {
           </a>
         );
       })}
+      <br />
+      <button className={`w3-button ${styles.post_button}`}>Post</button>
+      <button className={`w3-button ${styles.blog_post_button}`}>
+        Blog Post
+      </button>
     </div>
   );
 };
