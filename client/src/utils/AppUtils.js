@@ -6,9 +6,11 @@ import {
   faMessage,
   faBookmark,
   faList,
+  faBitcoinSign,
   faUser,
   faWallet,
   faListDots,
+  faVideoCamera,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const sideNavigations = [
@@ -19,8 +21,8 @@ export const sideNavigations = [
   { navName: "Explore", icon: faHashtag },
   { navName: "Notifications", icon: faBell },
   { navName: "Messages", icon: faMessage },
-  { navName: "Bookmarks", icon: faBookmark },
-  { navName: "lists", icon: faList },
+  { navName: "reels", icon: faVideoCamera },
+  { navName: "MarketPlace", icon: faBitcoinSign },
   { navName: "profile", icon: faUser },
   { navName: "Wallet", icon: faWallet },
   { navName: "More", icon: faListDots },
