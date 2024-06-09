@@ -1,0 +1,24 @@
+.explore_header {
+  height: 200px;
+  border-radius: 20px;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.explore_header h1 {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  max-width: 450px;
+  margin: auto;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,15 @@
+.explore_sub_header {
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.explore_sub_header h3 {
+  font-weight: 600;
+}
+
+.explore_sub_header a {
+  margin: auto 0;
+  display: block;
+  color: #929292;
+}
