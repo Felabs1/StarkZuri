@@ -1,20 +1,21 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
 
 import styles from "./SideNav.module.css";
 import { sideNavigations } from "../../utils/AppUtils";
 const SideNav = () => {
   return (
     <div className={`w3-sidebar w3-text-white w3-bar-block ${styles.sidebar}`}>
-      {sideNavigations.map(({ navName, icon }) => {
+      {sideNavigations.map(({ navName, icon, to }) => {
         return (
-          <a className={`w3-bar-item w3-block ${styles.navname}`}>
+          <Link to={to} className={`w3-bar-item w3-block ${styles.navname}`}>
             <FontAwesomeIcon
               className={`${styles.search_font} w3-text-white`}
               icon={icon}
             />
             {navName}
-          </a>
+          </Link>
         );
       })}
       <br />

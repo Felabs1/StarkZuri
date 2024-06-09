@@ -11,6 +11,7 @@
   padding: 12px !important;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .sidebar a:hover,
@@ -38,6 +39,7 @@
   border: 1px solid rgba(32, 127, 252, 1);
   border-radius: 20px;
 }
+
 @media (max-width: 600px) {
   .sidebar {
     display: none;
