@@ -10,6 +10,7 @@ import FollowersCard from "../components/rightside/FollowersCard";
 import ExploreHeader from "../components/middlepage/ExploreHeader";
 import ExploreSubHeader from "../components/middlepage/ExploreSubHeader";
 import FeaturedCommunityCard from "../components/middlepage/FeaturedCommunityCard";
+import PopularCard from "../components/middlepage/PopularCard";
 
 const Explore = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -32,6 +33,7 @@ const Explore = () => {
             <ExploreSubHeader name="Featured Community" />
             <FeaturedCommunityCard />
             <ExploreSubHeader name="Popular" />
+            <PopularCard />
             <ExploreSubHeader name="recent" />
           </div>
 

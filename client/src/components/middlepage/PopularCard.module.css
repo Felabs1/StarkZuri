@@ -1,0 +1,56 @@
+.popular_card {
+  height: 200px;
+  border-radius: 20px;
+  display: flex;
+  background-size: cover;
+  background-position: left;
+}
+
+.background {
+  flex: 2;
+  padding: 12px;
+}
+
+.description {
+  position: relative;
+  flex: 4;
+  border-radius: 40px 20px 20px 40px;
+  background-color: #393e5e;
+  padding: 12px;
+}
+
+.description h4 {
+  text-align: center;
+}
+
+.description p {
+  text-align: center;
+  font-size: 12px;
+  color: #bebebe;
+}
+
+.description .footer {
+  color: #bebebe96;
+}
+
+.triangle {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  margin: auto -60px;
+  margin-top: 50px;
+  background-color: lightblue;
+  background-size: cover;
+  background-position: center;
+  border-radius: -2px;
+  clip-path: polygon(
+    50% 0%,
+    72.361% 22.5%,
+    100% 43.301%,
+    72.361% 64.5%,
+    50% 87.5%,
+    27.639% 64.5%,
+    0% 43.301%,
+    27.639% 22.5%
+  );
+}
