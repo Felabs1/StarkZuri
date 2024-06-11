@@ -1,0 +1,63 @@
+.contact_navigation {
+  /* border-right: 1px solid #cccccc70; */
+  background-color: #1c1c1e;
+  padding: 12px;
+}
+
+.contact_navigation_head {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+}
+
+.contact_avatar {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: 2px solid rgb(232, 56, 85);
+  background-position: center;
+  background-size: cover;
+}
+
+.contact_navigation hr {
+  border-color: #cccccc70;
+  margin: 20px 10px 20px 0;
+}
+
+.message_heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.edit_icon {
+  margin: auto 0px;
+  display: block;
+  text-align: right;
+  margin-right: 0px;
+  width: 20px;
+}
+
+.edit_icon span {
+  margin-right: 0px;
+  color: #2196f3;
+  right: 0;
+  cursor: pointer;
+}
+
+.search_input {
+  display: flex;
+  background-color: #0d0d0d;
+  border-radius: 10px;
+}
+
+.search_input input {
+  background-color: inherit;
+  border: none;
+  color: white;
+  border-radius: 10px;
+}
+
+.search_input button {
+  color: rgba(255, 255, 255, 0.658);
+  border-radius: 10px;
+}

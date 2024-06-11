@@ -18,6 +18,7 @@ const Home = () => {
     console.log("something is wrong");
     console.log(navOpen);
   };
+
   return (
     <>
       <TopNav onMobileMenuClick={handleMobileMenuClick} />

@@ -1,0 +1,32 @@
+.message {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  transition: 0.2s ease-in;
+}
+
+.message:hover {
+  background-color: #cccccc67;
+}
+
+.profile {
+  height: 50px;
+  width: 50px;
+  background-position: center;
+  background-size: cover;
+  /* border: 1px solid red; */
+  border-radius: 50px;
+}
+
+.description {
+  flex: 5;
+  padding: 0 10px;
+}
+
+.description small {
+  color: rgba(255, 255, 255, 0.666);
+}
+
+.username {
+  font-weight: 500;
+}
