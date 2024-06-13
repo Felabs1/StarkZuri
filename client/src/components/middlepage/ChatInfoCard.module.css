@@ -1,0 +1,50 @@
+.chat_info_card {
+  padding: 12px;
+  background-color: #1c1c1e;
+}
+
+.chat_info_header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.profile_avatar {
+  margin: auto;
+  width: 100px;
+  height: 100px;
+  border: 1px solid blue;
+  border-radius: 50%;
+}
+.profile_avatar_div {
+  text-align: center;
+}
+
+.description .desc {
+  color: #ffffffbf;
+  /* margin-top: 12px; */
+}
+
+.invite_bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.invite_bar_header {
+  font-weight: 600;
+  font-size: 12px;
+  color: #2196f3;
+}
+
+.separator {
+  border: 0.5px solid #ccccccc6;
+}
+
+.shared_media_heading {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.media_navigation {
+  background-color: #cccccc2f;
+}
