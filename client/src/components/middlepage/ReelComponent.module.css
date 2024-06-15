@@ -1,0 +1,112 @@
+.reel_component {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.reel_video {
+  position: relative;
+  height: 80vh;
+  border-radius: 20px;
+  border: 1px solid blue;
+  width: 400px;
+  background-position: center;
+  background-size: cover;
+}
+
+.reel_buttons {
+  height: 80vh;
+  max-width: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.reel_icon {
+  font-size: 20px;
+  padding: 12px;
+}
+
+.reel_buttons button {
+  background-color: #222;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  margin: 2px;
+  padding: 12px;
+
+  cursor: pointer;
+}
+
+.reel_buttons button:hover {
+  background-color: #333;
+  color: #2196f3;
+  transition: 0.2s ease;
+}
+
+.reel_buttons div {
+  margin-bottom: 2px;
+  height: 400px;
+}
+
+.reel_buttons small {
+  text-align: center;
+  display: block;
+}
+
+.control_buttons button {
+  background-color: #22222255;
+  width: 50px;
+  height: 50px;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  margin: 2px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.comment_area {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+}
+
+.poster_initials {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
+}
+
+.profile_picture {
+  height: 50px;
+  width: 50px;
+  border: 1px solid purple;
+  border-radius: 50px;
+  background-size: cover;
+  background-position: center;
+}
+
+.poster_initials button {
+  padding: 12px;
+  border-radius: 20px;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.profile_username {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.poster_initials button:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 172, 252, 1) 35%,
+    rgba(32, 127, 252, 1) 100%
+  );
+  color: white;
+}

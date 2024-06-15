@@ -3,6 +3,7 @@ import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
 import MobileSidenav from "../components/navigation/MobileSidenav";
+import ReelComponent from "../components/middlepage/ReelComponent";
 
 const Reels = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -18,7 +19,9 @@ const Reels = () => {
 
       {navOpen && <MobileSidenav />}
 
-      <Main></Main>
+      <Main>
+        <ReelComponent />
+      </Main>
     </div>
   );
 };

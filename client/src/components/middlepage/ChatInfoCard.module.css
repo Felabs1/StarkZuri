@@ -47,4 +47,29 @@
 
 .media_navigation {
   background-color: #cccccc2f;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
+
+.media_navigation a {
+  border-radius: 20px;
+}
+
+.media_navigation a:hover {
+  background-color: #87dff4;
+}
+
+.media_images {
+  display: flex;
+  gap: 4px;
+}
+
+.media_image {
+  width: 100px;
+  height: 100px;
+}
+
+
+
+

@@ -2,6 +2,14 @@ import React from "react";
 import styles from "./ChatInfoCard.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import media1 from "../../assets/media1.jpg";
+import media2 from "../../assets/media2.jpg";
+import media3 from "../../assets/media3.jpg";
+import Message from "../navigation/Message";
+import profile1 from "../../assets/profile1.jpg";
+import profile2 from "../../assets/profile2.jpg";
+import profile3 from "../../assets/profile3.jpg";
+import profile5 from "../../assets/profile5.jpg";
 
 const ChatInfoCard = () => {
   return (
@@ -51,6 +59,20 @@ const ChatInfoCard = () => {
         <a className="w3-bar-item">files</a>
         <a className="w3-bar-item">links</a>
       </div>
+      <div className={styles.media_images}>
+        <img src={media1} className={styles.media_image} />
+        <img src={media2} className={styles.media_image} />
+        <img src={media3} className={styles.media_image} />
+      </div>
+      <h4>Members </h4>
+      <hr />
+      <Message image={profile5} contactName="james" message="CTO Felabs" />
+      <Message image={profile2} contactName="Jack" message="Product Manager" />
+      <Message
+        image={profile1}
+        contactName="Erick"
+        message="Lead Software Engineer"
+      />
     </div>
   );
 };
