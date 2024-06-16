@@ -26,11 +26,11 @@ const Profile = () => {
       <Main>
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            <ProfileCardMiddle />
+            <div className="w3-hide-medium w3-hide-small">
+              <ProfileCardMiddle />
+            </div>
           </div>
           <div className="w3-col l4">
-            <ProfileCard />
-            <br />
             <AssetsCard />
             <br />
             <FollowersCard />

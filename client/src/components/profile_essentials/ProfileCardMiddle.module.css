@@ -3,3 +3,93 @@
   border: 3px solid #2196f3;
   border-radius: 20px;
 }
+
+.cover_photo {
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  border-radius: 20px;
+}
+
+.profile_description_container {
+  display: flex;
+  width: 250px;
+  height: 200px;
+  margin-top: -100px;
+  margin-left: 50px;
+  background-color: #0d0d0d;
+  border-radius: 20px;
+  padding: 22px;
+  gap: 10px;
+}
+
+.profile_image {
+  background-size: cover;
+  background-position: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 20px;
+}
+
+.profile_following_container {
+  display: flex;
+  width: 250px;
+  margin-top: -190px;
+  margin-left: 350px;
+  background-color: #ffffff75;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 20px;
+  color: #333;
+}
+
+.follow_number {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile_username {
+  font-weight: bold;
+  display: block;
+}
+
+.profile_amount {
+  font-weight: 600;
+}
+
+.about_description {
+  padding: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.about_navigation_buttons button {
+  border: none;
+  background-color: #ccc;
+  padding: 12px;
+  transition: 0.2s ease;
+}
+
+.edit_button {
+  border-radius: 20px 0 0 20px;
+}
+
+.buy_button {
+  border-radius: 0 20px 20px 0;
+}
+
+.about_navigation_buttons button:hover {
+  background-color: #2196f3;
+  color: white;
+}
+
+.profile_micro_links {
+  margin-top: -30px;
+  margin-left: 50px;
+  display: flex;
+  gap: 50px;
+}
+
+.right_link {
+  color: #cccccc86;
+}
