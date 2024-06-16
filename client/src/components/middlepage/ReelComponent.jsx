@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMessage,
@@ -14,6 +14,10 @@ import media2 from "../../assets/media2.jpg";
 import profile5 from "../../assets/profile5.jpg";
 
 const ReelComponent = () => {
+  const [playing, setPlaying] = useState(true);
+  const handlePlayButtonClick = () => {
+    setPlaying(!playing);
+  };
   return (
     <div className={styles.reel_parent_component}>
       <div className={styles.reel_component}>
@@ -22,8 +26,8 @@ const ReelComponent = () => {
           style={{ backgroundImage: `url(${media2})` }}
         >
           <div className={styles.control_buttons}>
-            <button>
-              <FontAwesomeIcon icon={faPlay} />
+            <button onClick={handlePlayButtonClick}>
+              <FontAwesomeIcon icon={playing ? faPlay : faPause} />
             </button>
             <button>
               <FontAwesomeIcon icon={faVolumeHigh} />
