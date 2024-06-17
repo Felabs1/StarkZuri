@@ -1,0 +1,13 @@
+.profile_button_container {
+  padding: 12px;
+}
+
+.profile_navigation_buttons {
+  border: none;
+  background-color: inherit;
+  color: white;
+}
+
+.profile_navigation_buttons:hover {
+  color: #2196f3;
+}

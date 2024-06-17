@@ -8,6 +8,9 @@ import FollowersCard from "../components/rightside/FollowersCard";
 import ProfileCard from "../components/rightside/ProfileCard";
 import FloatingButton from "../components/navigation/FloatingButton";
 import ProfileCardMiddle from "../components/profile_essentials/ProfileCardMiddle";
+import ProfileNavigationButtons from "../components/profile_essentials/ProfileNavigationButtons";
+import SubNavigation from "../components/navigation/SubNavigation";
+import Post from "../components/middlepage/Post";
 
 const Profile = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -26,10 +29,22 @@ const Profile = () => {
       <Main>
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            <div className="w3-hide-medium w3-hide-small">
-              <ProfileCardMiddle />
-            </div>
+            <ProfileCard />
+            <br />
+            <ProfileNavigationButtons />
+            <SubNavigation
+              borderData={[
+                { linkName: "posts" },
+                { linkName: "blog" },
+                { linkName: "Zuri Coin" },
+                { linkName: "Diamonds" },
+                { linkName: "NFTs" },
+              ]}
+            />
+            <br />
+            <Post />
           </div>
+
           <div className="w3-col l4">
             <AssetsCard />
             <br />

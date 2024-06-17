@@ -1,13 +1,12 @@
 import React from "react";
 import styles from "./SubNavigation.module.css";
 
-const SubNavigation = () => {
+const SubNavigation = ({ borderData }) => {
   return (
     <div className={`${styles.side_navigations} w3-bar`}>
-      <a className="w3-bar-item">Following</a>
-      <a className="w3-bar-item">Hot</a>
-      <a className="w3-bar-item">New</a>
-      <a className="w3-bar-item">Explore</a>
+      {borderData.map(({ linkName }) => {
+        return <a className="w3-bar-item">{linkName}</a>;
+      })}
     </div>
   );
 };

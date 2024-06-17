@@ -29,7 +29,7 @@ const Notifications = () => {
             <br />
             <NotificationsCard />
           </div>
-          <div className="w3-col l4">
+          <div className="w3-col l4 w3-hide-small">
             <ProfileCard />
             <br />
 

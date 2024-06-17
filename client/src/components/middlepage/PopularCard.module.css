@@ -4,6 +4,7 @@
   display: flex;
   background-size: cover;
   background-position: left;
+  margin-bottom: 12px;
 }
 
 .background {

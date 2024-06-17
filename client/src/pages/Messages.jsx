@@ -26,10 +26,10 @@ const Messages = () => {
           <div className={`w3-col l3`}>
             <ContactNavigation />
           </div>
-          <div className={`w3-col l6`} style={{ height: "100%" }}>
+          <div className={`w3-col l6 w3-hide-small`} style={{ height: "100%" }}>
             <ChatBox />
           </div>
-          <div className={`w3-col l3`}>
+          <div className={`w3-col l3 w3-hide-small`}>
             <ChatInfoCard />
           </div>
         </div>

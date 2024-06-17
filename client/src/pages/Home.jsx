@@ -31,14 +31,21 @@ const Home = () => {
           <div className="w3-col l8">
             <PostCard />
             <br />
-            <SubNavigation />
+            <SubNavigation
+              borderData={[
+                { linkName: "following" },
+                { linkName: "Hot" },
+                { linkName: "New" },
+                { linkName: "explore" },
+              ]}
+            />
             <div>
               <br />
               <Post />
             </div>
           </div>
 
-          <div className="w3-col l4">
+          <div className="w3-col l4 w3-hide-small">
             <ProfileCard />
             <br />
 

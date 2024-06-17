@@ -1,5 +1,4 @@
 .profile_outer_container {
-  height: 50vh;
   border: 3px solid #2196f3;
   border-radius: 20px;
 }
@@ -92,4 +91,154 @@
 
 .right_link {
   color: #cccccc86;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .profile_outer_container {
+    height: auto;
+    border: 2px solid #2196f3;
+    border-radius: 15px;
+  }
+
+  .cover_photo {
+    height: 250px;
+    border-radius: 15px;
+  }
+
+  .profile_description_container {
+    width: 80%;
+    height: auto;
+    margin-top: -50px;
+    margin-left: 10%;
+    padding: 20px;
+    gap: 10px;
+  }
+
+  .profile_image {
+    width: 40px;
+    height: 40px;
+    border-radius: 15px;
+  }
+
+  .profile_following_container {
+    width: 80%;
+    margin-top: -100px;
+    margin-left: 10%;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .follow_number {
+    font-size: 18px;
+  }
+
+  .about_description {
+    padding: 30px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about_navigation_buttons {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .about_navigation_buttons button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .profile_micro_links {
+    margin-top: 20px;
+    margin-left: 0;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile_outer_container {
+    height: auto;
+    border: 2px solid #2196f3;
+    border-radius: 10px;
+  }
+
+  .cover_photo {
+    height: 200px;
+    border-radius: 10px;
+  }
+
+  .profile_description_container {
+    width: 90%;
+    height: auto;
+    margin-top: -50px;
+    margin-left: 5%;
+    padding: 15px;
+    gap: 8px;
+  }
+
+  .profile_image {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .profile_following_container {
+    width: 90%;
+    margin-top: -100px;
+    margin-left: 5%;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .follow_number {
+    font-size: 18px;
+  }
+
+  .about_description {
+    padding: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about_navigation_buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .about_navigation_buttons button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .profile_micro_links {
+    margin-top: 20px;
+    margin-left: 0;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile_description_container {
+    width: 95%;
+    margin-left: 2.5%;
+  }
+
+  .profile_following_container {
+    width: 95%;
+    margin-left: 2.5%;
+  }
+
+  .about_navigation_buttons button {
+    padding: 8px;
+  }
+
+  .profile_micro_links {
+    gap: 10px;
+  }
 }
