@@ -1,0 +1,71 @@
+.wallet_balance {
+  height: 300px;
+  border-radius: 20px;
+  background: linear-gradient(to right, #2196f3, #0074d9);
+  /* background: linear-gradient(to right, #000033, #0000cc); */
+  /* background: linear-gradient(to right, #000080, #4169e1); */
+  padding: 24px;
+}
+
+.wallet_balance h4 {
+  font-weight: 600;
+}
+
+.balance_and_controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.percentage {
+  border: none;
+  background: #fff;
+  border-radius: 20px;
+  font-weight: 300;
+  font-size: 12px;
+  color: #555;
+}
+
+.increment {
+  border: none;
+  background: inherit;
+  font-weight: 300;
+  font-size: 12px;
+}
+
+.balance_controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  align-content: center;
+}
+
+.balance_controls button {
+  border-radius: 50%;
+  display: block;
+  width: 50px;
+  height: 50px;
+  border: none;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 600px) {
+  .balance_and_controls {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+
+  .total_balance {
+    margin-bottom: 20px;
+  }
+
+  .total_balance h1 {
+    font-size: 40px;
+  }
+
+  .wallet_balance {
+    padding: 12px;
+    text-align: center;
+  }
+}

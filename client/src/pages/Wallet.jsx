@@ -4,6 +4,7 @@ import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
 import MobileSidenav from "../components/navigation/MobileSidenav";
 import WalletBalance from "../components/wallet/WalletBalance";
+import Transactions from "../components/wallet/Transactions";
 
 const Wallet = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -23,6 +24,8 @@ const Wallet = () => {
         <div className="w3-row-padding w3-strech">
           <div className="w3-col l8">
             <WalletBalance />
+            <br />
+            <Transactions />
           </div>
           <div className="w3-col l4"></div>
         </div>
