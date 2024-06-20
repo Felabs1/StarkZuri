@@ -5,6 +5,7 @@ import Main from "../components/middlepage/Main";
 import MobileSidenav from "../components/navigation/MobileSidenav";
 import WalletBalance from "../components/wallet/WalletBalance";
 import Transactions from "../components/wallet/Transactions";
+import MyAssets from "../components/wallet/MyAssets";
 
 const Wallet = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -27,7 +28,9 @@ const Wallet = () => {
             <br />
             <Transactions />
           </div>
-          <div className="w3-col l4"></div>
+          <div className="w3-col l4">
+            <MyAssets />
+          </div>
         </div>
       </Main>
     </div>

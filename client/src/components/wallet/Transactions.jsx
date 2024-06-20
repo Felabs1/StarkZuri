@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Transactions.module.css";
+import TransactionList from "./TransactionList";
 
 const Transactions = () => {
   return (
@@ -10,6 +11,13 @@ const Transactions = () => {
           <span className="w3-bar-item w3-text-white">View All</span>
         </div>
       </div>
+      <h6 className={styles.day_heading}>today</h6>
+      <TransactionList />
+      <TransactionList />
+      <TransactionList />
+      <TransactionList />
+
+      <h6 className={styles.day_heading}>Yesterday</h6>
     </div>
   );
 };

@@ -11,6 +11,7 @@ import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Reels from "./pages/Reels";
 import Wallet from "./pages/Wallet";
+import Comments from "./pages/post_essentials/Comments";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -29,6 +30,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/reels" element={<Reels />} />
           <Route path="/wallet" element={<Wallet />} />
+          <Route path="/post/:id" element={<Comments />} />
         </Routes>
       </Router>
     </>
