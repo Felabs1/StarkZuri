@@ -8,6 +8,7 @@ import FloatingButton from "../../components/navigation/FloatingButton";
 import ProfileCard from "../../components/rightside/ProfileCard";
 import AssetsCard from "../../components/rightside/AssetsCard";
 import FollowersCard from "../../components/rightside/FollowersCard";
+import CommentContainer from "../../components/comment/CommentContainer";
 
 const Comments = () => {
   const [navOpen, setNavOpen] = useState(false);

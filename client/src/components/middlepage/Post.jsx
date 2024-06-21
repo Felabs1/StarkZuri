@@ -12,6 +12,7 @@ import {
 import styles from "./Post.module.css";
 import profile from "../../assets/ST4.png";
 import postimg from "../../assets/post_img.jpg";
+import CommentContainer from "../comment/CommentContainer";
 
 const Post = () => {
   return (
@@ -78,6 +79,7 @@ const Post = () => {
           />
         </div>
       </div>
+      <CommentContainer />
     </div>
   );
 };
