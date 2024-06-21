@@ -1,3 +1,50 @@
 .comment_container {
   padding: 12px;
+  margin-bottom: 12px;
+}
+
+.comment_header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.commenter_profile_and_name {
+  display: flex;
+  gap: 12px;
+}
+
+.commenter_name {
+  margin: auto;
+}
+
+.commenter_profile {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+}
+
+.duration {
+  color: #ffffffb1;
+}
+
+.react_button {
+  background-color: inherit;
+  color: #ccc;
+  border: none;
+  cursor: pointer;
+}
+
+.reply_button {
+  background-color: inherit;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.react_button:hover,
+.reply_button:hover {
+  color: #2196f3;
 }

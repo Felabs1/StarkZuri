@@ -28,6 +28,9 @@ const Comments = () => {
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
             <Post />
+            <h4>Comments</h4>
+            <CommentContainer containsThread={true} />
+            <CommentContainer />
           </div>
           <div className="w3-col l4 w3-hide-small">
             <br />
