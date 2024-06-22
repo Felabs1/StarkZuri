@@ -1,0 +1,9 @@
+.modal_contaier {
+  display: block !important;
+  z-index: 67;
+}
+
+.modal_content {
+  display: block !important;
+  background-color: white !important;
+}

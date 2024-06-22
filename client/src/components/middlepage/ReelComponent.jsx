@@ -12,9 +12,11 @@ import {
 import styles from "./ReelComponent.module.css";
 import media2 from "../../assets/media2.jpg";
 import profile5 from "../../assets/profile5.jpg";
+import ModalContainer from "../modal/ModalContainer";
 
 const ReelComponent = () => {
   const [playing, setPlaying] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const handlePlayButtonClick = () => {
     setPlaying(!playing);
   };

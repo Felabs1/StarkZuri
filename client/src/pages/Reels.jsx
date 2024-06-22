@@ -4,6 +4,7 @@ import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
 import MobileSidenav from "../components/navigation/MobileSidenav";
 import ReelComponent from "../components/middlepage/ReelComponent";
+import ModalContainer from "../components/modal/ModalContainer";
 
 const Reels = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -21,6 +22,7 @@ const Reels = () => {
 
       <Main>
         <ReelComponent />
+        <ModalContainer>hello world</ModalContainer>
       </Main>
     </div>
   );
