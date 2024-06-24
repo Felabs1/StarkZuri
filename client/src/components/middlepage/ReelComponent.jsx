@@ -20,8 +20,13 @@ const ReelComponent = () => {
   const handlePlayButtonClick = () => {
     setPlaying(!playing);
   };
+  ``;
   return (
     <div className={styles.reel_parent_component}>
+      {modalOpen && (
+        <ModalContainer closeModal={setModalOpen}>hello world</ModalContainer>
+      )}
+
       <div className={styles.reel_component}>
         <div
           className={styles.reel_video}
@@ -55,7 +60,7 @@ const ReelComponent = () => {
         </div>
         <div className={styles.reel_buttons}>
           <div>
-            <button>
+            <button onClick={() => setModalOpen(true)}>
               <FontAwesomeIcon icon={faMessage} className={styles.reel_icon} />
             </button>
             <small>2000</small>

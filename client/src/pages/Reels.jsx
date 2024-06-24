@@ -22,7 +22,6 @@ const Reels = () => {
 
       <Main>
         <ReelComponent />
-        <ModalContainer>hello world</ModalContainer>
       </Main>
     </div>
   );
