@@ -13,6 +13,7 @@ import styles from "./ReelComponent.module.css";
 import media2 from "../../assets/media2.jpg";
 import profile5 from "../../assets/profile5.jpg";
 import ModalContainer from "../modal/ModalContainer";
+import CommentContainer from "../comment/CommentContainer";
 
 const ReelComponent = () => {
   const [playing, setPlaying] = useState(true);
@@ -24,7 +25,11 @@ const ReelComponent = () => {
   return (
     <div className={styles.reel_parent_component}>
       {modalOpen && (
-        <ModalContainer closeModal={setModalOpen}>hello world</ModalContainer>
+        <ModalContainer closeModal={setModalOpen}>
+          <CommentContainer />
+          <CommentContainer containsThread={true} />
+          <CommentContainer />
+        </ModalContainer>
       )}
 
       <div className={styles.reel_component}>

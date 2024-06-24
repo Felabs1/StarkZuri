@@ -3,6 +3,7 @@
   border-radius: 20px;
   border: 0.25px solid #0297d5;
   padding: 15px;
+  cursor: pointer;
 }
 
 .post_navigation {
@@ -39,6 +40,7 @@
 .interaction_bar a {
   padding: 15px;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .gradient_border hr {

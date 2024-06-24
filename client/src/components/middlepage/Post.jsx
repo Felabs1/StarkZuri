@@ -4,15 +4,19 @@ import {
   faListDots,
   faMessage,
   faHeart,
+  faEye,
   faShare,
   faDiamond,
   faPaperclip,
   faImage,
 } from "@fortawesome/free-solid-svg-icons";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./Post.module.css";
 import profile from "../../assets/ST4.png";
 import postimg from "../../assets/post_img.jpg";
 import CommentContainer from "../comment/CommentContainer";
+import { Link } from "react-router-dom";
 
 const Post = () => {
   return (
@@ -27,7 +31,9 @@ const Post = () => {
           </div>
         </div>
         <div>
-          <FontAwesomeIcon icon={faListDots} />
+          <Link to="/post/2">
+            <FontAwesomeIcon icon={faEye} />
+          </Link>
         </div>
       </div>
       <div className={styles.post_body}>
@@ -46,10 +52,10 @@ const Post = () => {
       </div>
       <br />
       <div className={`w3-bar ${styles.interaction_bar}`}>
-        <a className="w3-bar-item">
+        <Link to="/post/3" className="w3-bar-item">
           <FontAwesomeIcon icon={faMessage} />
           &nbsp; 16 comments
-        </a>
+        </Link>
         <a className="w3-bar-item">
           <FontAwesomeIcon className="w3-text-red" icon={faHeart} />
           &nbsp; 5694 likes

@@ -1,0 +1,25 @@
+.skeleton {
+  border-radius: 2px;
+  display: inline-block;
+  line-height: 100%;
+  width: 100%;
+  background-color: #fff;
+  background: linear-gradient(
+    90deg,
+    rgba(142, 142, 142, 1) 0%,
+    rgba(250, 250, 250, 1) 35%,
+    rgba(232, 232, 232, 1) 100%
+  );
+  background-size: 1000px 1000px;
+  animation: placeholderShimmer 1.5s linear infinite forwards;
+}
+
+@keyframes placeholderShimmer {
+  0% {
+    background-position: -500px 0;
+  }
+
+  100% {
+    background-position: 500px 0;
+  }
+}

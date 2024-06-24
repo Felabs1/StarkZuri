@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
@@ -41,12 +43,12 @@ const Home = () => {
             />
             <div>
               <br />
-              <Post />
+              {<Post /> || <Skeleton />}
             </div>
           </div>
 
           <div className="w3-col l4 w3-hide-small">
-            <ProfileCard />
+            {<ProfileCard /> || <Skeleton count={10} />}
             <br />
 
             <AssetsCard />

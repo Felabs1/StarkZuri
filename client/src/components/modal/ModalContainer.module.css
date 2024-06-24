@@ -1,9 +1,45 @@
-.modal_contaier {
-  display: block !important;
-  z-index: 67;
+.modal_background {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(8, 1, 1, 0.223);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
 }
 
-.modal_content {
-  display: block !important;
-  background-color: white !important;
+.modal_container {
+  width: 500px;
+  height: 70vh;
+  border-radius: 12px;
+  background-color: #1c1c1e;
+  box-shadow: #00000059 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.modal_container .body {
+  height: 55vh;
+  overflow-y: auto;
+}
+
+.modal_container .footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex: 20%;
+}
+
+.modal_container .footer button {
+  width: 150px;
+  height: 45px;
+  margin: 10px;
+  border: none;
+  background-color: #2196f3;
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
 }

@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Reels from "./pages/Reels";
 import Wallet from "./pages/Wallet";
 import Comments from "./pages/post_essentials/Comments";
+import Skeleton from "./components/skeleton/Skeleton";
 
 function App() {
   const [count, setCount] = useState(0);
