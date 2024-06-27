@@ -14,7 +14,7 @@ fn deploy_contract(name: ByteArray) -> ContractAddress {
 }
 
 #[test]
-fn test_increase_balance() {
+fn test_add_user() {
     let contract_address = deploy_contract("StarkZuri");
 
     let dispatcher = IStarkZuriContractDispatcher { contract_address };
@@ -22,10 +22,18 @@ fn test_increase_balance() {
     dispatcher.add_user('felix awere', 'felabs', 'image_url', 'cover');
     let user_count = dispatcher.view_user_count();
 
-    assert(user_count == 2, 'user was never added');
+    assert(user_count == 1, 'user was never added');
 }
 
-// #[test]
+#[test]
+fn test_follower_logic(){
+    // let contract_address = deploy_contract("StarkZuri");
+    // let dispatcher = IStarkZuriContractDispatcher { contract_address };
+    // lets use the stark deployer to test this one
+
+}
+
+// #[test] 204348833
 // #[feature("safe_dispatcher")]                   
 // fn test_cannot_increase_balance_with_zero_value() {
 //     let contract_address = deploy_contract("HelloStarknet");

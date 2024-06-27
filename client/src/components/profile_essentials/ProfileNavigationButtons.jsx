@@ -3,10 +3,13 @@ import styles from "./ProfileNavigationButtons.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faCoins } from "@fortawesome/free-solid-svg-icons";
 
-const ProfileNavigationButtons = () => {
+const ProfileNavigationButtons = ({ onModalOpen }) => {
   return (
     <div className={`w3-bar ${styles.profile_button_container}`}>
-      <button className={`w3-bar-item ${styles.profile_navigation_buttons}`}>
+      <button
+        className={`w3-bar-item ${styles.profile_navigation_buttons}`}
+        onClick={onModalOpen}
+      >
         <FontAwesomeIcon icon={faEdit} />
         &nbsp; edit
       </button>
