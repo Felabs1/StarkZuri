@@ -10,11 +10,6 @@ const ModalContainer = ({ children, closeModal }) => {
         </div>
 
         <div className={styles.body}>{children}</div>
-        <div className={styles.footer}>
-          <button className={styles.cancel} onClick={() => closeModal(false)}>
-            close
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import {
   faSearch,
   faHome,
@@ -28,3 +29,25 @@ export const sideNavigations = [
   { navName: "Wallet", icon: faWallet, to: "/wallet" },
   { navName: "More", icon: faListDots, to: "/more" },
 ];
+
+export function bigintToShortStr(bigintstr) {
+  try {
+    if (!bigintstr) return "";
+    const bn = BigNumber(bigintstr);
+    const hex_sentence = `0x` + bn.toString(16);
+    return shortString.decodeShortString(hex_sentence);
+  } catch (error) {
+    return bigintstr;
+  }
+}
+
+export function bigintToLongAddress(bigintstr) {
+  try {
+    if (!bigintstr) return "";
+    const bn = BigNumber(bigintstr);
+    const hex_sentence = `0x` + bn.toString(16);
+    return hex_sentence;
+  } catch (error) {
+    return bigintstr;
+  }
+}

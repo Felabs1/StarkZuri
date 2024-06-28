@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
@@ -13,10 +13,105 @@ import SubNavigation from "../components/navigation/SubNavigation";
 import Post from "../components/middlepage/Post";
 import ModalContainer from "../components/modal/ModalContainer";
 import styles from "./styles/Profile.module.css";
+import { useAppContext } from "../providers/AppProvider";
+import { bigintToShortStr } from "../utils/AppUtils";
+import BigNumber from "bignumber.js";
 
 const Profile = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { contract } = useAppContext();
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [profile, setProfile] = useState(null);
+  const [cover, setCover] = useState(null);
+
+  const profileImage = useRef();
+  const coverImage = useRef();
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleuserNameChange = async (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleProfileChange = async (e) => {
+    const _profile = profileImage.current.files[0];
+    if (!_profile) {
+      alert("please input file for upload");
+    } else {
+      console.log(_profile);
+      const formdata = new FormData();
+      formdata.append("image", _profile);
+      try {
+        const response = await fetch("http://localhost:3000/upload-image/", {
+          method: "POST",
+          body: formdata,
+        });
+        if (response.ok) {
+          const result = await response.text();
+          console.log("profile image uploaded successfully");
+          setProfile(result);
+          console.log(profile);
+        } else {
+          console.log("image upload failed");
+        }
+      } catch (error) {
+        console.error("Error", error);
+        alert("an error occured while uploading the image");
+      }
+    }
+  };
+
+  const handleCoverChangev = (e) => {
+    setCover(e.target.files[0]);
+  };
+
+  const makeInteraction = () => {
+    const myCall = contract.populate("add_user", [
+      name,
+      username,
+      "dir",
+      "dir",
+    ]);
+    setLoading(true);
+    contract["add_user"](myCall.calldata)
+      .then((res) => {
+        console.info("Successful Response:", res);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  let readableNo = BigNumber("1952805748").toString();
+  console.log(readableNo);
+
+  const view_users = () => {
+    const myCall = contract.populate("view_all_users", []);
+    setLoading(true);
+    contract["view_all_users"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_all_users", res?.result ?? res);
+        // console.info("success")
+        console.info("Successful Response:", val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
@@ -40,6 +135,7 @@ const Profile = () => {
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="text"
             />
+
             <label>userName</label>
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}
@@ -49,13 +145,20 @@ const Profile = () => {
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="file"
+              onChange={handleProfileChange}
+              ref={profileImage}
+              accept="image/*"
             />
             <label>Cover photo</label>
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="file"
+              ref={coverImage}
             />
-            <button className={`w3-btn w3-block w3-round w3-blue`}>
+            <button
+              onClick={view_users}
+              className={`w3-btn w3-block w3-round w3-blue`}
+            >
               update
             </button>
           </ModalContainer>

@@ -12,9 +12,12 @@ import FloatingButton from "../components/navigation/FloatingButton";
 import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
+import { useAppContext } from "../providers/AppProvider";
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const { contract } = useAppContext();
+  console.log(contract);
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
     console.log("something is wrong");

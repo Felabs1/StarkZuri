@@ -4,18 +4,11 @@ import { faSearch, faNavicon } from "@fortawesome/free-solid-svg-icons";
 import { connect, disconnect } from "starknetkit";
 import styles from "./TopNav.module.css";
 import Logo from "../../assets/logo.png";
+import { useAppContext } from "../../providers/AppProvider";
 
 const TopNav = ({ onMobileMenuClick }) => {
   // const [navOpen, setNavOpen] = useState(false);
-  const connectWallet = async () => {
-    const { wallet } = await connect();
-
-    if (wallet && wallet.isConnected) {
-      setConnection(wallet);
-      setProvider(wallet.account);
-      setAddress(wallet.selectedAddress);
-    }
-  };
+  const { address, handleWalletConnection } = useAppContext();
   return (
     <div className={`w3-bar ${styles.top_nav} w3-padding`}>
       <button
@@ -43,9 +36,9 @@ const TopNav = ({ onMobileMenuClick }) => {
 
           <button
             className={`w3-button ${styles.connect_button}`}
-            onClick={connectWallet}
+            onClick={handleWalletConnection}
           >
-            Connect wallet
+            {address ? "connected" : "connect wallet"}
           </button>
         </div>
       </div>

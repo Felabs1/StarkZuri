@@ -1,5 +1,6 @@
 use starknet::ContractAddress;
 use core::array::{Array, ArrayTrait};
+use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IStarkZuriContract<TContractState> {
@@ -10,6 +11,9 @@ pub trait IStarkZuriContract<TContractState> {
     fn follow_user(ref self: TContractState, user: ContractAddress);
     fn follower_exist(self: @TContractState, user: ContractAddress) -> bool;
     fn view_followers(self: @TContractState, user: ContractAddress) -> Array<User>;
+    fn upgrade(ref self: TContractState, impl_hash: ClassHash);
+    fn version(self: @TContractState) -> u256;
+
 }
 
 #[derive(Drop, Serde, Copy, starknet::Store)]
@@ -40,11 +44,17 @@ pub struct Post {
 
 #[starknet::contract]
 pub mod StarkZuri {
+    // importing dependancies into the starknet contract;
+
     use starknet::{ContractAddress, get_caller_address};
+    use starknet::class_hash::ClassHash;
+    use starknet::SyscallResultTrait;
+    use core::num::traits::Zero;
     use super::User;
     use super::Post;
     #[storage]
     struct Storage {
+        version: u256,
         users_count: u256,
         users: LegacyMap::<ContractAddress, User>,
         posts: LegacyMap::<(ContractAddress, u8), Post>,
@@ -53,6 +63,17 @@ pub mod StarkZuri {
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
         post_images: LegacyMap::<(ContractAddress, u8), felt252>,
         post_comments: LegacyMap::<(ContractAddress, u8), felt252>,
+    }
+
+    #[event]
+    #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
+    pub enum Event {
+        Upgraded: Upgraded
+    }
+
+    #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
+    pub struct Upgraded {
+        pub implementation: ClassHash
     }
 
     // adding user to or better still veryfying you ruser details
@@ -156,6 +177,17 @@ pub mod StarkZuri {
             };
 
             followers
+        }
+
+        fn upgrade(ref self: ContractState, impl_hash: ClassHash) {
+            assert(impl_hash.is_non_zero(), 'class hash cannot be zero');
+            starknet::syscalls::replace_class_syscall(impl_hash).unwrap_syscall();
+            self.emit(Event::Upgraded(Upgraded {implementation: impl_hash}));
+            self.version.write(self.version.read() + 1);
+        }
+
+        fn version(self: @ContractState) -> u256 {
+            self.version.read()
         }
         
 
