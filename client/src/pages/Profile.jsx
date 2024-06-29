@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
@@ -24,11 +24,19 @@ const Profile = () => {
   const { contract } = useAppContext();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [profile, setProfile] = useState(null);
-  const [cover, setCover] = useState(null);
+  const [profile, setProfile] = useState("");
+  const [cover, setCover] = useState("");
 
   const profileImage = useRef();
   const coverImage = useRef();
+
+  useEffect(() => {
+    console.log(cover);
+  }, [cover]);
+
+  useEffect(() => {
+    console.log(profile);
+  }, [profile]);
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -43,7 +51,6 @@ const Profile = () => {
     if (!_profile) {
       alert("please input file for upload");
     } else {
-      console.log(_profile);
       const formdata = new FormData();
       formdata.append("image", _profile);
       try {
@@ -54,6 +61,8 @@ const Profile = () => {
         if (response.ok) {
           const result = await response.text();
           console.log("profile image uploaded successfully");
+          console.log(result);
+
           setProfile(result);
           console.log(profile);
         } else {
@@ -66,16 +75,43 @@ const Profile = () => {
     }
   };
 
-  const handleCoverChangev = (e) => {
-    setCover(e.target.files[0]);
+  const handleCoverChange = async (e) => {
+    const _cover = coverImage.current.files[0];
+    if (!_cover) {
+      alert("please input file for upload");
+    } else {
+      const formdata = new FormData();
+      formdata.append("image", _cover);
+      try {
+        const response = await fetch("http://localhost:3000/upload-image/", {
+          method: "POST",
+          body: formdata,
+        });
+        if (response.ok) {
+          const result = await response.text();
+          console.log("profile image uploaded successfully");
+          setCover(result);
+          console.log(result);
+        } else {
+          console.log("image upload failed");
+        }
+      } catch (error) {
+        console.error("Error", error);
+        alert("an error occured while uploading the image");
+      }
+    }
   };
 
   const makeInteraction = () => {
+    // console.log(name);
+    // console.log(username);
+    // console.log(profile);
+    // console.log(cover);
     const myCall = contract.populate("add_user", [
       name,
       username,
-      "dir",
-      "dir",
+      profile,
+      cover,
     ]);
     setLoading(true);
     contract["add_user"](myCall.calldata)
@@ -132,12 +168,14 @@ const Profile = () => {
             <hr />
             <label>Name</label>
             <input
+              onChange={handleNameChange}
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="text"
             />
 
             <label>userName</label>
             <input
+              onChange={handleuserNameChange}
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="text"
             />
@@ -153,10 +191,11 @@ const Profile = () => {
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="file"
+              onChange={handleCoverChange}
               ref={coverImage}
             />
             <button
-              onClick={view_users}
+              onClick={makeInteraction}
               className={`w3-btn w3-block w3-round w3-blue`}
             >
               update

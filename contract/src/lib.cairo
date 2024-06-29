@@ -4,7 +4,7 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IStarkZuriContract<TContractState> {
-    fn add_user(ref self: TContractState, name: felt252, username: felt252, profile_pic: felt252, cover_photo: felt252);
+    fn add_user(ref self: TContractState, name: felt252, username: felt252, profile_pic: ByteArray, cover_photo: ByteArray);
     fn view_user(self: @TContractState, user_id: ContractAddress) -> User;
     fn view_user_count(self: @TContractState) -> u256;
     fn view_all_users(self: @TContractState) -> Array<User>;
@@ -21,8 +21,8 @@ pub struct User {
     pub userId: ContractAddress,
     pub name: felt252,
     pub username: felt252,
-    pub profile_pic: felt252,
-    pub cover_photo: felt252,
+    pub profile_pic: ByteArray,
+    pub cover_photo: ByteArray,
     pub date_registered: felt252,
     pub no_of_followers: u8,
     pub number_following: u8,
@@ -34,10 +34,11 @@ pub struct Post {
     #[key]
     postId: u8,
     caller: ContractAddress,
-    content: felt252,
+    content: ByteArray,
     likes: u8,
     comments: u8,
     shares: u8,
+    //images: ByteArray,
     // images and video links will be stored in Legacy Maps for now
 }
 
@@ -61,7 +62,6 @@ pub mod StarkZuri {
         user_addresses: LegacyMap::<u256, ContractAddress>,
         // followers and following profiles
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
-        post_images: LegacyMap::<(ContractAddress, u8), felt252>,
         post_comments: LegacyMap::<(ContractAddress, u8), felt252>,
     }
 
@@ -79,7 +79,7 @@ pub mod StarkZuri {
     // adding user to or better still veryfying you ruser details
     #[abi(embed_v0)]
     impl StarkZuri of super::IStarkZuriContract<ContractState> {
-        fn add_user(ref self: ContractState, name: felt252, username: felt252, profile_pic: felt252, cover_photo: felt252) {
+        fn add_user(ref self: ContractState, name: felt252, username: felt252, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();
             let user: User = User {
                 userId: caller,
