@@ -1,10 +1,28 @@
 export const CONTRACT_ADDRESS =
-  "0x07370b5cc6ab0edbc3fcd98b473178ded8b1825b8432caade7132ee442c43184";
+  "0x40b142cf10924b848179947367fb1aef325cc43d4b38d8347185a6fd4e0790e";
 export const ABI = [
   {
     type: "impl",
     name: "StarkZuri",
     interface_name: "contract::IStarkZuriContract",
+  },
+  {
+    type: "struct",
+    name: "core::byte_array::ByteArray",
+    members: [
+      {
+        name: "data",
+        type: "core::array::Array::<core::bytes_31::bytes31>",
+      },
+      {
+        name: "pending_word",
+        type: "core::felt252",
+      },
+      {
+        name: "pending_word_len",
+        type: "core::integer::u32",
+      },
+    ],
   },
   {
     type: "struct",
@@ -24,11 +42,11 @@ export const ABI = [
       },
       {
         name: "profile_pic",
-        type: "core::felt252",
+        type: "core::byte_array::ByteArray",
       },
       {
         name: "cover_photo",
-        type: "core::felt252",
+        type: "core::byte_array::ByteArray",
       },
       {
         name: "date_registered",
@@ -90,11 +108,11 @@ export const ABI = [
           },
           {
             name: "profile_pic",
-            type: "core::felt252",
+            type: "core::byte_array::ByteArray",
           },
           {
             name: "cover_photo",
-            type: "core::felt252",
+            type: "core::byte_array::ByteArray",
           },
         ],
         outputs: [],
@@ -182,12 +200,58 @@ export const ABI = [
         ],
         state_mutability: "view",
       },
+      {
+        type: "function",
+        name: "upgrade",
+        inputs: [
+          {
+            name: "impl_hash",
+            type: "core::starknet::class_hash::ClassHash",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "version",
+        inputs: [],
+        outputs: [
+          {
+            type: "core::integer::u256",
+          },
+        ],
+        state_mutability: "view",
+      },
+    ],
+  },
+  {
+    type: "constructor",
+    name: "constructor",
+    inputs: [],
+  },
+  {
+    type: "event",
+    name: "contract::StarkZuri::Upgraded",
+    kind: "struct",
+    members: [
+      {
+        name: "implementation",
+        type: "core::starknet::class_hash::ClassHash",
+        kind: "data",
+      },
     ],
   },
   {
     type: "event",
     name: "contract::StarkZuri::Event",
     kind: "enum",
-    variants: [],
+    variants: [
+      {
+        name: "Upgraded",
+        type: "contract::StarkZuri::Upgraded",
+        kind: "nested",
+      },
+    ],
   },
 ];

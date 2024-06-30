@@ -126,8 +126,8 @@ const Profile = () => {
       });
   };
 
-  let readableNo = BigNumber("1952805748").toString();
-  console.log(readableNo);
+  // let readableNo = BigNumber("1952805748").toString();
+  // console.log(readableNo);
 
   const view_users = () => {
     const myCall = contract.populate("view_all_users", []);
@@ -148,6 +148,8 @@ const Profile = () => {
         setLoading(false);
       });
   };
+
+  // view_users();
 
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);

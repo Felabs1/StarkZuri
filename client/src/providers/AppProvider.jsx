@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { connect, disconnect } from "starknetkit";
 
-import { Contract } from "starknet";
+import { Contract, Provider, Account, ec, json } from "starknet";
 import { ABI, CONTRACT_ADDRESS } from "./abi";
 const initialData = {
   address: null,
