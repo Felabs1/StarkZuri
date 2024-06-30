@@ -16,7 +16,7 @@ pub trait IStarkZuriContract<TContractState> {
 
 }
 
-#[derive(Drop, Serde, Copy, starknet::Store)]
+#[derive(Drop, Serde, starknet::Store)]
 pub struct User {
     pub userId: ContractAddress,
     pub name: felt252,
@@ -29,7 +29,7 @@ pub struct User {
 }
 
 
-#[derive(Drop, Serde, Copy, starknet::Store)]
+#[derive(Drop, Serde, starknet::Store)]
 pub struct Post {
     #[key]
     postId: u8,
@@ -47,7 +47,8 @@ pub struct Post {
 pub mod StarkZuri {
     // importing dependancies into the starknet contract;
 
-    use starknet::{ContractAddress, get_caller_address};
+    use core::traits::Into;
+use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
     use core::num::traits::Zero;
@@ -55,6 +56,7 @@ pub mod StarkZuri {
     use super::Post;
     #[storage]
     struct Storage {
+        deployer: ContractAddress,
         version: u256,
         users_count: u256,
         users: LegacyMap::<ContractAddress, User>,
@@ -63,6 +65,12 @@ pub mod StarkZuri {
         // followers and following profiles
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
         post_comments: LegacyMap::<(ContractAddress, u8), felt252>,
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        let deployer = get_caller_address();
+        self.deployer.write(deployer);
     }
 
     #[event]
@@ -134,11 +142,13 @@ pub mod StarkZuri {
             // let available_follower = self.followers.read((user, ))
             // this is the person being followed
             let mut user_to_be_followed: User = self.users.read(user);
+            let mut _user_to_be_followed: User = self.users.read(user);
             if self.follower_exist(user) == false {
                 user_to_be_followed.no_of_followers += 1;
+                _user_to_be_followed.no_of_followers += 1;
                 _user.number_following += 1;
                 self.users.write(user_following, _user);
-                self.users.write(user, user_to_be_followed);
+                self.users.write(user, _user_to_be_followed);
 
                 self.followers.write(
                     (user, user_to_be_followed.no_of_followers), 
@@ -180,7 +190,9 @@ pub mod StarkZuri {
         }
 
         fn upgrade(ref self: ContractState, impl_hash: ClassHash) {
+            let upgrader = get_caller_address();
             assert(impl_hash.is_non_zero(), 'class hash cannot be zero');
+            assert(self.deployer.read() == upgrader, 'only felix can upgrade');
             starknet::syscalls::replace_class_syscall(impl_hash).unwrap_syscall();
             self.emit(Event::Upgraded(Upgraded {implementation: impl_hash}));
             self.version.write(self.version.read() + 1);
