@@ -13,6 +13,12 @@ pub trait IStarkZuriContract<TContractState> {
     fn view_followers(self: @TContractState, user: ContractAddress) -> Array<User>;
     fn upgrade(ref self: TContractState, impl_hash: ClassHash);
     fn version(self: @TContractState) -> u256;
+    fn create_post(ref self: TContractState, content: ByteArray, images: ByteArray);
+    fn like_post(ref self: TContractState, post_id: u256);
+    fn unlike_post(ref self: TContractState, post_id: u256);
+    fn view_likes(self: @TContractState, post_id: u256)->Array<User>;
+    // fn comment_on_post(ref self: TContractState, post_id: u256, content: ByteArray);
+    // fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
 
 }
 
@@ -32,14 +38,23 @@ pub struct User {
 #[derive(Drop, Serde, starknet::Store)]
 pub struct Post {
     #[key]
-    postId: u8,
+    postId: u256,
     caller: ContractAddress,
     content: ByteArray,
     likes: u8,
     comments: u8,
     shares: u8,
-    //images: ByteArray,
+    images: ByteArray,
     // images and video links will be stored in Legacy Maps for now
+}
+
+#[derive(Drop, Serde, starknet::Store)]
+struct Comment {
+    postId: u256,
+    caller: ContractAddress,
+    content: ByteArray,
+    likes: u8,
+    replies: u8,
 }
 
 
@@ -52,19 +67,21 @@ use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
     use core::num::traits::Zero;
-    use super::User;
-    use super::Post;
+    use super::{User, Post, Comment};
     #[storage]
     struct Storage {
         deployer: ContractAddress,
         version: u256,
         users_count: u256,
+        posts_count: u256,
         users: LegacyMap::<ContractAddress, User>,
-        posts: LegacyMap::<(ContractAddress, u8), Post>,
+        posts: LegacyMap::<u256, Post>,
         user_addresses: LegacyMap::<u256, ContractAddress>,
         // followers and following profiles
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
-        post_comments: LegacyMap::<(ContractAddress, u8), felt252>,
+        post_comments: LegacyMap::<(ContractAddress, u256), Comment>,
+        post_likes: LegacyMap::<(ContractAddress, u256), felt252>
+
     }
 
     #[constructor]
@@ -202,8 +219,88 @@ use starknet::{ContractAddress, get_caller_address};
             self.version.read()
         }
 
+        fn create_post(ref self: ContractState, content: ByteArray, images: ByteArray) {
+            let _post_id = self.posts_count.read() + 1;
+            let post = Post {
+                postId: _post_id,
+                caller: get_caller_address(),
+                content: content,
+                likes: 0,
+                comments: 0,
+                shares: 0,
+                images: images,
+
+            };
+
+            self.posts.write(_post_id, post);
+        }
+
+
+        fn like_post(ref self: ContractState, post_id: u256){
+            // we need to prevent liking twice
+            let mut likable_post = self.post_likes.read((get_caller_address(), post_id));
+            if (likable_post != 'like') {
+                let mut post = self.posts.read(post_id);
+                post.likes += 1;
+                self.posts.write(post_id, post);
+                self.post_likes.write((get_caller_address(), post_id), 'like');
+            }
+    
+        }
+    
+        fn unlike_post(ref self: ContractState, post_id: u256) {
+            let mut likable_post = self.post_likes.read((get_caller_address(), post_id));
+            if (likable_post == 'like') {
+                let mut post = self.posts.read(post_id);
+                post.likes -= 1;
+                self.posts.write(post_id, post);
+                self.post_likes.write((get_caller_address(), post_id), '');
+            }
+        }
+
+        // fn view_likes()
+        fn view_likes(self: @ContractState, post_id: u256) -> Array<User> {
+            let mut users: Array<User> = ArrayTrait::new();
+            let all_users: Array<User> = self.view_all_users();
+            let mut counter = 0;
+
+            while (counter < all_users.len()) {
+                let _post = self.posts.read(post_id);
+                let _poster_address = _post.caller;
+
+                // lets go through the likes
+                let _reaction = self.post_likes.read((_poster_address, post_id));
+                if _reaction == 'like' {
+                    let _user: User = self.users.read(_poster_address);
+                    users.append(_user);
+                }
+                
+                counter += 1;
+                
+            };
+
+            users
+        }
+
+
+        // fn comment_on_post(ref self: ContractAddress, post_id: u256, content: ByteArray){
+        //     let comment = Comment {
+        //         postId: post_id,
+        //         caller: get_caller_address(),
+        //         content: content,
+        //         likes: 0,
+        //         replies: 0,
+        //     };
+        //     let mut post = self.posts.read()
+
+        //     self.post_comments.write((get_caller_address(), post_id), comment);
+        // }
+
+
     }
+
+   
+
 
 }
 
-//
