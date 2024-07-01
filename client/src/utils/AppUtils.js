@@ -1,4 +1,5 @@
 import { BigNumber } from "bignumber.js";
+import { shortString } from "starknet";
 import {
   faSearch,
   faHome,
@@ -39,6 +40,12 @@ export function bigintToShortStr(bigintstr) {
   } catch (error) {
     return bigintstr;
   }
+}
+
+export function convertToReadableNumber(string) {
+  const num = BigNumber(string).toString(16);
+  const hex_sentence = `0x` + num;
+  return shortString.decodeShortString(hex_sentence);
 }
 
 export function bigintToLongAddress(bigintstr) {

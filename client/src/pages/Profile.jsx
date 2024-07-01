@@ -14,7 +14,11 @@ import Post from "../components/middlepage/Post";
 import ModalContainer from "../components/modal/ModalContainer";
 import styles from "./styles/Profile.module.css";
 import { useAppContext } from "../providers/AppProvider";
-import { bigintToShortStr } from "../utils/AppUtils";
+import {
+  bigintToLongAddress,
+  bigintToShortStr,
+  convertToReadableNumber,
+} from "../utils/AppUtils";
 import BigNumber from "bignumber.js";
 
 const Profile = () => {
@@ -149,7 +153,17 @@ const Profile = () => {
       });
   };
 
-  // view_users();
+  useEffect(() => {
+    if (contract) {
+      view_users();
+    }
+    console.log(bigintToShortStr(439788267896n));
+    console.log(
+      bigintToLongAddress(
+        3576822344088438784960174474173613065167062044832123606782432014284400833814n
+      )
+    );
+  }, [contract]);
 
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
