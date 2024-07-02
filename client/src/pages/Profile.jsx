@@ -25,17 +25,22 @@ const Profile = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { contract } = useAppContext();
+  const { contract, address } = useAppContext();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [profile, setProfile] = useState("");
   const [cover, setCover] = useState("");
+
+  // these ones will be used to display hapo let's try it
+  const [coverPhoto, setCoverPhoto] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
 
   const profileImage = useRef();
   const coverImage = useRef();
 
   useEffect(() => {
     console.log(cover);
+    // console.log(address)
   }, [cover]);
 
   useEffect(() => {
@@ -143,7 +148,17 @@ const Profile = () => {
       .then((res) => {
         let val = contract.callData.parse("view_all_users", res?.result ?? res);
         // console.info("success")
-        console.info("Successful Response:", val);
+        // console.info("Successful Response:", val);
+        // console.log(val);
+        val.forEach(({ cover_photo, profile_pic, userId }) => {
+          const _address = bigintToLongAddress(userId);
+          if (address == _address) {
+            setCoverPhoto(cover_photo);
+            setProfilePhoto(profile_pic);
+          }
+
+          // console.log(_address);
+        });
       })
       .catch((err) => {
         console.error("Error: ", err);
@@ -153,16 +168,19 @@ const Profile = () => {
       });
   };
 
+  // console.log(coverPhoto);
+  // console.log(profilePhoto);
+
   useEffect(() => {
     if (contract) {
       view_users();
     }
-    console.log(bigintToShortStr(439788267896n));
-    console.log(
-      bigintToLongAddress(
-        3576822344088438784960174474173613065167062044832123606782432014284400833814n
-      )
-    );
+    // console.log(bigintToShortStr(439788267896n));
+    // console.log(
+    //   bigintToLongAddress(
+    //     3576822344088438784960174474173613065167062044832123606782432014284400833814n
+    //   )
+    // );
   }, [contract]);
 
   const handleMobileMenuClick = () => {

@@ -4,7 +4,7 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IStarkZuriContract<TContractState> {
-    fn add_user(ref self: TContractState, name: felt252, username: felt252, profile_pic: ByteArray, cover_photo: ByteArray);
+    fn add_user(ref self: TContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray);
     fn view_user(self: @TContractState, user_id: ContractAddress) -> User;
     fn view_user_count(self: @TContractState) -> u256;
     fn view_all_users(self: @TContractState) -> Array<User>;
@@ -17,8 +17,10 @@ pub trait IStarkZuriContract<TContractState> {
     fn like_post(ref self: TContractState, post_id: u256);
     fn unlike_post(ref self: TContractState, post_id: u256);
     fn view_likes(self: @TContractState, post_id: u256)->Array<User>;
-    // fn comment_on_post(ref self: TContractState, post_id: u256, content: ByteArray);
-    // fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
+    fn comment_on_post(ref self: TContractState, post_id: u256, content: ByteArray);
+    fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
+    fn view_posts(self: @TContractState)->Array<Post>;
+    fn filter_post(self: @TContractState, user: ContractAddress) -> Array<Post>;
 
 }
 
@@ -27,6 +29,7 @@ pub struct User {
     pub userId: ContractAddress,
     pub name: felt252,
     pub username: felt252,
+    pub about: ByteArray,
     pub profile_pic: ByteArray,
     pub cover_photo: ByteArray,
     pub date_registered: felt252,
@@ -42,7 +45,7 @@ pub struct Post {
     caller: ContractAddress,
     content: ByteArray,
     likes: u8,
-    comments: u8,
+    comments: u256,
     shares: u8,
     images: ByteArray,
     // images and video links will be stored in Legacy Maps for now
@@ -51,6 +54,7 @@ pub struct Post {
 #[derive(Drop, Serde, starknet::Store)]
 struct Comment {
     postId: u256,
+    commentId: u256,
     caller: ContractAddress,
     content: ByteArray,
     likes: u8,
@@ -62,7 +66,9 @@ struct Comment {
 pub mod StarkZuri {
     // importing dependancies into the starknet contract;
 
-    use core::traits::Into;
+    use core::array::ArrayTrait;
+use contract::IStarkZuriContract;
+use core::traits::Into;
 use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
@@ -79,8 +85,9 @@ use starknet::{ContractAddress, get_caller_address};
         user_addresses: LegacyMap::<u256, ContractAddress>,
         // followers and following profiles
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
-        post_comments: LegacyMap::<(ContractAddress, u256), Comment>,
-        post_likes: LegacyMap::<(ContractAddress, u256), felt252>
+        post_comments: LegacyMap::<(u256, u256), Comment>,
+        post_likes: LegacyMap::<(ContractAddress, u256), felt252>,
+        comment_count: u256
 
     }
 
@@ -104,7 +111,7 @@ use starknet::{ContractAddress, get_caller_address};
     // adding user to or better still veryfying you ruser details
     #[abi(embed_v0)]
     impl StarkZuri of super::IStarkZuriContract<ContractState> {
-        fn add_user(ref self: ContractState, name: felt252, username: felt252, profile_pic: ByteArray, cover_photo: ByteArray) {
+        fn add_user(ref self: ContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();
             let user: User = User {
                 userId: caller,
@@ -112,6 +119,7 @@ use starknet::{ContractAddress, get_caller_address};
                 username: username,
                 profile_pic: profile_pic,
                 cover_photo: cover_photo,
+                about: about,
                 date_registered: 'now',
                 no_of_followers: 0,
                 number_following: 0,
@@ -231,7 +239,7 @@ use starknet::{ContractAddress, get_caller_address};
                 images: images,
 
             };
-
+            self.posts_count.write(_post_id);
             self.posts.write(_post_id, post);
         }
 
@@ -261,20 +269,21 @@ use starknet::{ContractAddress, get_caller_address};
         // fn view_likes()
         fn view_likes(self: @ContractState, post_id: u256) -> Array<User> {
             let mut users: Array<User> = ArrayTrait::new();
+
             let all_users: Array<User> = self.view_all_users();
             let mut counter = 0;
 
             while (counter < all_users.len()) {
                 let _post = self.posts.read(post_id);
-                let _poster_address = _post.caller;
+                let _user = all_users.at(counter);
+                let _user_address = *_user.userId;  // we have the user address
+                // we also have the post id
+                let reaction = self.post_likes.read((_user_address, post_id));
+                if reaction == 'like' {
+                    let user = self.users.read(_user_address);
+                    users.append(user);
 
-                // lets go through the likes
-                let _reaction = self.post_likes.read((_poster_address, post_id));
-                if _reaction == 'like' {
-                    let _user: User = self.users.read(_poster_address);
-                    users.append(_user);
                 }
-                
                 counter += 1;
                 
             };
@@ -283,18 +292,86 @@ use starknet::{ContractAddress, get_caller_address};
         }
 
 
-        // fn comment_on_post(ref self: ContractAddress, post_id: u256, content: ByteArray){
-        //     let comment = Comment {
-        //         postId: post_id,
-        //         caller: get_caller_address(),
-        //         content: content,
-        //         likes: 0,
-        //         replies: 0,
-        //     };
-        //     let mut post = self.posts.read()
+        fn comment_on_post(ref self: ContractState, post_id: u256, content: ByteArray){
+            let comment_id = self.comment_count.read() + 1;
+            
+            let comment = Comment {
+                postId: post_id,
+                commentId: comment_id,
+                caller: get_caller_address(),
+                content: content,
+                likes: 0,
+                replies: 0,
+            };
+            let mut post = self.posts.read(post_id);
+            let mut _post = self.posts.read(post_id);
+            _post.comments += 1;
+            post.comments += 1;
+            self.posts.write(post_id, _post);
 
-        //     self.post_comments.write((get_caller_address(), post_id), comment);
-        // }
+            self.post_comments.write((post_id, post.comments), comment);
+        }
+
+        fn view_comments(self: @ContractState, post_id: u256) -> Array<Comment> {
+            let mut comments: Array<Comment> = ArrayTrait::new();
+            let post = self.posts.read(post_id);
+            let _comment_count = post.comments;
+            let mut counter = 1;
+            while (counter <= _comment_count){
+                let comment = self.post_comments.read((post_id, counter));
+                comments.append(comment);
+                counter +=  1;
+            };
+
+            comments
+        }
+
+        fn view_posts(self: @ContractState)->Array<Post> {
+            let post_count: u256 = self.posts_count.read();
+            let mut counter: u256 = 1;
+            let mut posts = ArrayTrait::new();
+
+            while (counter <= post_count) {
+                let post:  Post = self.posts.read(counter);
+                posts.append(post);
+                counter += 1;
+
+            };
+
+            posts
+
+        }
+
+        fn filter_post(self: @ContractState, user: ContractAddress) -> Array<Post> {
+            // let mut posts: @Array<Post> = @self.view_posts();
+            // let mut filtered_posts: @Array<Post> = @ArrayTrait::new();
+            // let mut counter = 0;
+            // while (counter < posts.len()) {
+            //     let post: Post = *posts.at(counter);
+            //     if post.caller == user {
+                    
+            //     }
+            //     counter += 1;
+            // };
+            // filtered_posts
+            let post_count = self.posts_count.read();
+            let mut counter = 1;
+            let mut posts = ArrayTrait::new();
+
+            while (counter <= post_count) {
+                let post:  Post = self.posts.read(counter);
+                if post.caller == user {
+                    posts.append(post);
+                }
+                counter += 1;
+
+            };
+
+            posts
+
+
+        }
+
 
 
     }

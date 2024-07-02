@@ -53,6 +53,12 @@
   border-radius: 15px;
   padding: 15px;
   margin: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.form_helpers:hover {
+  background-color: #333333;
 }
 
 @media (max-width: 600px) {

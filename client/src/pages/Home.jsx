@@ -17,7 +17,7 @@ import { useAppContext } from "../providers/AppProvider";
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
   const { contract } = useAppContext();
-  console.log(contract);
+  // console.log(contract);
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
     console.log("something is wrong");

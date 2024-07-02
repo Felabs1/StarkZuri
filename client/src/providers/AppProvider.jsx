@@ -40,7 +40,7 @@ const AppProvider = (props) => {
       });
       const _contract = new Contract(ABI, CONTRACT_ADDRESS, _provider);
       setContract(_contract);
-      console.log(_contract);
+      // console.log(_contract);
     }
   };
 

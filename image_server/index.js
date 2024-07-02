@@ -19,6 +19,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // set up multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -46,6 +48,38 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     res.send("uploads/" + filename);
   } catch (error) {
     res.status(500).send("Error processing image");
+    console.error(error);
+  }
+});
+
+app.post("/upload-images", upload.array("images", 10), async (req, res) => {
+  try {
+    // Iterate through each uploaded file
+    const promises = req.files.map(async (file) => {
+      // Resize and compress each image
+      const buffer = await sharp(file.buffer)
+        .resize({ width: 800 })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+      // Generate a unique filename
+      const filename = createHashedFilename(file.originalname);
+      const outpath = path.join(__dirname, "uploads", filename);
+
+      // Write the processed image to disk
+      fs.writeFileSync(outpath, buffer);
+
+      // Return the path to the uploaded image
+      return "uploads/" + filename;
+    });
+
+    // Wait for all promises to resolve
+    const results = await Promise.all(promises);
+
+    // Send response with array of uploaded file paths
+    res.json(results);
+  } catch (error) {
+    res.status(500).send("Error processing images");
     console.error(error);
   }
 });
