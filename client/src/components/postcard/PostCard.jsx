@@ -11,26 +11,65 @@ import {
   faBucket,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { useAppContext } from "../../providers/AppProvider";
 
 const PostCard = () => {
   const fileInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { contract, address } = useAppContext();
+  const [postmedia, setPostmedia] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const postContent = useRef();
+
   const handleFileClick = () => {
     fileInputRef.current.click();
   };
 
+  const handleSubmitForm = () => {
+    const _postContent = postContent.current.value;
+    const _postmedia = postmedia.join(" ");
+    console.log(_postmedia);
+    console.log(_postContent);
+
+    const myCall = contract.populate("create_post", [_postContent, _postmedia]);
+    setLoading(true);
+    console.log(contract);
+    contract["create_post"](myCall.calldata)
+      .then((res) => {
+        console.info("successful response", res);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   const handleFileChange = (event) => {
     setSelectedFiles(event.target.files);
+    handleUpload();
   };
 
   const handleUpload = async () => {
     const formData = new FormData();
+    const images = fileInputRef.current.files;
+    // console.log(images);
 
     // append each selected file to the form data object
-    for (let i = 0; i < selectedFiles.length; i++) {
-      formData.append("images", selectedFiles[i]);
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
     }
+
+    // Log the contents of formData
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1].name); // Logs the field name and file name
+    }
+    // console.log(formData);
+
+    // // keybr.com monkeytype.com speedcoder.dev speedtyper.com 10fastfingers and last but not least.. typing trainer the mother to my muschle memory
 
     try {
       const response = await axios.post(
@@ -49,7 +88,8 @@ const PostCard = () => {
           },
         }
       );
-      console.log("upload successful", response.data);
+      // console.log("upload successful", response.data);
+      setPostmedia(response.data);
       setSelectedFiles([]);
     } catch (error) {
       console.error("Error uploading images: ", error);
@@ -59,8 +99,14 @@ const PostCard = () => {
     <div className={styles.postcard_border}>
       <div className={styles.form_container}>
         <img src={searchLogo} className={styles.logo_image} alt="image" />
-        <input className="w3-input" placeholder="what's on your mind" />
-        <button className="w3-button">Post</button>
+        <input
+          className="w3-input"
+          ref={postContent}
+          placeholder="what's on your mind"
+        />
+        <button className="w3-button" onClick={handleSubmitForm}>
+          Post
+        </button>
       </div>
       <br />
       <div className={styles.form_helpers_holder}>

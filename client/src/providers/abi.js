@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS =
-  "0x40b142cf10924b848179947367fb1aef325cc43d4b38d8347185a6fd4e0790e";
+  "0x6fa4fd5e80533c13c22811ce231ed550cd40f4406cdb87e32bc987d6faf5196";
 export const ABI = [
   {
     type: "impl",
@@ -39,6 +39,10 @@ export const ABI = [
       {
         name: "username",
         type: "core::felt252",
+      },
+      {
+        name: "about",
+        type: "core::byte_array::ByteArray",
       },
       {
         name: "profile_pic",
@@ -91,6 +95,70 @@ export const ABI = [
     ],
   },
   {
+    type: "struct",
+    name: "contract::Comment",
+    members: [
+      {
+        name: "postId",
+        type: "core::integer::u256",
+      },
+      {
+        name: "commentId",
+        type: "core::integer::u256",
+      },
+      {
+        name: "caller",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "content",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "likes",
+        type: "core::integer::u8",
+      },
+      {
+        name: "replies",
+        type: "core::integer::u8",
+      },
+    ],
+  },
+  {
+    type: "struct",
+    name: "contract::Post",
+    members: [
+      {
+        name: "postId",
+        type: "core::integer::u256",
+      },
+      {
+        name: "caller",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "content",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "likes",
+        type: "core::integer::u8",
+      },
+      {
+        name: "comments",
+        type: "core::integer::u256",
+      },
+      {
+        name: "shares",
+        type: "core::integer::u8",
+      },
+      {
+        name: "images",
+        type: "core::byte_array::ByteArray",
+      },
+    ],
+  },
+  {
     type: "interface",
     name: "contract::IStarkZuriContract",
     items: [
@@ -105,6 +173,10 @@ export const ABI = [
           {
             name: "username",
             type: "core::felt252",
+          },
+          {
+            name: "about",
+            type: "core::byte_array::ByteArray",
           },
           {
             name: "profile_pic",
@@ -219,6 +291,121 @@ export const ABI = [
         outputs: [
           {
             type: "core::integer::u256",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "create_post",
+        inputs: [
+          {
+            name: "content",
+            type: "core::byte_array::ByteArray",
+          },
+          {
+            name: "images",
+            type: "core::byte_array::ByteArray",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "like_post",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "unlike_post",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "view_likes",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::User>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "comment_on_post",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+          {
+            name: "content",
+            type: "core::byte_array::ByteArray",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "view_comments",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Comment>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "view_posts",
+        inputs: [],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Post>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "filter_post",
+        inputs: [
+          {
+            name: "user",
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Post>",
           },
         ],
         state_mutability: "view",

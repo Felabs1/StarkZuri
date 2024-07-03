@@ -18,51 +18,56 @@ import postimg from "../../assets/post_img.jpg";
 import CommentContainer from "../comment/CommentContainer";
 import { Link } from "react-router-dom";
 
-const Post = () => {
+const Post = ({
+  username,
+  profile_pic,
+  time_posted,
+  content,
+  images,
+  likes,
+  shares,
+  comments,
+  postId,
+}) => {
   return (
     <div className={`${styles.gradient_border}`}>
       <div className={styles.post_navigation}>
         <div className={styles.profile}>
-          <img src={profile} />
+          <img src={`http://localhost:3000/${profile_pic}` ?? profile} />
           <div className={styles.profile_details}>
-            <span>Felabs</span>
+            <span>{username}</span>
             <br />
             <small>1 hr ago</small>
           </div>
         </div>
         <div>
-          <Link to="/post/2">
+          <Link to={`/post/${postId}`}>
             <FontAwesomeIcon icon={faEye} />
           </Link>
         </div>
       </div>
       <div className={styles.post_body}>
-        <h4>5 Advantages of developing on starknet</h4>
-        <p>
-          1: data ownership
-          <br />
-          2: fast transactions
-          <br />
-          3: cheap transaction fees
-          <br />
-          <br />
-          Learn more in our new Blog
-        </p>
-        <img src={postimg} />
+        <p>{content}</p>
+        <div className={styles.post_media}>
+          {images &&
+            images.map((image) => {
+              return <img src={`http://localhost:3000/${image}`} /> || "";
+            })}
+        </div>
       </div>
       <br />
       <div className={`w3-bar ${styles.interaction_bar}`}>
-        <Link to="/post/3" className="w3-bar-item">
+        <Link to={`/post/${postId}`} className="w3-bar-item">
           <FontAwesomeIcon icon={faMessage} />
-          &nbsp; 16 comments
+          &nbsp; {comments} comments
         </Link>
         <a className="w3-bar-item">
           <FontAwesomeIcon className="w3-text-red" icon={faHeart} />
-          &nbsp; 5694 likes
+          &nbsp; {likes} likes
         </a>
         <a className="w3-bar-item">
           <FontAwesomeIcon icon={faShare} />
-          &nbsp;5 shares
+          &nbsp;{shares} shares
         </a>
         <a className="w3-bar-item">
           <FontAwesomeIcon icon={faDiamond} />

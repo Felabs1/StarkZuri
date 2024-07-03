@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import TopNav from "../components/navigation/TopNav";
@@ -13,10 +13,74 @@ import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
 import { useAppContext } from "../providers/AppProvider";
+import { bigintToLongAddress, bigintToShortStr } from "../utils/AppUtils";
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { contract } = useAppContext();
+  const [users, setUsers] = useState([]);
+
+  const view_users = () => {
+    const myCall = contract.populate("view_all_users", []);
+    setLoading(true);
+    contract["view_all_users"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_all_users", res?.result ?? res);
+
+        setUsers(val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  function getUserName(userId) {
+    if (users) {
+      const _user = users.find((element) => element.userId == userId);
+      console.log(_user);
+      return _user;
+    }
+  }
+
+  // console.log(users);
+
+  const view_posts = () => {
+    const myCall = contract.populate("view_posts", []);
+    setLoading(true);
+    contract["view_posts"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_posts", res?.result ?? res);
+        // console.info("success")
+        // console.info("Successful Response:", val);
+        console.log(val);
+        setPosts(val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (contract) {
+      view_posts();
+      view_users();
+    }
+  }, [contract]);
+
   // console.log(contract);
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
@@ -46,7 +110,42 @@ const Home = () => {
             />
             <div>
               <br />
-              {<Post /> || <Skeleton />}
+              {(posts &&
+                posts.map(
+                  ({
+                    postId,
+                    caller,
+                    content,
+                    likes,
+                    comments,
+                    shares,
+                    images,
+                  }) => {
+                    const _account_address = bigintToLongAddress(caller);
+                    const great_user = getUserName(_account_address);
+
+                    if (great_user) {
+                      const _readable_username = bigintToShortStr(
+                        great_user.username
+                      );
+                      console.log(comments.toString());
+
+                      return (
+                        <Post
+                          key={postId}
+                          postId={bigintToShortStr(postId)}
+                          images={images.split(" ")}
+                          content={content}
+                          username={_readable_username}
+                          comments={comments.toString()}
+                          profile_pic={great_user.profile_pic}
+                          likes={likes.toString()}
+                          shares={shares.toString()}
+                        />
+                      );
+                    }
+                  }
+                )) || <Skeleton />}
             </div>
           </div>
 

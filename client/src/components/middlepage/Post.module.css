@@ -4,6 +4,7 @@
   border: 0.25px solid #0297d5;
   padding: 15px;
   cursor: pointer;
+  margin-bottom: 12px;
 }
 
 .post_navigation {
@@ -72,4 +73,15 @@
   border-radius: 20px;
   color: white;
   outline: none;
+}
+
+.post_media {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
+  /* No space between items */
+}
+
+.post_media img {
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding and border are included in the width */
 }

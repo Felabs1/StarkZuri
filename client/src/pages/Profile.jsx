@@ -30,6 +30,7 @@ const Profile = () => {
   const [username, setUsername] = useState("");
   const [profile, setProfile] = useState("");
   const [cover, setCover] = useState("");
+  const [about, setAbout] = useState("");
 
   // these ones will be used to display hapo let's try it
   const [coverPhoto, setCoverPhoto] = useState("");
@@ -119,6 +120,7 @@ const Profile = () => {
     const myCall = contract.populate("add_user", [
       name,
       username,
+      about,
       profile,
       cover,
     ]);
@@ -152,6 +154,7 @@ const Profile = () => {
         // console.log(val);
         val.forEach(({ cover_photo, profile_pic, userId }) => {
           const _address = bigintToLongAddress(userId);
+          console.log(_address);
           if (address == _address) {
             setCoverPhoto(cover_photo);
             setProfilePhoto(profile_pic);
@@ -166,6 +169,10 @@ const Profile = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleAboutChange = (e) => {
+    setAbout(e.target.value);
   };
 
   // console.log(coverPhoto);
@@ -185,7 +192,6 @@ const Profile = () => {
 
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
-    console.log("something is wrong");
     console.log(navOpen);
   };
   return (
@@ -210,6 +216,12 @@ const Profile = () => {
             <label>userName</label>
             <input
               onChange={handleuserNameChange}
+              className={`w3-input w3-border w3-round ${styles.input}`}
+              type="text"
+            />
+            <label>about</label>
+            <input
+              onChange={handleAboutChange}
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="text"
             />
