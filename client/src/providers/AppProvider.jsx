@@ -8,6 +8,7 @@ const initialData = {
   contract: null,
   provider: null,
   handleWalletConnection: null,
+  handleWalletDisconnection: null,
 };
 
 const AppContext = createContext(initialData);
@@ -25,6 +26,15 @@ const AppProvider = (props) => {
       setAddress(wallet.selectedAddress);
     } else {
       setProvider(_provider);
+    }
+  };
+
+  const disconnectWallet = async () => {
+    const { wallet } = await disconnect();
+    if (wallet && wallet.isConnected) {
+      // setConnection(undefined);
+      setProvider(undefined);
+      setAddress("");
     }
   };
 
@@ -50,12 +60,17 @@ const AppProvider = (props) => {
       contract,
       provider,
       handleWalletConnection: connectWallet,
+      handleWalletDisconnection: disconnectWallet,
     }),
     [address, contract, provider]
   );
   useEffect(() => {
     connectContract();
   }, [address]);
+
+  useEffect(() => {
+    connectWallet();
+  }, []);
   return (
     <AppContext.Provider value={appValue}>{props.children}</AppContext.Provider>
   );

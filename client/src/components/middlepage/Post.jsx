@@ -33,6 +33,7 @@ const Post = ({
   const { contract } = useAppContext();
   const [loading, setLoading] = useState(false);
   const commentText = useRef();
+
   const comment_on_post = () => {
     const _comment_text = commentText.current.value;
     const myCall = contract.populate("comment_on_post", [
@@ -51,6 +52,7 @@ const Post = ({
         setLoading(false);
       });
   };
+
   const like_post = (e) => {
     const myCall = contract.populate("like_post", [postId]);
     setLoading(true);

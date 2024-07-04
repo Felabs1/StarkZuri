@@ -8,7 +8,8 @@ import { useAppContext } from "../../providers/AppProvider";
 
 const TopNav = ({ onMobileMenuClick }) => {
   // const [navOpen, setNavOpen] = useState(false);
-  const { address, handleWalletConnection } = useAppContext();
+  const { address, handleWalletConnection, handleWalletDisconnection } =
+    useAppContext();
   return (
     <div className={`w3-bar ${styles.top_nav} w3-padding`}>
       <button
@@ -36,7 +37,9 @@ const TopNav = ({ onMobileMenuClick }) => {
 
           <button
             className={`w3-button ${styles.connect_button}`}
-            onClick={handleWalletConnection}
+            onClick={
+              address ? handleWalletDisconnection : handleWalletConnection
+            }
           >
             {address ? "connected" : "connect wallet"}
           </button>

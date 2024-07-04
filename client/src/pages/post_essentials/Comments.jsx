@@ -30,47 +30,54 @@ const Comments = () => {
   const [commentList, setCommentList] = useState();
 
   const view_comment_list = (commentId) => {
-    const myCall = contract.populate("view_comments", [commentId]);
-    setLoading(true);
-    contract["view_comments"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_comments", res?.result ?? res);
-        console.log(val);
-        setCommentList(val);
+    if (contract) {
+      const myCall = contract.populate("view_comments", [commentId]);
+      setLoading(true);
+      contract["view_comments"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
       })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        .then((res) => {
+          let val = contract.callData.parse(
+            "view_comments",
+            res?.result ?? res
+          );
+          console.log(val);
+          setCommentList(val);
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
-  useEffect(() => {
-    view_comment_list(id);
-  }, [contract]);
-
   const view_users = () => {
-    const myCall = contract.populate("view_all_users", []);
     setLoading(true);
-    contract["view_all_users"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_all_users", res?.result ?? res);
+    if (contract) {
+      const myCall = contract.populate("view_all_users", []);
 
-        setUsers(val);
+      contract["view_all_users"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
       })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        .then((res) => {
+          let val = contract.callData.parse(
+            "view_all_users",
+            res?.result ?? res
+          );
+
+          setUsers(val);
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   function getPost(postId) {
@@ -78,7 +85,7 @@ const Comments = () => {
       const _post = posts.find(
         (element) => element.postId == postId.toString()
       );
-      console.log(_post);
+      // console.log(_post);
       let caller = _post.caller;
       let user = getUserName(bigintToLongAddress(caller));
       // console.log(user.username);
@@ -95,10 +102,6 @@ const Comments = () => {
 
   // getPost(3);
 
-  useEffect(() => {
-    getPost(id);
-  }, [contract]);
-
   function getUserName(userId) {
     if (users) {
       const _user = users.find((element) => element.userId == userId);
@@ -108,26 +111,39 @@ const Comments = () => {
   }
 
   const view_posts = () => {
-    const myCall = contract.populate("view_posts", []);
     setLoading(true);
-    contract["view_posts"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_posts", res?.result ?? res);
-        // console.info("success")
-        // console.info("Successful Response:", val);
-        console.log(val);
-        setPosts(val);
+    if (contract) {
+      const myCall = contract.populate("view_posts", []);
+
+      contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
       })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        .then((res) => {
+          let val = contract.callData.parse("view_posts", res?.result ?? res);
+          // console.info("success")
+          // console.info("Successful Response:", val);
+          console.log(val);
+          setPosts(val);
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
+
+  const handleMobileMenuClick = () => {
+    setNavOpen(!navOpen);
+    console.log("something is wrong");
+    console.log(navOpen);
+  };
+
+  useEffect(() => {
+    view_comment_list(id);
+  }, []);
 
   useEffect(() => {
     if (contract) {
@@ -137,13 +153,11 @@ const Comments = () => {
     }
   }, [contract]);
 
-  const handleMobileMenuClick = () => {
-    setNavOpen(!navOpen);
-    console.log("something is wrong");
-    console.log(navOpen);
-  };
+  useEffect(() => {
+    getPost(id);
+  }, [contract]);
 
-  console.log(commentList);
+  // console.log(commentList);
   return (
     <>
       <TopNav onMobileMenuClick={handleMobileMenuClick} />
@@ -155,6 +169,7 @@ const Comments = () => {
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
             <Post
+              postId={id}
               username={username && username}
               likes={likes && likes.toString()}
               images={images && images.split(" ")}
@@ -162,21 +177,22 @@ const Comments = () => {
               shares={shares && shares}
             />
             <h4>Comments</h4>
-            {commentList.map(
-              ({ caller, commentId, content, likes, postId, replies }) => {
-                const user = getUserName(bigintToLongAddress(caller));
-                console.log(user);
-                console.log(likes.toString());
-                return (
-                  <CommentContainer
-                    content={content && content}
-                    profilePic={user && user.profile_pic}
-                    username={user && bigintToShortStr(user.username)}
-                    likes={likes && likes.toString()}
-                  />
-                );
-              }
-            )}
+            {commentList &&
+              commentList.map(
+                ({ caller, commentId, content, likes, postId, replies }) => {
+                  const user = getUserName(bigintToLongAddress(caller));
+                  console.log(user);
+                  console.log(likes.toString());
+                  return (
+                    <CommentContainer
+                      content={content && content}
+                      profilePic={user && user.profile_pic}
+                      username={user && bigintToShortStr(user.username)}
+                      likes={likes && likes.toString()}
+                    />
+                  );
+                }
+              )}
             {/* <CommentContainer containsThread={true} /> */}
           </div>
           <div className="w3-col l4 w3-hide-small">
