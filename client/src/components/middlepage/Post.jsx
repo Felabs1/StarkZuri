@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faListDots,
@@ -17,6 +17,7 @@ import profile from "../../assets/ST4.png";
 import postimg from "../../assets/post_img.jpg";
 import CommentContainer from "../comment/CommentContainer";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../../providers/AppProvider";
 
 const Post = ({
   username,
@@ -29,6 +30,41 @@ const Post = ({
   comments,
   postId,
 }) => {
+  const { contract } = useAppContext();
+  const [loading, setLoading] = useState(false);
+  const commentText = useRef();
+  const comment_on_post = () => {
+    const _comment_text = commentText.current.value;
+    const myCall = contract.populate("comment_on_post", [
+      postId,
+      _comment_text,
+    ]);
+    setLoading(true);
+    contract["comment_on_post"](myCall.calldata)
+      .then((res) => {
+        console.info("Successful Response:", res);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const like_post = (e) => {
+    const myCall = contract.populate("like_post", [postId]);
+    setLoading(true);
+    contract["like_post"](myCall.calldata)
+      .then((res) => {
+        console.info("Successful Response:", res);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   return (
     <div className={`${styles.gradient_border}`}>
       <div className={styles.post_navigation}>
@@ -61,10 +97,14 @@ const Post = ({
           <FontAwesomeIcon icon={faMessage} />
           &nbsp; {comments} comments
         </Link>
-        <a className="w3-bar-item">
+        <button
+          className="w3-bar-item w3-transparent w3-text-white"
+          value={postId}
+          onClick={like_post}
+        >
           <FontAwesomeIcon className="w3-text-red" icon={faHeart} />
           &nbsp; {likes} likes
-        </a>
+        </button>
         <a className="w3-bar-item">
           <FontAwesomeIcon icon={faShare} />
           &nbsp;{shares} shares
@@ -76,18 +116,25 @@ const Post = ({
       </div>
       <hr />
       <div className={styles.comment_interaction_section}>
-        <img src={profile} />
+        <img src={`http://localhost:3000/${profile_pic}` ?? profile} />
         <div className={styles.comment_field}>
-          <input className="w3-input" placeholder="write your comment" />
+          <input
+            className="w3-input"
+            ref={commentText}
+            placeholder="write your comment"
+          />
 
-          <FontAwesomeIcon
+          {/* <FontAwesomeIcon
             icon={faPaperclip}
             className={`${styles.comment_button} w3-padding`}
           />
           <FontAwesomeIcon
             icon={faImage}
             className={`${styles.comment_button} w3-padding`}
-          />
+          /> */}
+          <button className="w3-btn w3-blue w3-round" onClick={comment_on_post}>
+            comment
+          </button>
         </div>
       </div>
     </div>

@@ -21,6 +21,7 @@ pub trait IStarkZuriContract<TContractState> {
     fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
     fn view_posts(self: @TContractState)->Array<Post>;
     fn filter_post(self: @TContractState, user: ContractAddress) -> Array<Post>;
+    fn view_post(self: @TContractState, post_id: u256) -> Post;
 
 }
 
@@ -370,6 +371,10 @@ use starknet::{ContractAddress, get_caller_address};
             posts
 
 
+        }
+
+        fn view_post(self: @ContractState, post_id: u256) -> Post {
+            self.posts.read(post_id)
         }
 
 
