@@ -89,7 +89,7 @@ const Post = ({
         <div className={styles.post_media}>
           {images &&
             images.map((image) => {
-              return <img src={`http://localhost:3000/${image}`} /> || "";
+              return <img src={`${image}`} /> || "";
             })}
         </div>
       </div>

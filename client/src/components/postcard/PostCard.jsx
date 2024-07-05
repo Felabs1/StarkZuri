@@ -35,7 +35,7 @@ const PostCard = () => {
 
     const myCall = contract.populate("create_post", [_postContent, _postmedia]);
     setLoading(true);
-    console.log(contract);
+    // console.log(contract);
     contract["create_post"](myCall.calldata)
       .then((res) => {
         console.info("successful response", res);
@@ -60,7 +60,7 @@ const PostCard = () => {
 
     // append each selected file to the form data object
     for (let i = 0; i < images.length; i++) {
-      formData.append("images", images[i]);
+      formData.append("files", images[i]);
     }
 
     // Log the contents of formData
@@ -73,7 +73,7 @@ const PostCard = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/upload-images",
+        "http://localhost:3001/upload-multiple",
         formData,
         {
           headers: {
@@ -89,8 +89,10 @@ const PostCard = () => {
         }
       );
       // console.log("upload successful", response.data);
-      setPostmedia(response.data);
-      setSelectedFiles([]);
+      const urls = response.data;
+      console.log(response.data.urls);
+      setPostmedia(response.data.urls);
+      // setSelectedFiles([]);
     } catch (error) {
       console.error("Error uploading images: ", error);
     }

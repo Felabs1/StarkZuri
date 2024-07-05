@@ -64,7 +64,7 @@ const Home = () => {
         // console.info("success")
         // console.info("Successful Response:", val);
         console.log(val);
-        setPosts(val);
+        setPosts(val.reverse());
       })
       .catch((err) => {
         console.error("Error: ", err);
