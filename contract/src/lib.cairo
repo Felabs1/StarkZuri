@@ -22,8 +22,14 @@ pub trait IStarkZuriContract<TContractState> {
     fn view_posts(self: @TContractState)->Array<Post>;
     fn filter_post(self: @TContractState, user: ContractAddress) -> Array<Post>;
     fn view_post(self: @TContractState, post_id: u256) -> Post;
-
+    fn create_community(ref self: TContractState, community_name: felt252, description: ByteArray, profile_image: ByteArray, cover_image: ByteArray);
+    fn list_communities(self: @TContractState)-> Array<Community>;
+    fn join_community(ref self: TContractState, community_id: u256);
+    fn member_exist(self: @TContractState, community_id: u256, userId: ContractAddress) -> bool;
+    fn view_community_members(self: @TContractState, community_id: u256) -> Array<User>;
 }
+
+
 
 #[derive(Drop, Serde, starknet::Store)]
 pub struct User {
@@ -62,19 +68,62 @@ struct Comment {
     replies: u8,
 }
 
+#[derive(Drop, Serde, starknet::Store)]
+struct Community {
+    community_id: u256,
+    community_admin: ContractAddress,
+    community_name: felt252,
+    description: ByteArray,
+    members: u256,
+    online_members: u256,
+    profile_image: ByteArray,
+    cover_image: ByteArray,
+}
+
+#[derive(Drop, Serde, starknet::Store)]
+struct Notification {
+    notification_id: felt252,
+    caller: ContractAddress,
+    receiver: ContractAddress,
+    notification_message: ByteArray,
+    notification_type: felt252,
+    notification_status: felt252,
+    timestamp: u64,
+}
+
+#[derive(Drop, Serde, starknet::Store)]
+struct Message {
+    sender: ContractAddress,
+    receiver: ContractAddress,
+    message: felt252,
+    timestamp: u64,
+    group_name: felt252,
+    media: ByteArray,
+}
+
+#[derive(Drop, Serde, starknet::Store)]
+struct Reel {
+    caller: ContractAddress,
+    likes: u256,
+    dislikes: u256,
+    shares: u256,
+    video: ByteArray,
+    timestamp: u64,
+    description: ByteArray,
+}
+
 
 #[starknet::contract]
 pub mod StarkZuri {
     // importing dependancies into the starknet contract;
-
     use core::array::ArrayTrait;
-use contract::IStarkZuriContract;
-use core::traits::Into;
-use starknet::{ContractAddress, get_caller_address};
+    use contract::IStarkZuriContract;
+    use core::traits::Into;
+    use starknet::{ContractAddress, get_caller_address};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
     use core::num::traits::Zero;
-    use super::{User, Post, Comment};
+    use super::{User, Post, Comment, Community};
     #[storage]
     struct Storage {
         deployer: ContractAddress,
@@ -88,7 +137,15 @@ use starknet::{ContractAddress, get_caller_address};
         followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
         post_comments: LegacyMap::<(u256, u256), Comment>,
         post_likes: LegacyMap::<(ContractAddress, u256), felt252>,
-        comment_count: u256
+        comment_count: u256,
+
+        // communities
+        community_count: u256,
+        communities: LegacyMap::<u256, Community>,
+
+        // community_joins
+        // a user can join more than one community
+        community_members: LegacyMap::<(u256, u256), User>,
 
     }
 
@@ -377,6 +434,93 @@ use starknet::{ContractAddress, get_caller_address};
             self.posts.read(post_id)
         }
 
+
+        // let's create our community
+        fn create_community(ref self: ContractState, community_name: felt252, description: ByteArray, profile_image: ByteArray, cover_image: ByteArray){
+            let community_id = self.community_count.read() + 1;
+            let community = Community {
+                community_id: community_id,
+                community_admin: get_caller_address(),
+                community_name: community_name,
+                description: description,
+                members: 1,
+                online_members: 0,
+                profile_image: profile_image,
+                cover_image: cover_image
+            };
+            let user: User = self.users.read(get_caller_address());
+            self.communities.write(community_id, community);
+            self.community_count.write(community_id);
+            self.community_members.write((1, community_id), user);
+        }
+
+        fn list_communities(self: @ContractState) -> Array<Community> {
+            let mut listed_communities: Array<Community> =  ArrayTrait::new();
+            let mut  counter: u256 = 1;
+            let community_count: u256 = self.community_count.read();
+
+            while(counter <= community_count){
+                let community = self.communities.read(counter);
+                listed_communities.append(community);
+                counter += 1;
+            };
+
+            
+
+            listed_communities
+
+        }
+
+        fn join_community(ref self: ContractState, community_id: u256){
+            let mut user_joining: ContractAddress = get_caller_address();
+            let mut _user: User = self.users.read(user_joining);
+            let mut community_to_be_joined: Community = self.communities.read(community_id);
+
+            if self.member_exist(community_id, user_joining) == false {
+                let mut _members = community_to_be_joined.members + 1;
+                community_to_be_joined.members = _members;
+                self.community_members.write((_members, community_id), _user);
+                self.communities.write(community_id, community_to_be_joined);
+            }
+
+            
+
+        }
+
+        fn member_exist(self: @ContractState, community_id: u256, userId: ContractAddress) -> bool{
+            let mut member_exist = false;
+            let community = self.communities.read(community_id);
+            let members = community.members;
+            let mut counter: u256 = 1;
+
+            while(counter <= members) {
+                let user: User = self.community_members.read((counter, community_id));
+                if user.userId == userId {
+                    member_exist = true;
+                }
+                counter += 1;
+
+            };
+
+            return member_exist;
+        }
+
+        fn view_community_members(self: @ContractState, community_id: u256) -> Array<User> {
+            let mut users: Array<User> = ArrayTrait::new();
+            let community: Community = self.communities.read(community_id);
+            let members = community.members;
+            let mut counter: u256 = 1;
+
+            while(counter<= members) {
+                let user: User = self.community_members.read((counter, community_id));
+                users.append(user);
+                counter += 1;
+            };
+
+            users
+
+
+        }
 
 
     }
