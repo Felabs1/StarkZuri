@@ -135,6 +135,45 @@ const Comments = () => {
     }
   };
 
+  const view_posts2 = () => {
+    const myCall = contract.populate("view_posts", []);
+    const callPromises = [
+      contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      }),
+    ];
+
+    setLoading(true);
+    Promise.all(callPromises)
+      .then((responses) => {
+        const results = responses.map((res) => {
+          if (!res || !res.result) {
+            console.error("Error: Invalid response from contract");
+            return null;
+          }
+          return contract.callData.parse("view_posts", res.result);
+        });
+        const validResults = results.filter((result) => result !== null);
+        if (validResults.length === 0) {
+          console.error("Error: No valid responses from contract");
+          return;
+        }
+        const posts = validResults.reduce(
+          (acc, result) => [...acc, ...result],
+          []
+        );
+        console.log(posts);
+        setPosts(posts.reverse());
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
     console.log("something is wrong");
@@ -147,7 +186,7 @@ const Comments = () => {
 
   useEffect(() => {
     if (contract) {
-      view_posts();
+      view_posts2();
       view_users();
       // getPost(id);
     }

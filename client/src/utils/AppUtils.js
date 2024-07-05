@@ -23,7 +23,7 @@ export const sideNavigations = [
   },
   { navName: "Explore", icon: faHashtag, to: "/explore" },
   { navName: "Notifications", icon: faBell, to: "/notifications" },
-  { navName: "Messages", icon: faMessage, to: "/messages" },
+  // { navName: "Messages", icon: faMessage, to: "/messages" },
   { navName: "reels", icon: faVideoCamera, to: "/reels" },
 
   { navName: "profile", icon: faUser, to: "/profile" },

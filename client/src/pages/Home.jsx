@@ -52,22 +52,61 @@ const Home = () => {
 
   // console.log(users);
 
-  const view_posts = () => {
+  // const view_posts = () => {
+  //   const myCall = contract.populate("view_posts", []);
+  //   setLoading(true);
+  //   contract["view_posts"](myCall.calldata, {
+  //     parseResponse: false,
+  //     parseRequest: false,
+  //   })
+  //     .then((res) => {
+  //       let val = contract.callData.parse("view_posts", res?.result ?? res);
+  //       // console.info("success")
+  //       // console.info("Successful Response:", val);
+  //       console.log(val);
+  //       setPosts(val.reverse());
+  //     })
+  //     .catch((err) => {
+  //       console.error("Error: ", err);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // };
+
+  const view_posts2 = () => {
     const myCall = contract.populate("view_posts", []);
+    const callPromises = [
+      contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      }),
+    ];
+
     setLoading(true);
-    contract["view_posts"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_posts", res?.result ?? res);
-        // console.info("success")
-        // console.info("Successful Response:", val);
-        console.log(val);
-        setPosts(val.reverse());
+    Promise.all(callPromises)
+      .then((responses) => {
+        const results = responses.map((res) => {
+          if (!res || !res.result) {
+            console.error("Error: Invalid response from contract");
+            return null;
+          }
+          return contract.callData.parse("view_posts", res.result);
+        });
+        const validResults = results.filter((result) => result !== null);
+        if (validResults.length === 0) {
+          console.error("Error: No valid responses from contract");
+          return;
+        }
+        const posts = validResults.reduce(
+          (acc, result) => [...acc, ...result],
+          []
+        );
+        console.log(posts);
+        setPosts(posts.reverse());
       })
       .catch((err) => {
-        console.error("Error: ", err);
+        console.error("Error:", err);
       })
       .finally(() => {
         setLoading(false);
@@ -76,7 +115,8 @@ const Home = () => {
 
   useEffect(() => {
     if (contract) {
-      view_posts();
+      // view_posts();
+      view_posts2();
       view_users();
     }
   }, [contract]);

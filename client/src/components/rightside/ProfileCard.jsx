@@ -16,7 +16,10 @@ const ProfileCard = () => {
   const [coverPhoto, setCoverPhoto] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
   const [username, setUsername] = useState("");
+  const [followers, setFollowers] = useState("");
+  const [following, setFollowing] = useState("");
   const [loading, setLoading] = useState(false);
+  const [about, setAbout] = useState(false);
 
   console.log(coverPhoto);
   console.log(profilePhoto);
@@ -32,19 +35,32 @@ const ProfileCard = () => {
         // console.info("success")
         // console.info("Successful Response:", val);
         console.log(val);
-        val.forEach(({ cover_photo, profile_pic, userId, username }) => {
-          const _address = bigintToLongAddress(userId);
-          if (address == _address) {
-            const _username = bigintToShortStr(username);
-            setCoverPhoto(cover_photo);
-            setProfilePhoto(profile_pic);
-            setUsername(_username);
-            // console.log(cover_photo);
-            // console.log(profile_pic);
-          }
+        val.forEach(
+          ({
+            cover_photo,
+            profile_pic,
+            userId,
+            username,
+            no_of_followers,
+            number_following,
+            about,
+          }) => {
+            const _address = bigintToLongAddress(userId);
+            if (address == _address) {
+              const _username = bigintToShortStr(username);
+              setCoverPhoto(cover_photo);
+              setProfilePhoto(profile_pic);
+              setUsername(_username);
+              setFollowers(no_of_followers.toString());
+              setFollowing(number_following.toString());
+              setAbout(about);
+              // console.log(cover_photo);
+              // console.log(profile_pic);
+            }
 
-          // console.log(_address);
-        });
+            // console.log(_address);
+          }
+        );
       })
       .catch((err) => {
         console.error("Error: ", err);
@@ -77,12 +93,12 @@ const ProfileCard = () => {
 
       <div className={styles.followers_div}>
         <div className={styles.followers}>
-          <b>45</b>
+          <b>{followers}</b>
           <br />
           <small>Followers</small>
         </div>
         <div className={styles.followers}>
-          <b>4,556</b>
+          <b>{following}</b>
           <br />
           <small>Following</small>
         </div>
@@ -94,9 +110,7 @@ const ProfileCard = () => {
         <small>$0.0 coin Price</small>
         <br />
         <br />
-        <span>
-          the decentralized social media you are looking for is here...
-        </span>
+        <span>{about}</span>
         <br />
         <br />
         <div className={styles.profile_more_info}>
