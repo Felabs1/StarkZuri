@@ -52,27 +52,27 @@ const Home = () => {
 
   // console.log(users);
 
-  // const view_posts = () => {
-  //   const myCall = contract.populate("view_posts", []);
-  //   setLoading(true);
-  //   contract["view_posts"](myCall.calldata, {
-  //     parseResponse: false,
-  //     parseRequest: false,
-  //   })
-  //     .then((res) => {
-  //       let val = contract.callData.parse("view_posts", res?.result ?? res);
-  //       // console.info("success")
-  //       // console.info("Successful Response:", val);
-  //       console.log(val);
-  //       setPosts(val.reverse());
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error: ", err);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // };
+  const view_posts = () => {
+    const myCall = contract.populate("view_posts", []);
+    setLoading(true);
+    contract["view_posts"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_posts", res?.result ?? res);
+        // console.info("success")
+        // console.info("Successful Response:", val);
+        console.log(val);
+        setPosts(val.reverse());
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const view_posts2 = () => {
     const myCall = contract.populate("view_posts", []);
@@ -115,8 +115,8 @@ const Home = () => {
 
   useEffect(() => {
     if (contract) {
-      // view_posts();
-      view_posts2();
+      view_posts();
+      // view_posts2();
       view_users();
     }
   }, [contract]);
