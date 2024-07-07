@@ -23,6 +23,7 @@ const Post = ({
   username,
   profile_pic,
   time_posted,
+  user_image,
   content,
   images,
   likes,
@@ -71,7 +72,7 @@ const Post = ({
     <div className={`${styles.gradient_border}`}>
       <div className={styles.post_navigation}>
         <div className={styles.profile}>
-          <img src={`http://localhost:3000/${profile_pic}` ?? profile} />
+          <img src={`${profile_pic}` ?? profile} />
           <div className={styles.profile_details}>
             <span>{username}</span>
             <br />
@@ -113,12 +114,12 @@ const Post = ({
         </a>
         <a className="w3-bar-item">
           <FontAwesomeIcon icon={faDiamond} />
-          &nbsp;2 Diamonds
+          &nbsp;2 ZuriTokens
         </a>
       </div>
       <hr />
       <div className={styles.comment_interaction_section}>
-        <img src={`http://localhost:3000/${profile_pic}` ?? profile} />
+        <img src={`${profile_pic}` ?? profile} />
         <div className={styles.comment_field}>
           <input
             className="w3-input"

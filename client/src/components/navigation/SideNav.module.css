@@ -38,6 +38,8 @@
 .blog_post_button {
   border: 1px solid rgba(32, 127, 252, 1);
   border-radius: 20px;
+  font-weight: 500 !important;
+  margin: 12px;
 }
 
 @media (max-width: 600px) {

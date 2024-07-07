@@ -8,8 +8,10 @@ import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
 import FloatingButton from "../components/navigation/FloatingButton";
 import NotificationsCard from "../components/middlepage/NotificationsCard";
+import { useAppContext } from "../providers/AppProvider";
 
 const Notifications = () => {
+  const { contract, address } = useAppContext();
   const [navOpen, setNavOpen] = useState(false);
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
@@ -30,7 +32,7 @@ const Notifications = () => {
             <NotificationsCard />
           </div>
           <div className="w3-col l4 w3-hide-small">
-            <ProfileCard />
+            {address && <ProfileCard />}
             <br />
 
             <AssetsCard />

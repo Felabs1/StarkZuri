@@ -62,19 +62,19 @@ const Profile = () => {
       alert("please input file for upload");
     } else {
       const formdata = new FormData();
-      formdata.append("image", _profile);
+      formdata.append("file", _profile);
       try {
-        const response = await fetch("http://localhost:3000/upload-image/", {
+        const response = await fetch("http://localhost:3001/upload", {
           method: "POST",
           body: formdata,
         });
         if (response.ok) {
-          const result = await response.text();
+          const result = await response.json();
           console.log("profile image uploaded successfully");
-          console.log(result);
+          // console.log(result);
 
-          setProfile(result);
-          console.log(profile);
+          setProfile(result.url);
+          // console.log(profile);
         } else {
           console.log("image upload failed");
         }
@@ -91,17 +91,17 @@ const Profile = () => {
       alert("please input file for upload");
     } else {
       const formdata = new FormData();
-      formdata.append("image", _cover);
+      formdata.append("file", _cover);
       try {
-        const response = await fetch("http://localhost:3000/upload-image/", {
+        const response = await fetch("http://localhost:3001/upload", {
           method: "POST",
           body: formdata,
         });
         if (response.ok) {
-          const result = await response.text();
+          const result = await response.json();
           console.log("profile image uploaded successfully");
-          setCover(result);
-          console.log(result);
+          setCover(result.url);
+          // console.log(result);
         } else {
           console.log("image upload failed");
         }
@@ -233,6 +233,7 @@ const Profile = () => {
               ref={profileImage}
               accept="image/*"
             />
+
             <label>Cover photo</label>
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}

@@ -8,7 +8,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 const PopularCard = () => {
   return (
     <div className={`w3-row-padding w3-stretch`}>
-      <div className={`w3-col l6`}>
+      {/* <div className={`w3-col l6`}>
         <div
           className={`${styles.popular_card}`}
           style={{ backgroundImage: `url(${background})` }}
@@ -49,7 +49,7 @@ const PopularCard = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

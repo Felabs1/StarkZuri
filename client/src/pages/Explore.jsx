@@ -11,9 +11,11 @@ import ExploreHeader from "../components/middlepage/ExploreHeader";
 import ExploreSubHeader from "../components/middlepage/ExploreSubHeader";
 import FeaturedCommunityCard from "../components/middlepage/FeaturedCommunityCard";
 import PopularCard from "../components/middlepage/PopularCard";
+import { useAppContext } from "../providers/AppProvider";
 
 const Explore = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const { contract, address } = useAppContext();
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
     console.log("something is wrong");
@@ -38,7 +40,7 @@ const Explore = () => {
           </div>
 
           <div className="w3-col l4 w3-hide-small">
-            <ProfileCard />
+            {address && <ProfileCard />}
             <br />
 
             <AssetsCard />

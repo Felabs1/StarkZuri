@@ -19,7 +19,7 @@ const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { contract } = useAppContext();
+  const { contract, address } = useAppContext();
   const [users, setUsers] = useState([]);
 
   const view_users = () => {
@@ -190,7 +190,7 @@ const Home = () => {
           </div>
 
           <div className="w3-col l4 w3-hide-small">
-            {<ProfileCard /> || <Skeleton count={10} />}
+            {address && <ProfileCard />}
             <br />
 
             <AssetsCard />

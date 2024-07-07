@@ -24,8 +24,6 @@ const AppProvider = (props) => {
     if (wallet && wallet.isConnected) {
       setProvider(wallet.account);
       setAddress(wallet.selectedAddress);
-    } else {
-      setProvider(_provider);
     }
   };
 

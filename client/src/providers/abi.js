@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS =
-  "0x6fa4fd5e80533c13c22811ce231ed550cd40f4406cdb87e32bc987d6faf5196";
+  "0x48a46fb1e5624589de7810f5f25ee9a7c79644753388031d5080475507bc986";
 export const ABI = [
   {
     type: "impl",
@@ -154,6 +154,44 @@ export const ABI = [
       },
       {
         name: "images",
+        type: "core::byte_array::ByteArray",
+      },
+    ],
+  },
+  {
+    type: "struct",
+    name: "contract::Community",
+    members: [
+      {
+        name: "community_id",
+        type: "core::integer::u256",
+      },
+      {
+        name: "community_admin",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "community_name",
+        type: "core::felt252",
+      },
+      {
+        name: "description",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "members",
+        type: "core::integer::u256",
+      },
+      {
+        name: "online_members",
+        type: "core::integer::u256",
+      },
+      {
+        name: "profile_image",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "cover_image",
         type: "core::byte_array::ByteArray",
       },
     ],
@@ -406,6 +444,105 @@ export const ABI = [
         outputs: [
           {
             type: "core::array::Array::<contract::Post>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "view_post",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [
+          {
+            type: "contract::Post",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "create_community",
+        inputs: [
+          {
+            name: "community_name",
+            type: "core::felt252",
+          },
+          {
+            name: "description",
+            type: "core::byte_array::ByteArray",
+          },
+          {
+            name: "profile_image",
+            type: "core::byte_array::ByteArray",
+          },
+          {
+            name: "cover_image",
+            type: "core::byte_array::ByteArray",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "list_communities",
+        inputs: [],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Community>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "join_community",
+        inputs: [
+          {
+            name: "community_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "member_exist",
+        inputs: [
+          {
+            name: "community_id",
+            type: "core::integer::u256",
+          },
+          {
+            name: "userId",
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::bool",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "view_community_members",
+        inputs: [
+          {
+            name: "community_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::User>",
           },
         ],
         state_mutability: "view",

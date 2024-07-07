@@ -81,13 +81,13 @@ const ProfileCard = () => {
       <div
         className={styles.profile_image}
         style={{
-          backgroundImage: `url(http://localhost:3000/${coverPhoto})`,
+          backgroundImage: `url(${coverPhoto})`,
         }}
       ></div>
       <div
         className={`w3-center w3-border ${styles.profile_avatar}`}
         style={{
-          backgroundImage: `url(http://localhost:3000/${profilePhoto})`,
+          backgroundImage: `url(${profilePhoto})`,
         }}
       ></div>
 
