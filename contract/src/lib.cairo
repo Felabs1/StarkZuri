@@ -27,6 +27,9 @@ pub trait IStarkZuriContract<TContractState> {
     fn join_community(ref self: TContractState, community_id: u256);
     fn member_exist(self: @TContractState, community_id: u256, userId: ContractAddress) -> bool;
     fn view_community_members(self: @TContractState, community_id: u256) -> Array<User>;
+    fn trigger_notification(ref self: TContractState, caller: ContractAddress);
+    fn view_notifications(self: @TContractState, account_name: ContractAddress)->Array<Notification>;
+    
 }
 
 
@@ -42,6 +45,7 @@ pub struct User {
     pub date_registered: felt252,
     pub no_of_followers: u8,
     pub number_following: u8,
+    pub notifications: u256,
 }
 
 
@@ -82,7 +86,7 @@ struct Community {
 
 #[derive(Drop, Serde, starknet::Store)]
 struct Notification {
-    notification_id: felt252,
+    notification_id: u256,
     caller: ContractAddress,
     receiver: ContractAddress,
     notification_message: ByteArray,
@@ -119,11 +123,11 @@ pub mod StarkZuri {
     use core::array::ArrayTrait;
     use contract::IStarkZuriContract;
     use core::traits::Into;
-    use starknet::{ContractAddress, get_caller_address};
+    use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
     use core::num::traits::Zero;
-    use super::{User, Post, Comment, Community};
+    use super::{User, Post, Comment, Community, Notification};
     #[storage]
     struct Storage {
         deployer: ContractAddress,
@@ -146,6 +150,9 @@ pub mod StarkZuri {
         // community_joins
         // a user can join more than one community
         community_members: LegacyMap::<(u256, u256), User>,
+
+        // we are supposed to store notification based on the caller address
+        notifications: LegacyMap::<(ContractAddress, u256), Notification>
 
     }
 
@@ -181,6 +188,7 @@ pub mod StarkZuri {
                 date_registered: 'now',
                 no_of_followers: 0,
                 number_following: 0,
+                notifications: 0,
             };
             let available_user = self.view_user(caller);
             if(available_user.userId != caller) {
@@ -221,6 +229,7 @@ pub mod StarkZuri {
             // the person doing the following
             let mut _user: User = self.users.read(user_following);
             
+            
             // let us check if the caller allready followed the user so we dont have to update again
             // let available_follower = self.followers.read((user, ))
             // this is the person being followed
@@ -229,13 +238,29 @@ pub mod StarkZuri {
             if self.follower_exist(user) == false {
                 user_to_be_followed.no_of_followers += 1;
                 _user_to_be_followed.no_of_followers += 1;
+                user_to_be_followed.notifications += 1;
+                _user_to_be_followed.notifications += 1;
                 _user.number_following += 1;
+                let message = format!("{} followed you", _user.name);
+
+                // we are going to create notification data store
+                let notification = Notification {
+                    notification_id: user_to_be_followed.notifications,
+                    caller: get_caller_address(),
+                    receiver: user,
+                    notification_message: message,
+                    notification_type: 'follow!',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp()
+                };
+
                 self.users.write(user_following, _user);
                 self.users.write(user, _user_to_be_followed);
 
                 self.followers.write(
                     (user, user_to_be_followed.no_of_followers), 
                  user_following);
+                 self.notifications.write((user, user_to_be_followed.notifications), notification);
             }
             
         }
@@ -299,6 +324,7 @@ pub mod StarkZuri {
             };
             self.posts_count.write(_post_id);
             self.posts.write(_post_id, post);
+            self.trigger_notification(get_caller_address());
         }
 
 
@@ -308,6 +334,22 @@ pub mod StarkZuri {
             if (likable_post != 'like') {
                 let mut post = self.posts.read(post_id);
                 post.likes += 1;
+                
+                let liker: User = self.users.read(get_caller_address());
+                let mut user: User = self.users.read(post.caller);
+                let notification_count: u256 = user.notifications + 1;
+                let notification = Notification {
+                    notification_id: notification_count,
+                    caller: get_caller_address(),
+                    receiver: post.caller,
+                    notification_message: format!("{} liked your post", liker.name),
+                    notification_type: 'like',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp(),
+                };
+                user.notifications = notification_count;
+                self.notifications.write((post.caller, notification_count), notification);
+                self.users.write(post.caller, user);
                 self.posts.write(post_id, post);
                 self.post_likes.write((get_caller_address(), post_id), 'like');
             }
@@ -522,11 +564,60 @@ pub mod StarkZuri {
 
         }
 
+        fn trigger_notification(ref self: ContractState, caller: ContractAddress){
+            // we check if the receiver is actually being followed by the caller
+            let followers: Array<User> = self.view_followers(caller);
+            let user: User = self.view_user(caller);
+            let mut counter = 1;
 
+            while (counter < followers.len()){
+                let mut _follower = followers.at(counter);
+                let message = format!("{} made a post check his threads here", user.name);
+                let notification_id: u256 = *_follower.notifications + 1;
+                let notification = Notification {
+                    notification_id: notification_id,
+                    caller: caller,
+                    receiver: *_follower.userId,
+                    notification_message: message,
+                    notification_type: 'post',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp(),
+
+                };
+
+                let mut user = self.users.read(*_follower.userId);
+                user.notifications = notification_id;
+
+                // _follower.notifications = notification_id;
+                self.users.write(*_follower.userId, user);
+                
+                self.notifications.write((*_follower.userId, notification_id), notification);
+                counter += 1;
+            };
+
+                    
+        }
+
+        fn view_notifications(self: @ContractState, account_name: ContractAddress)->Array<Notification>{
+            let mut notifications: Array<Notification> = ArrayTrait::new();
+            let user: User = self.view_user(account_name);
+            let mut counter: u256 = 1;
+            let _notifications: u256 = user.notifications;
+
+            while (counter <= _notifications) {
+                let notification: Notification = self.notifications.read((account_name, counter));
+                notifications.append(notification);
+                counter += 1;
+            };
+
+            return notifications;
+
+        }
+
+        
+
+
+        
     }
-
-   
-
-
 }
 
