@@ -382,12 +382,10 @@ pub mod StarkZuri {
                 if reaction == 'like' {
                     let user = self.users.read(_user_address);
                     users.append(user);
-
                 }
                 counter += 1;
                 
             };
-
             users
         }
 
@@ -407,7 +405,26 @@ pub mod StarkZuri {
             let mut _post = self.posts.read(post_id);
             _post.comments += 1;
             post.comments += 1;
+            let user_commenting = self.users.read(get_caller_address());
+            let mut receiving_user = self.users.read(post.caller);
+            let notification_id: u256 = receiving_user.notifications + 1;
+            
+            let notification: Notification  =  Notification{
+                notification_id: notification_id,
+                caller: get_caller_address(),
+                receiver: post.caller,
+                notification_message: format!("{} commented on your post", user_commenting.name),
+                notification_type: 'comment',
+                notification_status: 'unread',
+                timestamp: get_block_timestamp(),
+            };
             self.posts.write(post_id, _post);
+            receiving_user.notifications = notification_id;
+            self.users.write(post.caller, receiving_user);
+            self.notifications.write((post.caller, notification_id), notification);
+            
+            //  update notifications storage and users storage
+            
 
             self.post_comments.write((post_id, post.comments), comment);
         }
@@ -588,6 +605,8 @@ pub mod StarkZuri {
                 let mut user = self.users.read(*_follower.userId);
                 user.notifications = notification_id;
 
+                // the quick brown fox jumps over the lazy dogs
+
                 // _follower.notifications = notification_id;
                 self.users.write(*_follower.userId, user);
                 
@@ -613,8 +632,6 @@ pub mod StarkZuri {
             return notifications;
 
         }
-
-        
 
 
         

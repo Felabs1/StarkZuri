@@ -20,6 +20,7 @@ import {
   convertToReadableNumber,
 } from "../utils/AppUtils";
 import BigNumber from "bignumber.js";
+import { uploadToIPFS } from "../Infura";
 
 const Profile = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -31,6 +32,7 @@ const Profile = () => {
   const [profile, setProfile] = useState("");
   const [cover, setCover] = useState("");
   const [about, setAbout] = useState("");
+  // const []
 
   // these ones will be used to display hapo let's try it
   const [coverPhoto, setCoverPhoto] = useState("");
@@ -56,6 +58,16 @@ const Profile = () => {
     setUsername(e.target.value);
   };
 
+  async function onChangeFile(e) {
+    var file = e.target.files[0];
+
+    const response = await uploadToIPFS(file);
+
+    console.log(response);
+
+    setProfilePhoto(response);
+  }
+
   const handleProfileChange = async (e) => {
     const _profile = profileImage.current.files[0];
     if (!_profile) {
@@ -64,20 +76,19 @@ const Profile = () => {
       const formdata = new FormData();
       formdata.append("file", _profile);
       try {
-        const response = await fetch("http://localhost:3001/upload", {
-          method: "POST",
-          body: formdata,
-        });
-        if (response.ok) {
-          const result = await response.json();
-          console.log("profile image uploaded successfully");
-          // console.log(result);
-
-          setProfile(result.url);
-          // console.log(profile);
-        } else {
-          console.log("image upload failed");
-        }
+        // const response = await fetch("http://localhost:3001/upload", {
+        //   method: "POST",
+        //   body: formdata,
+        // });
+        // if (response.ok) {
+        //   const result = await response.json();
+        //   console.log("profile image uploaded successfully");
+        //   // console.log(result);
+        //   setProfile(result.url);
+        // console.log(profile);
+        // } else {
+        //   console.log("image upload failed");
+        // }
       } catch (error) {
         console.error("Error", error);
         alert("an error occured while uploading the image");
@@ -86,30 +97,37 @@ const Profile = () => {
   };
 
   const handleCoverChange = async (e) => {
-    const _cover = coverImage.current.files[0];
-    if (!_cover) {
-      alert("please input file for upload");
-    } else {
-      const formdata = new FormData();
-      formdata.append("file", _cover);
-      try {
-        const response = await fetch("http://localhost:3001/upload", {
-          method: "POST",
-          body: formdata,
-        });
-        if (response.ok) {
-          const result = await response.json();
-          console.log("profile image uploaded successfully");
-          setCover(result.url);
-          // console.log(result);
-        } else {
-          console.log("image upload failed");
-        }
-      } catch (error) {
-        console.error("Error", error);
-        alert("an error occured while uploading the image");
-      }
-    }
+    // const _cover = coverImage.current.files[0];
+    // if (!_cover) {
+    //   alert("please input file for upload");
+    // } else {
+    //   const formdata = new FormData();
+    //   formdata.append("file", _cover);
+    //   try {
+    //     const response = await fetch("http://localhost:3001/upload", {
+    //       method: "POST",
+    //       body: formdata,
+    //     });
+    //     if (response.ok) {
+    //       const result = await response.json();
+    //       console.log("profile image uploaded successfully");
+    //       setCover(result.url);
+    //       // console.log(result);
+    //     } else {
+    //       console.log("image upload failed");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error", error);
+    //     alert("an error occured while uploading the image");
+    //   }
+
+    var file = e.target.files[0];
+
+    const response = await uploadToIPFS(file);
+
+    console.log(response);
+
+    setCoverPhoto(response);
   };
 
   const makeInteraction = () => {
@@ -121,8 +139,8 @@ const Profile = () => {
       name,
       username,
       about,
-      profile,
-      cover,
+      profilePhoto,
+      coverPhoto,
     ]);
     setLoading(true);
     contract["add_user"](myCall.calldata)
@@ -229,7 +247,7 @@ const Profile = () => {
             <input
               className={`w3-input w3-border w3-round ${styles.input}`}
               type="file"
-              onChange={handleProfileChange}
+              onChange={onChangeFile}
               ref={profileImage}
               accept="image/*"
             />

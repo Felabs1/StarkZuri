@@ -69,29 +69,27 @@ const PostCard = () => {
     }
     // console.log(formData);
 
-    // // keybr.com monkeytype.com speedcoder.dev speedtyper.com 10fastfingers and last but not least.. typing trainer the mother to my muschle memory
-
     try {
-      const response = await axios.post(
-        "http://localhost:3001/upload-multiple",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          // track upload progress
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(progress);
-          },
-        }
-      );
+      // const response = await axios.post(
+      //   "http://localhost:3001/upload-multiple",
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //     // track upload progress
+      //     onUploadProgress: (progressEvent) => {
+      //       const progress = Math.round(
+      //         (progressEvent.loaded * 100) / progressEvent.total
+      //       );
+      //       setUploadProgress(progress);
+      //     },
+      //   }
+      // );
       // console.log("upload successful", response.data);
-      const urls = response.data;
-      console.log(response.data.urls);
-      setPostmedia(response.data.urls);
+      // const urls = response.data;
+      // console.log(response.data.urls);
+      // setPostmedia(response.data.urls);
       // setSelectedFiles([]);
     } catch (error) {
       console.error("Error uploading images: ", error);

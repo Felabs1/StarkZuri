@@ -26,7 +26,7 @@ const CommentContainer = ({
           <div
             className={styles.commenter_profile}
             style={{
-              backgroundImage: `url(http://localhost:3000/${profilePic})`,
+              backgroundImage: `url(${profilePic})`,
             }}
           ></div>
           <div className={styles.commenter_name}>

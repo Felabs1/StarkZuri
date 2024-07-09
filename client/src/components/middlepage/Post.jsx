@@ -113,6 +113,7 @@ const Post = ({
           &nbsp;{shares} shares
         </a>
         <a className="w3-bar-item">
+          ``
           <FontAwesomeIcon icon={faDiamond} />
           &nbsp;2 ZuriTokens
         </a>
