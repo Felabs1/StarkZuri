@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
@@ -13,6 +13,7 @@ import { useAppContext } from "../providers/AppProvider";
 const Notifications = () => {
   const { contract, address } = useAppContext();
   const [navOpen, setNavOpen] = useState(false);
+
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
     console.log("something is wrong");

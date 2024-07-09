@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS =
-  "0x48a46fb1e5624589de7810f5f25ee9a7c79644753388031d5080475507bc986";
+  "0x262d8976588d3d8051b91ee88f6f9d7e54dfb8d76a743cd86661e04a8d7a92f";
 export const ABI = [
   {
     type: "impl",
@@ -21,6 +21,20 @@ export const ABI = [
       {
         name: "pending_word_len",
         type: "core::integer::u32",
+      },
+    ],
+  },
+  {
+    type: "struct",
+    name: "core::integer::u256",
+    members: [
+      {
+        name: "low",
+        type: "core::integer::u128",
+      },
+      {
+        name: "high",
+        type: "core::integer::u128",
       },
     ],
   },
@@ -64,19 +78,9 @@ export const ABI = [
         name: "number_following",
         type: "core::integer::u8",
       },
-    ],
-  },
-  {
-    type: "struct",
-    name: "core::integer::u256",
-    members: [
       {
-        name: "low",
-        type: "core::integer::u128",
-      },
-      {
-        name: "high",
-        type: "core::integer::u128",
+        name: "notifications",
+        type: "core::integer::u256",
       },
     ],
   },
@@ -193,6 +197,40 @@ export const ABI = [
       {
         name: "cover_image",
         type: "core::byte_array::ByteArray",
+      },
+    ],
+  },
+  {
+    type: "struct",
+    name: "contract::Notification",
+    members: [
+      {
+        name: "notification_id",
+        type: "core::integer::u256",
+      },
+      {
+        name: "caller",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "receiver",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "notification_message",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "notification_type",
+        type: "core::felt252",
+      },
+      {
+        name: "notification_status",
+        type: "core::felt252",
+      },
+      {
+        name: "timestamp",
+        type: "core::integer::u64",
       },
     ],
   },
@@ -543,6 +581,34 @@ export const ABI = [
         outputs: [
           {
             type: "core::array::Array::<contract::User>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "trigger_notification",
+        inputs: [
+          {
+            name: "caller",
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "view_notifications",
+        inputs: [
+          {
+            name: "account_name",
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Notification>",
           },
         ],
         state_mutability: "view",

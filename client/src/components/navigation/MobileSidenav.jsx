@@ -9,7 +9,11 @@ const MobileSidenav = () => {
     <div className={`w3-sidebar w3-bar-block ${styles.sidebar}`}>
       {sideNavigations.map(({ navName, icon, to }) => {
         return (
-          <Link to={to} className={`w3-bar-item w3-block ${styles.navname}`}>
+          <Link
+            to={to}
+            key={styles.navName}
+            className={`w3-bar-item w3-block ${styles.navname}`}
+          >
             <FontAwesomeIcon
               className={`${styles.search_font} w3-text-white`}
               icon={icon}
