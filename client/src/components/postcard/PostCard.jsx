@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useAppContext } from "../../providers/AppProvider";
+import { uploadToIPFS } from "../../Infura";
 
 const PostCard = () => {
   const fileInputRef = useRef(null);
@@ -20,6 +21,10 @@ const PostCard = () => {
   const { contract, address } = useAppContext();
   const [postmedia, setPostmedia] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // two states to store the files and the urls
+  const [fileURLs, setFileURLs] = useState(null);
+  const [imagesValue, setImagesValue] = useState([]);
 
   const postContent = useRef();
 
@@ -33,7 +38,10 @@ const PostCard = () => {
     console.log(_postmedia);
     console.log(_postContent);
 
-    const myCall = contract.populate("create_post", [_postContent, _postmedia]);
+    const myCall = contract.populate("create_post", [
+      _postContent,
+      fileURLs.join(" "),
+    ]);
     setLoading(true);
     // console.log(contract);
     contract["create_post"](myCall.calldata)
@@ -51,6 +59,21 @@ const PostCard = () => {
   const handleFileChange = (event) => {
     setSelectedFiles(event.target.files);
     handleUpload();
+  };
+
+  const OnChangeMFile = async (e) => {
+    // Placeholder logic: Upload files to IPFS
+    const uploadedUrls = [];
+    const selectedFiles = e.target.files;
+
+    for (const file of selectedFiles) {
+      const response = await uploadToIPFS(file); // Your actual IPFS upload function
+      uploadedUrls.push(response);
+    }
+
+    // Placeholder logic: Handle changes, such as updating URLs
+    console.log("Uploaded URLs:", uploadedUrls);
+    setFileURLs(uploadedUrls); // Assuming you have a state to store the URLs
   };
 
   const handleUpload = async () => {
@@ -120,7 +143,7 @@ const PostCard = () => {
           type="file"
           id="fileInput"
           ref={fileInputRef}
-          onChange={handleFileChange}
+          onChange={OnChangeMFile}
           multiple
           style={{ display: "none" }}
         />
