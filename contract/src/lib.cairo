@@ -4,6 +4,7 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IStarkZuriContract<TContractState> {
+    fn get_owner(self: @TContractState) -> ContractAddress;
     fn add_user(ref self: TContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray);
     fn view_user(self: @TContractState, user_id: ContractAddress) -> User;
     fn view_user_count(self: @TContractState) -> u256;
@@ -29,6 +30,12 @@ pub trait IStarkZuriContract<TContractState> {
     fn view_community_members(self: @TContractState, community_id: u256) -> Array<User>;
     fn trigger_notification(ref self: TContractState, caller: ContractAddress);
     fn view_notifications(self: @TContractState, account_name: ContractAddress)->Array<Notification>;
+    fn create_reel(ref self: TContractState, description: ByteArray, video: ByteArray);
+    fn view_reels(self: @TContractState)-> Array<Reel>;
+    fn view_reels_for_account(self: @TContractState, owner: ContractAddress)-> Array<Reel>;
+    fn like_reel(ref self: TContractState, reel_id: u256);
+    fn dislike_reel(ref self: TContractState, reel_id: u256);
+    fn comment_on_reel(ref self: TContractState, reel_id: u256, content: ByteArray);
     
 }
 
@@ -42,10 +49,11 @@ pub struct User {
     pub about: ByteArray,
     pub profile_pic: ByteArray,
     pub cover_photo: ByteArray,
-    pub date_registered: felt252,
+    pub date_registered: u64,
     pub no_of_followers: u8,
     pub number_following: u8,
     pub notifications: u256,
+    pub zuri_points: u256,
 }
 
 
@@ -59,6 +67,8 @@ pub struct Post {
     comments: u256,
     shares: u8,
     images: ByteArray,
+    zuri_points: u256,
+    date_posted: u64
     // images and video links will be stored in Legacy Maps for now
 }
 
@@ -70,6 +80,8 @@ struct Comment {
     content: ByteArray,
     likes: u8,
     replies: u8,
+    time_commented: u64,
+    zuri_points: u256,
 }
 
 #[derive(Drop, Serde, starknet::Store)]
@@ -107,13 +119,16 @@ struct Message {
 
 #[derive(Drop, Serde, starknet::Store)]
 struct Reel {
+    reel_id: u256,
     caller: ContractAddress,
     likes: u256,
     dislikes: u256,
+    comments: u256,
     shares: u256,
     video: ByteArray,
     timestamp: u64,
     description: ByteArray,
+    zuri_points: u256,
 }
 
 
@@ -127,7 +142,7 @@ pub mod StarkZuri {
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
     use core::num::traits::Zero;
-    use super::{User, Post, Comment, Community, Notification};
+    use super::{User, Post, Comment, Community, Notification, Reel};
     #[storage]
     struct Storage {
         deployer: ContractAddress,
@@ -152,7 +167,15 @@ pub mod StarkZuri {
         community_members: LegacyMap::<(u256, u256), User>,
 
         // we are supposed to store notification based on the caller address
-        notifications: LegacyMap::<(ContractAddress, u256), Notification>
+        notifications: LegacyMap::<(ContractAddress, u256), Notification>,
+
+        // time to create a reel
+        reel_count: u256,
+        reels: LegacyMap::<u256, Reel>,
+        reel_likes: LegacyMap::<(ContractAddress, u256), felt252>,
+        reel_dislikes: LegacyMap::<(ContractAddress, u256), felt252>,
+        reel_comments: LegacyMap::<(u256, u256), Comment>,
+        
 
     }
 
@@ -185,18 +208,30 @@ pub mod StarkZuri {
                 profile_pic: profile_pic,
                 cover_photo: cover_photo,
                 about: about,
-                date_registered: 'now',
+                date_registered: get_block_timestamp(),
                 no_of_followers: 0,
                 number_following: 0,
                 notifications: 0,
+                zuri_points: 20,
             };
             let available_user = self.view_user(caller);
             if(available_user.userId != caller) {
                 let assigned_user_number: u256 = self.users_count.read() + 1;
+                let notification = Notification {
+                    notification_id: 1,
+                    caller: get_caller_address(),
+                    receiver: get_caller_address(),
+                    notification_message: "you have been awarded 20 Zuri points for registering to stark zuri",
+                    notification_type: 'Join Award',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp()
+                };
 
                 self.users.write(caller, user);
                 self.users_count.write(assigned_user_number);
                 self.user_addresses.write(assigned_user_number, caller);
+                self.notifications.write((get_caller_address(), 1), notification);
+
             }
             
         }
@@ -306,6 +341,10 @@ pub mod StarkZuri {
             self.version.write(self.version.read() + 1);
         }
 
+        fn get_owner(self: @ContractState) -> ContractAddress {
+            self.deployer.read()
+        }
+
         fn version(self: @ContractState) -> u256 {
             self.version.read()
         }
@@ -320,6 +359,8 @@ pub mod StarkZuri {
                 comments: 0,
                 shares: 0,
                 images: images,
+                zuri_points: 0,
+                date_posted: get_block_timestamp()
 
             };
             self.posts_count.write(_post_id);
@@ -334,6 +375,7 @@ pub mod StarkZuri {
             if (likable_post != 'like') {
                 let mut post = self.posts.read(post_id);
                 post.likes += 1;
+                post.zuri_points += 10;
                 
                 let liker: User = self.users.read(get_caller_address());
                 let mut user: User = self.users.read(post.caller);
@@ -342,12 +384,13 @@ pub mod StarkZuri {
                     notification_id: notification_count,
                     caller: get_caller_address(),
                     receiver: post.caller,
-                    notification_message: format!("{} liked your post", liker.name),
+                    notification_message: format!("{} liked your post and won you 10 Zuri points", liker.name),
                     notification_type: 'like',
                     notification_status: 'unread',
                     timestamp: get_block_timestamp(),
                 };
                 user.notifications = notification_count;
+                // user.zuri_points = user.zuri_points + 10;
                 self.notifications.write((post.caller, notification_count), notification);
                 self.users.write(post.caller, user);
                 self.posts.write(post_id, post);
@@ -400,11 +443,15 @@ pub mod StarkZuri {
                 content: content,
                 likes: 0,
                 replies: 0,
+                time_commented: get_block_timestamp(),
+                zuri_points: 0,
             };
             let mut post = self.posts.read(post_id);
             let mut _post = self.posts.read(post_id);
             _post.comments += 1;
             post.comments += 1;
+            _post.zuri_points += 2;
+            post.zuri_points += 2;
             let user_commenting = self.users.read(get_caller_address());
             let mut receiving_user = self.users.read(post.caller);
             let notification_id: u256 = receiving_user.notifications + 1;
@@ -413,11 +460,12 @@ pub mod StarkZuri {
                 notification_id: notification_id,
                 caller: get_caller_address(),
                 receiver: post.caller,
-                notification_message: format!("{} commented on your post", user_commenting.name),
+                notification_message: format!("{} commented on your post and that earned your post 2 zuri points", user_commenting.name),
                 notification_type: 'comment',
                 notification_status: 'unread',
                 timestamp: get_block_timestamp(),
             };
+            
             self.posts.write(post_id, _post);
             receiving_user.notifications = notification_id;
             self.users.write(post.caller, receiving_user);
@@ -534,6 +582,7 @@ pub mod StarkZuri {
             let mut user_joining: ContractAddress = get_caller_address();
             let mut _user: User = self.users.read(user_joining);
             let mut community_to_be_joined: Community = self.communities.read(community_id);
+            // let mut community_owner = self.users.read(community_to_be_joined.community_admin)
 
             if self.member_exist(community_id, user_joining) == false {
                 let mut _members = community_to_be_joined.members + 1;
@@ -632,6 +681,158 @@ pub mod StarkZuri {
             return notifications;
 
         }
+
+        fn create_reel(ref self: ContractState, description: ByteArray, video: ByteArray){
+            let reel_count: u256 = self.reel_count.read() + 1;
+            let reel: Reel = Reel {
+                reel_id: reel_count,
+                caller: get_caller_address(),
+                likes: 0,
+                dislikes: 0,
+                shares: 0,
+                video: video,
+                timestamp: get_block_timestamp(),
+                description: description,
+                comments: 0,
+                zuri_points: 0
+            };
+
+            self.reel_count.write(reel_count);
+            self.reels.write(reel_count, reel);
+        }
+
+        fn view_reels(self: @ContractState)->Array<Reel> {
+            let mut reels: Array<Reel> = ArrayTrait::new();
+            let reel_count = self.reel_count.read();
+            let mut counter = 1;
+            
+            while(counter <= reel_count){
+                let reel: Reel = self.reels.read(counter);
+                reels.append(reel);
+                counter+=1;
+            };
+
+            reels
+        }
+
+        fn view_reels_for_account(self: @ContractState, owner: ContractAddress)-> Array<Reel>{
+            // let reels: Array<Reel> = self.view_reels();
+            let reel_count = self.reel_count.read();
+            let mut account_reels: Array<Reel> = ArrayTrait::new();
+            let mut counter = 1;
+            while (counter < reel_count){
+                let reel: Reel = self.reels.read(counter);
+                if reel.caller == owner {
+                    account_reels.append(reel);
+                }
+                counter+=1;
+            };
+
+            account_reels
+        }
+
+        // ---to do---
+        // like reel
+        fn like_reel(ref self: ContractState, reel_id: u256){
+            let mut likable_reel = self.reel_likes.read((get_caller_address(), reel_id));
+            if (likable_reel != 'like'){
+                let mut reel = self.reels.read(reel_id);
+                reel.likes += 1;
+                reel.zuri_points += 10;
+                let liker: User = self.users.read(get_caller_address());
+                let mut user: User = self.users.read(reel.caller);
+                let notification_count: u256 = user.notifications + 1;
+                let notification: Notification = Notification {
+                    notification_id: notification_count,
+                    caller: get_caller_address(),
+                    receiver: reel.caller,
+                    notification_message: format!("{} liked your reel and won you 10 zuri points", liker.name),
+                    notification_type: 'like',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp(),
+                };
+                user.notifications = notification_count;
+                self.notifications.write((reel.caller, notification_count), notification);
+                self.users.write(reel.caller, user);
+                self.reels.write(reel_id, reel);
+                self.reel_likes.write((get_caller_address(), reel_id), 'like');
+            }
+        }
+        // dislike reel
+        fn dislike_reel(ref self: ContractState, reel_id: u256){
+            let mut likable_reel = self.reel_dislikes.read((get_caller_address(), reel_id));
+            if (likable_reel != 'dislike'){
+                let mut reel = self.reels.read(reel_id);
+                reel.dislikes += 1;
+                reel.zuri_points -= 5;
+                let liker: User = self.users.read(get_caller_address());
+                let mut user: User = self.users.read(reel.caller);
+                let notification_count: u256 = user.notifications + 1;
+                let notification: Notification = Notification {
+                    notification_id: notification_count,
+                    caller: get_caller_address(),
+                    receiver: reel.caller,
+                    notification_message: format!("{} disliked your reel and deducted it 5 zuri points", liker.name),
+                    notification_type: 'dislike',
+                    notification_status: 'unread',
+                    timestamp: get_block_timestamp(),
+                };
+                user.notifications = notification_count;
+                self.notifications.write((reel.caller, notification_count), notification);
+                self.users.write(reel.caller, user);
+                self.reels.write(reel_id, reel);
+                self.reel_dislikes.write((get_caller_address(), reel_id), 'dislike');
+            }
+        }
+        
+        // coment on reel
+    fn comment_on_reel(ref self: ContractState, reel_id: u256, content: ByteArray){
+        let comment_id = self.comment_count.read() + 1;
+
+        let comment = Comment {
+            postId: reel_id,
+            commentId: comment_id,
+            caller: get_caller_address(),
+            content: content,
+            likes: 0,
+            replies: 0,
+            time_commented: get_block_timestamp(),
+            zuri_points: 0,
+        };
+
+        let mut reel = self.reels.read(reel_id);
+        let mut _reel = self.reels.read(reel_id);
+        _reel.comments += 1;
+        reel.comments += 1;
+        _reel.zuri_points += 2;
+        reel.zuri_points += 2;
+        let user_commenting = self.users.read(get_caller_address());
+        let mut receiving_user = self.users.read(reel.caller);
+
+        let notification_id: u256= receiving_user.notifications + 1;
+
+        let notification: Notification = Notification {
+            notification_id: notification_id,
+            caller: get_caller_address(),
+            receiver: reel.caller,
+            notification_message: format!("{} commented on your reel and that earned it 2 zuri points", user_commenting.name),
+            notification_type: 'comment',
+            notification_status: 'unread',
+            timestamp: get_block_timestamp(),
+        };
+
+        self.reels.write(reel_id, _reel);
+        receiving_user.notifications = notification_id;
+        self.users.write(reel.caller, receiving_user);
+        self.notifications.write((reel.caller, notification_id), notification);
+        self.reel_comments.write((reel_id, reel.comments), comment);
+
+
+    }
+        
+        
+        // repost reel
+        
 
 
         
