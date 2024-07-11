@@ -4,6 +4,7 @@ import SideNav from "../../components/navigation/SideNav";
 import Main from "../../components/middlepage/Main";
 import styles from "./NewCommunity.module.css";
 import { useAppContext } from "../../providers/AppProvider";
+import { uploadToIPFS } from "../../Infura";
 
 const NewCommunity = () => {
   const communityName = useRef();
@@ -44,56 +45,62 @@ const NewCommunity = () => {
   const handleProfileUpload = async () => {
     console.log(profileImage.current.files);
     const _profile = profileImage.current.files[0];
-    if (!_profile) {
-      alert("please input file for upload");
-    } else {
-      const formdata = new FormData();
-      formdata.append("file", _profile);
-      try {
-        const response = await fetch("http://localhost:3001/upload", {
-          method: "POST",
-          body: formdata,
-        });
-        if (response.ok) {
-          const result = await response.json();
-          console.log("profile image uploaded successfully");
-          setProfile(result.url);
-          console.log(result);
-        } else {
-          console.log("image upload failed");
-        }
-      } catch (error) {
-        console.error("Error", error);
-        alert("an error occured while uploading the image");
-      }
-    }
+    const response = await uploadToIPFS(_profile);
+    console.log(response);
+    setProfile(response);
+    // if (!_profile) {
+    //   alert("please input file for upload");
+    // } else {
+    //   const formdata = new FormData();
+    //   formdata.append("file", _profile);
+    //   try {
+    //     const response = await fetch("http://localhost:3001/upload", {
+    //       method: "POST",
+    //       body: formdata,
+    //     });
+    //     if (response.ok) {
+    //       const result = await response.json();
+    //       console.log("profile image uploaded successfully");
+    //       setProfile(result.url);
+    //       console.log(result);
+    //     } else {
+    //       console.log("image upload failed");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error", error);
+    //     alert("an error occured while uploading the image");
+    //   }
+    // }
   };
 
   const handleCoverUpload = async () => {
     const _cover = coverImage.current.files[0];
-    if (!_cover) {
-      alert("please input file for upload");
-    } else {
-      const formdata = new FormData();
-      formdata.append("file", _cover);
-      try {
-        const response = await fetch("http://localhost:3001/upload", {
-          method: "POST",
-          body: formdata,
-        });
-        if (response.ok) {
-          const result = await response.json();
-          console.log("profile image uploaded successfully");
-          setCover(result.url);
-          console.log(result);
-        } else {
-          console.log("image upload failed");
-        }
-      } catch (error) {
-        console.error("Error", error);
-        alert("an error occured while uploading the image");
-      }
-    }
+    const response = await uploadToIPFS(_cover);
+    console.log(response);
+    setCover(response);
+    // if (!_cover) {
+    //   alert("please input file for upload");
+    // } else {
+    //   const formdata = new FormData();
+    //   formdata.append("file", _cover);
+    //   try {
+    //     const response = await fetch("http://localhost:3001/upload", {
+    //       method: "POST",
+    //       body: formdata,
+    //     });
+    //     if (response.ok) {
+    //       const result = await response.json();
+    //       console.log("profile image uploaded successfully");
+    //       setCover(result.url);
+    //       console.log(result);
+    //     } else {
+    //       console.log("image upload failed");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error", error);
+    //     alert("an error occured while uploading the image");
+    //   }
+    // }
   };
 
   return (

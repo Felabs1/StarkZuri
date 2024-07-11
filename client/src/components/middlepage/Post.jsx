@@ -29,6 +29,7 @@ const Post = ({
   likes,
   shares,
   comments,
+  zuri_points,
   postId,
 }) => {
   const { contract } = useAppContext();
@@ -113,9 +114,8 @@ const Post = ({
           &nbsp;{shares} shares
         </a>
         <a className="w3-bar-item">
-          ``
           <FontAwesomeIcon icon={faDiamond} />
-          &nbsp;2 ZuriTokens
+          &nbsp;{zuri_points} ZuriTokens
         </a>
       </div>
       <hr />

@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS =
-  "0x262d8976588d3d8051b91ee88f6f9d7e54dfb8d76a743cd86661e04a8d7a92f";
+  "0x7c2109cfa8c36fa10c6baac19b234679606cba00eb6697a052b73b869850673";
 export const ABI = [
   {
     type: "impl",
@@ -68,7 +68,7 @@ export const ABI = [
       },
       {
         name: "date_registered",
-        type: "core::felt252",
+        type: "core::integer::u64",
       },
       {
         name: "no_of_followers",
@@ -80,6 +80,10 @@ export const ABI = [
       },
       {
         name: "notifications",
+        type: "core::integer::u256",
+      },
+      {
+        name: "zuri_points",
         type: "core::integer::u256",
       },
     ],
@@ -126,6 +130,14 @@ export const ABI = [
         name: "replies",
         type: "core::integer::u8",
       },
+      {
+        name: "time_commented",
+        type: "core::integer::u64",
+      },
+      {
+        name: "zuri_points",
+        type: "core::integer::u256",
+      },
     ],
   },
   {
@@ -159,6 +171,14 @@ export const ABI = [
       {
         name: "images",
         type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "zuri_points",
+        type: "core::integer::u256",
+      },
+      {
+        name: "date_posted",
+        type: "core::integer::u64",
       },
     ],
   },
@@ -235,9 +255,66 @@ export const ABI = [
     ],
   },
   {
+    type: "struct",
+    name: "contract::Reel",
+    members: [
+      {
+        name: "reel_id",
+        type: "core::integer::u256",
+      },
+      {
+        name: "caller",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+      {
+        name: "likes",
+        type: "core::integer::u256",
+      },
+      {
+        name: "dislikes",
+        type: "core::integer::u256",
+      },
+      {
+        name: "comments",
+        type: "core::integer::u256",
+      },
+      {
+        name: "shares",
+        type: "core::integer::u256",
+      },
+      {
+        name: "video",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "timestamp",
+        type: "core::integer::u64",
+      },
+      {
+        name: "description",
+        type: "core::byte_array::ByteArray",
+      },
+      {
+        name: "zuri_points",
+        type: "core::integer::u256",
+      },
+    ],
+  },
+  {
     type: "interface",
     name: "contract::IStarkZuriContract",
     items: [
+      {
+        type: "function",
+        name: "get_owner",
+        inputs: [],
+        outputs: [
+          {
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        state_mutability: "view",
+      },
       {
         type: "function",
         name: "add_user",
@@ -613,12 +690,136 @@ export const ABI = [
         ],
         state_mutability: "view",
       },
+      {
+        type: "function",
+        name: "create_reel",
+        inputs: [
+          {
+            name: "description",
+            type: "core::byte_array::ByteArray",
+          },
+          {
+            name: "video",
+            type: "core::byte_array::ByteArray",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "view_reels",
+        inputs: [],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Reel>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "view_reels_for_account",
+        inputs: [
+          {
+            name: "owner",
+            type: "core::starknet::contract_address::ContractAddress",
+          },
+        ],
+        outputs: [
+          {
+            type: "core::array::Array::<contract::Reel>",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "like_reel",
+        inputs: [
+          {
+            name: "reel_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "dislike_reel",
+        inputs: [
+          {
+            name: "reel_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "comment_on_reel",
+        inputs: [
+          {
+            name: "reel_id",
+            type: "core::integer::u256",
+          },
+          {
+            name: "content",
+            type: "core::byte_array::ByteArray",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "repost_reel",
+        inputs: [
+          {
+            name: "reel_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "claim_reel_points",
+        inputs: [
+          {
+            name: "reel_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
+      {
+        type: "function",
+        name: "claim_post_points",
+        inputs: [
+          {
+            name: "post_id",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
     ],
   },
   {
     type: "constructor",
     name: "constructor",
-    inputs: [],
+    inputs: [
+      {
+        name: "address",
+        type: "core::starknet::contract_address::ContractAddress",
+      },
+    ],
   },
   {
     type: "event",

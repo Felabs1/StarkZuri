@@ -160,6 +160,7 @@ const Home = () => {
                     comments,
                     shares,
                     images,
+                    zuri_points,
                   }) => {
                     const _account_address = bigintToLongAddress(caller);
                     const great_user = getUserName(_account_address);
@@ -181,6 +182,7 @@ const Home = () => {
                           profile_pic={great_user.profile_pic}
                           likes={likes.toString()}
                           shares={shares.toString()}
+                          zuri_points={zuri_points.toString()}
                         />
                       );
                     }

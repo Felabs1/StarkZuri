@@ -36,6 +36,9 @@ pub trait IStarkZuriContract<TContractState> {
     fn like_reel(ref self: TContractState, reel_id: u256);
     fn dislike_reel(ref self: TContractState, reel_id: u256);
     fn comment_on_reel(ref self: TContractState, reel_id: u256, content: ByteArray);
+    fn repost_reel(ref self: TContractState, reel_id: u256);
+    fn claim_reel_points(ref self: TContractState, reel_id: u256);
+    fn claim_post_points(ref self: TContractState, post_id: u256);
     
 }
 
@@ -135,7 +138,9 @@ struct Reel {
 #[starknet::contract]
 pub mod StarkZuri {
     // importing dependancies into the starknet contract;
-    use core::array::ArrayTrait;
+    use core::option::OptionTrait;
+use core::traits::TryInto;
+use core::array::ArrayTrait;
     use contract::IStarkZuriContract;
     use core::traits::Into;
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
@@ -175,13 +180,16 @@ pub mod StarkZuri {
         reel_likes: LegacyMap::<(ContractAddress, u256), felt252>,
         reel_dislikes: LegacyMap::<(ContractAddress, u256), felt252>,
         reel_comments: LegacyMap::<(u256, u256), Comment>,
+
+        // now we need to claim the points so that they can appear on the profile
+        claimed_points: LegacyMap::<ContractAddress, u256>,
         
 
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState) {
-        let deployer = get_caller_address();
+    fn constructor(ref self: ContractState, address: ContractAddress) {
+        let deployer: ContractAddress = address;
         self.deployer.write(deployer);
     }
 
@@ -826,15 +834,67 @@ pub mod StarkZuri {
         self.users.write(reel.caller, receiving_user);
         self.notifications.write((reel.caller, notification_id), notification);
         self.reel_comments.write((reel_id, reel.comments), comment);
+    }
 
+    fn repost_reel(ref self: ContractState, reel_id: u256){
+        let mut reel = self.reels.read(reel_id);
+        let mut _reel = self.reels.read(reel_id);
+        reel.shares += 1;
+        reel.zuri_points += 4;
+        reel.timestamp = get_block_timestamp();
+        _reel.shares += 1;
+        _reel.zuri_points += 4;
+        _reel.timestamp = get_block_timestamp();
+        let mut receiving_user: User = self.users.read(reel.caller);
+        let user_reposting: User = self.users.read(get_caller_address());
+        let notification_id = receiving_user.notifications + 1;
+        let notification: Notification = Notification {
+            notification_id: notification_id,
+            caller: get_caller_address(),
+            receiver: reel.caller,
+            notification_message: format!("{} reposted your reel and earned it 4 zuri points", user_reposting.name),
+            notification_type: 'repost',
+            notification_status: 'unread',
+            timestamp: get_block_timestamp(),
+             
+        };
+        self.reels.write(reel_id, _reel);
+        receiving_user.notifications = notification_id;
+        self.users.write(reel.caller, receiving_user);
+        self.notifications.write((reel.caller, notification_id), notification);
 
     }
-        
-        
+
+    fn claim_reel_points(ref self: ContractState, reel_id: u256){
+        let mut claimer = self.users.read(get_caller_address());
+        let mut reel = self.reels.read(reel_id);
+        let mut _reel = self.reels.read(reel_id);
+
+        claimer.zuri_points += reel.zuri_points;
+        reel.zuri_points -= reel.zuri_points;
+        _reel.zuri_points -= _reel.zuri_points;
+        self.reels.write(reel_id, _reel);
+        self.users.write(get_caller_address(), claimer);
+        let claimed_points = self.claimed_points.read(get_caller_address());
+        self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
+    }
+
+    fn claim_post_points(ref self: ContractState, post_id: u256){
+        let mut claimer = self.users.read(get_caller_address());
+        let mut post = self.posts.read(post_id);
+        let mut _post = self.posts.read(post_id);
+
+        claimer.zuri_points += post.zuri_points;
+        post.zuri_points -= post.zuri_points;
+        _post.zuri_points -= post.zuri_points;
+        self.posts.write(post_id, _post);
+        self.users.write(get_caller_address(), claimer);
+        let claimed_points = self.claimed_points.read(get_caller_address());
+        self.claimed_points.write(get_caller_address(), claimed_points + post.zuri_points);
+
+    }
+
         // repost reel
-        
-
-
         
     }
 }
