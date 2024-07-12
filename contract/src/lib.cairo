@@ -870,13 +870,17 @@ use core::array::ArrayTrait;
         let mut reel = self.reels.read(reel_id);
         let mut _reel = self.reels.read(reel_id);
 
-        claimer.zuri_points += reel.zuri_points;
-        reel.zuri_points -= reel.zuri_points;
-        _reel.zuri_points -= _reel.zuri_points;
-        self.reels.write(reel_id, _reel);
-        self.users.write(get_caller_address(), claimer);
-        let claimed_points = self.claimed_points.read(get_caller_address());
-        self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
+
+        if get_caller_address() == reel.caller {
+            claimer.zuri_points += reel.zuri_points;
+            reel.zuri_points -= reel.zuri_points;
+            _reel.zuri_points -= _reel.zuri_points;
+            self.reels.write(reel_id, _reel);
+            self.users.write(get_caller_address(), claimer);
+            let claimed_points = self.claimed_points.read(get_caller_address());
+            self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
+        }
+       
     }
 
     fn claim_post_points(ref self: ContractState, post_id: u256){
@@ -884,14 +888,15 @@ use core::array::ArrayTrait;
         let mut post = self.posts.read(post_id);
         let mut _post = self.posts.read(post_id);
 
-        claimer.zuri_points += post.zuri_points;
-        post.zuri_points -= post.zuri_points;
-        _post.zuri_points -= post.zuri_points;
-        self.posts.write(post_id, _post);
-        self.users.write(get_caller_address(), claimer);
-        let claimed_points = self.claimed_points.read(get_caller_address());
-        self.claimed_points.write(get_caller_address(), claimed_points + post.zuri_points);
-
+        if get_caller_address() == post.caller {
+            claimer.zuri_points += post.zuri_points;
+            post.zuri_points -= post.zuri_points;
+            _post.zuri_points -= post.zuri_points;
+            self.posts.write(post_id, _post);
+            self.users.write(get_caller_address(), claimer);
+            let claimed_points = self.claimed_points.read(get_caller_address());
+            self.claimed_points.write(get_caller_address(), claimed_points + post.zuri_points);
+        }
     }
 
         // repost reel

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import styles from "./ReelComponent.module.css";
+import video from "../../assets/nature.mp4";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMessage,
@@ -8,86 +10,69 @@ import {
   faPause,
   faPlay,
   faVolumeHigh,
+  faArrowRotateBack,
+  faCameraAlt,
+  faMusic,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./ReelComponent.module.css";
-import media2 from "../../assets/media2.jpg";
 import profile5 from "../../assets/profile5.jpg";
-import ModalContainer from "../modal/ModalContainer";
-import CommentContainer from "../comment/CommentContainer";
+import video2 from "../../assets/media2.mp4";
+import Video from "./video_essentials/Video";
+import funnyjude from "../../assets/funnyjude.mp4";
+
+import { useAppContext } from "../../providers/AppProvider";
+import { bigintToLongAddress } from "../../utils/AppUtils";
 
 const ReelComponent = () => {
-  const [playing, setPlaying] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const handlePlayButtonClick = () => {
-    setPlaying(!playing);
-  };
-  ``;
+  const { contract } = useAppContext();
+  const [loading, setLoading] = useState(false);
+  const [reels, setReels] = useState([]);
+
+  useEffect(() => {
+    const view_reels = () => {
+      const myCall = contract.populate("view_reels", []);
+      setLoading(true);
+      contract["view_reels"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      })
+        .then((res) => {
+          let val = contract.callData.parse("view_reels", res?.result ?? res);
+          console.log(val);
+          setReels(val);
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+
+    if (contract) {
+      view_reels();
+    }
+  }, [contract]);
   return (
-    <div className={styles.reel_parent_component}>
-      {modalOpen && (
-        <ModalContainer closeModal={setModalOpen}>
-          <CommentContainer />
-          <CommentContainer containsThread={true} />
-          <CommentContainer />
-        </ModalContainer>
-      )}
-
-      <div className={styles.reel_component}>
-        <div
-          className={styles.reel_video}
-          style={{ backgroundImage: `url(${media2})` }}
-        >
-          <div className={styles.control_buttons}>
-            <button onClick={handlePlayButtonClick}>
-              <FontAwesomeIcon icon={playing ? faPlay : faPause} />
-            </button>
-            <button>
-              <FontAwesomeIcon icon={faVolumeHigh} />
-            </button>
-          </div>
-          <div className={styles.comment_area}>
-            <div className={styles.poster_initials}>
-              <div
-                className={styles.profile_picture}
-                style={{ backgroundImage: `url(${profile5})` }}
-              ></div>
-              <div className={styles.profile_username}>
-                <span>@felabs</span>
-              </div>
-              <div>
-                <button className={styles.profile_button}>follow</button>
-              </div>
-            </div>
-            <div className={styles.poster_description}>
-              <p>I almost got caught...</p>
-            </div>
-          </div>
-        </div>
-        <div className={styles.reel_buttons}>
-          <div>
-            <button onClick={() => setModalOpen(true)}>
-              <FontAwesomeIcon icon={faMessage} className={styles.reel_icon} />
-            </button>
-            <small>2000</small>
-            <button>
-              <FontAwesomeIcon icon={faThumbsUp} className={styles.reel_icon} />
-            </button>
-            <small>Like</small>
-
-            <button>
-              <FontAwesomeIcon
-                icon={faThumbsDown}
-                className={styles.reel_icon}
+    <div className={styles.body}>
+      <div className={styles.app__videos} id="video-container">
+        {reels &&
+          reels.map((reel, id) => {
+            return (
+              <Video
+                key={id}
+                video={reel.video}
+                description={reel.description}
+                caller={bigintToLongAddress(reel.caller)}
+                comments={reel.comments.toString()}
+                dislikes={reel.dislikes.toString()}
+                likes={reel.likes.toString()}
+                reel_id={reel.reel_id.toString()}
+                shares={reel.shares.toString()}
+                zuri_points={reel.zuri_points.toString()}
               />
-            </button>
-            <small>dislike</small>
-
-            <button>
-              <FontAwesomeIcon icon={faShare} className={styles.reel_icon} />
-            </button>
-            <small className="w3-center">share</small>
-          </div>
-        </div>
+            );
+          })}
       </div>
     </div>
   );

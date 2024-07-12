@@ -15,6 +15,7 @@ import Comments from "./pages/post_essentials/Comments";
 import Skeleton from "./components/skeleton/Skeleton";
 import AppProvider from "./providers/AppProvider";
 import NewCommunity from "./pages/community_essentials/NewCommunity";
+import NewVideo from "./components/middlepage/video_essentials/NewVideo";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -35,6 +36,7 @@ function App() {
             <Route path="/reels" element={<Reels />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/post/:id" element={<Comments />} />
+            <Route path="/reels/new-reel" element={<NewVideo />} />
             <Route
               path="/explore/new-community"
               element={<NewCommunity />}
