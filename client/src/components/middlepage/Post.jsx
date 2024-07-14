@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CallData, cairo } from "starknet";
 import {
   faListDots,
   faMessage,
@@ -18,6 +19,7 @@ import postimg from "../../assets/post_img.jpg";
 import CommentContainer from "../comment/CommentContainer";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../providers/AppProvider";
+import { CONTRACT_ADDRESS } from "../../providers/abi";
 
 const Post = ({
   username,
@@ -32,7 +34,7 @@ const Post = ({
   zuri_points,
   postId,
 }) => {
-  const { contract } = useAppContext();
+  const { contract, provider } = useAppContext();
   const [loading, setLoading] = useState(false);
   const commentText = useRef();
 
@@ -55,19 +57,37 @@ const Post = ({
       });
   };
 
-  const like_post = (e) => {
+  const like_post = async (e) => {
     const myCall = contract.populate("like_post", [postId]);
     setLoading(true);
-    contract["like_post"](myCall.calldata)
-      .then((res) => {
-        console.info("Successful Response:", res);
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // contract["like_post"](myCall.calldata)
+    //   .then((res) => {
+    //     console.info("Successful Response:", res);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error: ", err);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
+
+    const result = await provider.execute([
+      {
+        contractAddress:
+          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+        entrypoint: "approve",
+        calldata: CallData.compile({
+          spender: CONTRACT_ADDRESS,
+          amount: cairo.uint256(31000000000000n),
+        }),
+      },
+      {
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "like_post",
+        calldata: myCall.calldata,
+      },
+    ]);
+    // await provider.waitForTransaction(result.transaction_hash);
   };
   return (
     <div className={`${styles.gradient_border}`}>

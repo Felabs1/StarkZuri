@@ -5,8 +5,14 @@ version = 1
 name = "contract"
 version = "0.1.0"
 dependencies = [
+ "openzeppelin",
  "snforge_std",
 ]
+
+[[package]]
+name = "openzeppelin"
+version = "0.15.0-rc.0"
+source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.15.0-rc.0#6869190bbc3eef90f49651a42e0b44dcc4bec842"
 
 [[package]]
 name = "snforge_std"

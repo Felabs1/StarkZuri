@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { BounceLoader, ClipLoader } from "react-spinners";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";
@@ -13,7 +14,14 @@ import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
 import { useAppContext } from "../providers/AppProvider";
-import { bigintToLongAddress, bigintToShortStr } from "../utils/AppUtils";
+import {
+  bigintToLongAddress,
+  bigintToShortStr,
+  getUint256CalldataFromBN,
+  parseInputAmountToUint256,
+} from "../utils/AppUtils";
+
+console.log(parseInputAmountToUint256("0.1", 18));
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -21,6 +29,25 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const { contract, address } = useAppContext();
   const [users, setUsers] = useState([]);
+
+  const trytransfer = () => {
+    const amount = parseInputAmountToUint256("0.0001", 18);
+    const receiver =
+      "0x0134831e6e2d9ac8fce18327c87b4d5bb7a38f091f8a9dcb2c580675b09fd9dc";
+    const myCall = contract.populate("deposit_fee", [receiver, amount]);
+    setLoading(true);
+    // console.log(contract);
+    contract["deposit_fee"](myCall.calldata)
+      .then((res) => {
+        console.info("successful response", res);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const view_users = () => {
     const myCall = contract.populate("view_all_users", []);
@@ -128,6 +155,14 @@ const Home = () => {
     console.log(navOpen);
   };
 
+  const handleButtonClick = () => {
+    setLoading(true);
+    // Simulate an API call
+    setTimeout(() => {
+      setLoading(false);
+    }, 20000);
+  };
+
   return (
     <>
       <TopNav onMobileMenuClick={handleMobileMenuClick} />
@@ -148,47 +183,57 @@ const Home = () => {
                 { linkName: "explore" },
               ]}
             />
-            <div>
-              <br />
-              {(posts &&
-                posts.map(
-                  ({
-                    postId,
-                    caller,
-                    content,
-                    likes,
-                    comments,
-                    shares,
-                    images,
-                    zuri_points,
-                  }) => {
-                    const _account_address = bigintToLongAddress(caller);
-                    const great_user = getUserName(_account_address);
 
-                    if (great_user) {
-                      const _readable_username = bigintToShortStr(
-                        great_user.username
-                      );
-                      console.log(comments.toString());
+            {loading ? (
+              <div className="w3-center">
+                <ClipLoader loading={loading} color="#2196F3" size={50} />
+              </div>
+            ) : (
+              <div>
+                <br />
+                {(posts &&
+                  posts.map(
+                    ({
+                      postId,
+                      caller,
+                      content,
+                      likes,
+                      comments,
+                      shares,
+                      images,
+                      zuri_points,
+                    }) => {
+                      const _account_address = bigintToLongAddress(caller);
+                      const great_user = getUserName(_account_address);
 
-                      return (
-                        <Post
-                          key={postId}
-                          postId={bigintToShortStr(postId)}
-                          images={images.split(" ")}
-                          content={content}
-                          username={_readable_username}
-                          comments={comments.toString()}
-                          profile_pic={great_user.profile_pic}
-                          likes={likes.toString()}
-                          shares={shares.toString()}
-                          zuri_points={zuri_points.toString()}
-                        />
-                      );
+                      if (great_user) {
+                        const _readable_username = bigintToShortStr(
+                          great_user.username
+                        );
+                        console.log(comments.toString());
+
+                        return (
+                          <Post
+                            key={postId}
+                            postId={bigintToShortStr(postId)}
+                            images={images.split(" ")}
+                            content={content}
+                            username={_readable_username}
+                            comments={comments.toString()}
+                            profile_pic={great_user.profile_pic}
+                            likes={likes.toString()}
+                            shares={shares.toString()}
+                            zuri_points={zuri_points.toString()}
+                          />
+                        );
+                      }
                     }
-                  }
-                )) || <Skeleton />}
-            </div>
+                  )) || <Skeleton />}
+                <button onClick={handleButtonClick} disabled={loading}>
+                  {loading ? <BounceLoader size={20} /> : "Click Me"}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="w3-col l4 w3-hide-small">

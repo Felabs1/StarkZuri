@@ -40,5 +40,8 @@ pub trait IStarkZuriContract<TContractState> {
     fn repost_reel(ref self: TContractState, reel_id: u256);
     fn claim_reel_points(ref self: TContractState, reel_id: u256);
     fn claim_post_points(ref self: TContractState, post_id: u256);
-    
+    fn add_token_address(ref self: TContractState, token_name: felt252, token_address: ContractAddress);
+    fn deposit_fee(ref self: TContractState, receiver: ContractAddress);
 }
+
+// this 

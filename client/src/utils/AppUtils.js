@@ -1,5 +1,5 @@
 import { BigNumber } from "bignumber.js";
-import { shortString } from "starknet";
+import { shortString, num, uint256 } from "starknet";
 import {
   faSearch,
   faHome,
@@ -58,3 +58,39 @@ export function bigintToLongAddress(bigintstr) {
     return bigintstr;
   }
 }
+
+export const getUint256CalldataFromBN = (bn) => uint256.bnToUint256(bn);
+
+export const parseInputAmountToUint256 = (input, decimals) =>
+  getUint256CalldataFromBN(parseUnits(input, decimals).value);
+
+export const parseUnits = (value, decimals) => {
+  let [integer, fraction = ""] = value.split(".");
+
+  const negative = integer.startsWith("-");
+  if (negative) {
+    integer = integer.slice(1);
+  }
+
+  // If the fraction is longer than allowed, round it off
+  if (fraction.length > decimals) {
+    const unitIndex = decimals;
+    const unit = Number(fraction[unitIndex]);
+
+    if (unit >= 5) {
+      const fractionBigInt = BigInt(fraction.slice(0, decimals)) + BigInt(1);
+      fraction = fractionBigInt.toString().padStart(decimals, "0");
+    } else {
+      fraction = fraction.slice(0, decimals);
+    }
+  } else {
+    fraction = fraction.padEnd(decimals, "0");
+  }
+
+  const parsedValue = BigInt(`${negative ? "-" : ""}${integer}${fraction}`);
+
+  return {
+    value: parsedValue,
+    decimals,
+  };
+};

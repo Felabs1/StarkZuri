@@ -6,6 +6,7 @@ import computer_science from "../../assets/computer_science.jpg";
 import profile_4 from "../../assets/profile3.jpg";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToShortStr } from "../../utils/AppUtils";
+import { ClipLoader } from "react-spinners";
 
 const FeaturedCommunityCard = () => {
   const { contract } = useAppContext();
@@ -45,47 +46,55 @@ const FeaturedCommunityCard = () => {
     <div
       className={`${styles.featured_community_card} w3-row-padding w3-stretch`}
     >
-      {communities &&
-        communities.map(
-          ({
-            community_id,
-            community_admin,
-            community_name,
-            description,
-            members,
-            online_members,
-            profile_image,
-            cover_image,
-          }) => {
-            return (
-              <div className="w3-col l6">
-                <div
-                  className={` ${styles.community_card}`}
-                  style={{ backgroundImage: `url(${cover_image})` }}
-                >
-                  <div className={styles.wave}>
+      {loading ? (
+        <div className="w3-center">
+          <ClipLoader loading={loading} color="#2196F3" size={50} />
+        </div>
+      ) : (
+        <div>
+          {communities &&
+            communities.map(
+              ({
+                community_id,
+                community_admin,
+                community_name,
+                description,
+                members,
+                online_members,
+                profile_image,
+                cover_image,
+              }) => {
+                return (
+                  <div className="w3-col l6">
                     <div
-                      className={styles.profile_pic}
-                      style={{ backgroundImage: `url(${profile_image})` }}
-                    ></div>
-                    <h4>{bigintToShortStr(community_name)}</h4>
-                    <p>{bigintToShortStr(description)}</p>
-                    <br />
-                    <div className={styles.footer}>
-                      <div className={styles.online}>
-                        {online_members.toString()} online
-                      </div>
+                      className={` ${styles.community_card}`}
+                      style={{ backgroundImage: `url(${cover_image})` }}
+                    >
+                      <div className={styles.wave}>
+                        <div
+                          className={styles.profile_pic}
+                          style={{ backgroundImage: `url(${profile_image})` }}
+                        ></div>
+                        <h4>{bigintToShortStr(community_name)}</h4>
+                        <p>{bigintToShortStr(description)}</p>
+                        <br />
+                        <div className={styles.footer}>
+                          <div className={styles.online}>
+                            {online_members.toString()} online
+                          </div>
 
-                      <div className={styles.members}>
-                        {members.toString()} Members
+                          <div className={styles.members}>
+                            {members.toString()} Members
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            );
-          }
-        )}
+                );
+              }
+            )}
+        </div>
+      )}
 
       {/* <div className="w3-col l6">
         <div

@@ -21,6 +21,7 @@
     "react-dom": "^18.2.0",
     "react-loading-skeleton": "^3.4.0",
     "react-router-dom": "^6.23.1",
+    "react-spinners": "^0.14.1",
     "starknet": "^6.9.0",
     "starknetkit": "^1.1.9",
     "w3-css": "^4.1.0"

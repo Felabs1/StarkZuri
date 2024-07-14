@@ -2,18 +2,29 @@
 #[starknet::contract]
 pub mod StarkZuri {
     // importing dependancies into the starknet contract;
+    // use super::IStarkZuriContract;
     use core::option::OptionTrait;
     use core::traits::TryInto;
     use core::array::ArrayTrait;
     use contract::interfaces::IStarkZuriContract;
     use core::traits::Into;
-    use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
+    use starknet::{ContractAddress, get_caller_address,get_contract_address, get_block_timestamp, contract_address_const, syscalls};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
-    use core::num::traits::Zero;
     use contract::structs::{User, Post, Comment, Community, Notification, Reel};
+    use contract::erc20::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
+    use openzeppelin::access::ownable::OwnableComponent;
+
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    impl InternalImpl = OwnableComponent::InternalImpl<ContractState>;
+
     #[storage]
     struct Storage {
+       
         deployer: ContractAddress,
         version: u256,
         users_count: u256,
@@ -47,20 +58,35 @@ pub mod StarkZuri {
 
         // now we need to claim the points so that they can appear on the profile
         claimed_points: LegacyMap::<ContractAddress, u256>,
+
+        // we are going to create a 
+        token_addresses: LegacyMap::<felt252, ContractAddress>,
+        balances: LegacyMap::<ContractAddress, u256>,
+        #[substorage(v0)]
+        pub ownable: OwnableComponent::Storage,
         
 
     }
+
+
 
     #[constructor]
     fn constructor(ref self: ContractState, address: ContractAddress) {
         let deployer: ContractAddress = address;
         self.deployer.write(deployer);
+        self.ownable.initializer(deployer);
+
     }
 
+   
+
+
     #[event]
-    #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
+    #[derive(Drop, starknet::Event)]
     pub enum Event {
-        Upgraded: Upgraded
+        Upgraded: Upgraded,
+        #[flat]
+        OwnableEvent: OwnableComponent::Event
     }
 
     #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
@@ -71,6 +97,10 @@ pub mod StarkZuri {
     // adding user to or better still veryfying you ruser details
     #[abi(embed_v0)]
     impl StarkZuri of IStarkZuriContract<ContractState> {
+        fn add_token_address(ref self: ContractState, token_name: felt252, token_address: ContractAddress) {
+            assert(self.deployer.read() == get_caller_address(), 'only felix can make this call');
+            self.token_addresses.write(token_name, token_address);
+        }
         fn add_user(ref self: ContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();
             let user: User = User {
@@ -99,14 +129,35 @@ pub mod StarkZuri {
                     timestamp: get_block_timestamp()
                 };
 
-                self.users.write(caller, user);
-                self.users_count.write(assigned_user_number);
-                self.user_addresses.write(assigned_user_number, caller);
-                self.notifications.write((get_caller_address(), 1), notification);
+                // let eth_address: ContractAddress = self.token_addresses.read('ETH');
+                // let token_dispatcher = IERC20Dispatcher {contract_address:eth_address};
+                // let amount = 100000000000000;
+                // let has_transferred = token_dispatcher.transferFrom(sender: caller, recipient: get_contract_address(), amount: amount);
+
+                
+                    // self.balances.write(eth_address, self.balances.read(eth_address) + amount);
+                    self.users.write(caller, user);
+                    self.users_count.write(assigned_user_number);
+                    self.user_addresses.write(assigned_user_number, caller);
+                    self.notifications.write((caller, 1), notification);
 
             }
             
         }
+
+        fn deposit_fee(ref self: ContractState, receiver: ContractAddress){
+            let eth_dispatcher = ERC20ABIDispatcher {
+                contract_address: contract_address_const::<
+                    0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                >() // ETH Contract Address            
+            };
+
+            eth_dispatcher.approve(get_caller_address(), 1000000000000000);
+             
+            eth_dispatcher.transfer_from(get_caller_address(), receiver, 1000000000000000);
+
+        }
+
 
         fn view_user(self: @ContractState, user_id: ContractAddress) -> User {
             let user = self.users.read(user_id);
@@ -206,7 +257,7 @@ pub mod StarkZuri {
 
         fn upgrade(ref self: ContractState, impl_hash: ClassHash) {
             let upgrader = get_caller_address();
-            assert(impl_hash.is_non_zero(), 'class hash cannot be zero');
+            // assert(impl_hash.is_non_zero(), 'class hash cannot be zero');
             assert(self.deployer.read() == upgrader, 'only felix can upgrade');
             starknet::syscalls::replace_class_syscall(impl_hash).unwrap_syscall();
             self.emit(Event::Upgraded(Upgraded {implementation: impl_hash}));
@@ -244,7 +295,17 @@ pub mod StarkZuri {
         fn like_post(ref self: ContractState, post_id: u256){
             // we need to prevent liking twice
             let mut likable_post = self.post_likes.read((get_caller_address(), post_id));
-            if (likable_post != 'like') {
+
+            let eth_address: ContractAddress = self.token_addresses.read('ETH');
+                let token_dispatcher = IERC20Dispatcher {contract_address: contract_address_const::<
+                    0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                >()};
+                let amount = 31000000000000;
+                let has_transferred = token_dispatcher.transferFrom(get_caller_address(), get_contract_address(), amount);
+
+                
+
+            if (likable_post != 'like' && has_transferred) {
                 let mut post = self.posts.read(post_id);
                 post.likes += 1;
                 post.zuri_points += 10;

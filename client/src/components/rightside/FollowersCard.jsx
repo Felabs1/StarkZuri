@@ -7,6 +7,7 @@ import profile4 from "../../assets/profile5.jpg";
 import FollowersLIst from "./FollowersLIst";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToLongAddress, bigintToShortStr } from "../../utils/AppUtils";
+import { ClipLoader } from "react-spinners";
 
 const FollowersCard = () => {
   const { contract } = useAppContext();
@@ -51,8 +52,12 @@ const FollowersCard = () => {
         <div className={styles.right_heading}>view all</div>
       </div>
       <br />
-
-      {users &&
+      {loading ? (
+        <div className="w3-center">
+          <ClipLoader loading={loading} color="#2196F3" size={50} />
+        </div>
+      ) : (
+        users &&
         users.map((user) => {
           return (
             <FollowersLIst
@@ -62,7 +67,8 @@ const FollowersCard = () => {
               followText="follow"
             />
           );
-        })}
+        })
+      )}
 
       {/* <FollowersLIst
         profileImage={profile1}
