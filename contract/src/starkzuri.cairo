@@ -101,6 +101,12 @@ pub mod StarkZuri {
             assert(self.deployer.read() == get_caller_address(), 'only felix can make this call');
             self.token_addresses.write(token_name, token_address);
         }
+
+        fn view_contract_balance(self: @ContractState, address: ContractAddress) -> u256{
+            
+            self.balances.read(address)
+        }
+        
         fn add_user(ref self: ContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();
             let user: User = User {
@@ -114,7 +120,7 @@ pub mod StarkZuri {
                 no_of_followers: 0,
                 number_following: 0,
                 notifications: 0,
-                zuri_points: 20,
+                zuri_points: 0,
             };
             let available_user = self.view_user(caller);
             if(available_user.userId != caller) {
@@ -328,6 +334,9 @@ pub mod StarkZuri {
                 self.users.write(post.caller, user);
                 self.posts.write(post_id, post);
                 self.post_likes.write((get_caller_address(), post_id), 'like');
+                self.balances.write(contract_address_const::< 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                    >(), self.balances.read(contract_address_const::< 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                        >()) + amount);
             }
     
         }
@@ -387,7 +396,16 @@ pub mod StarkZuri {
             post.zuri_points += 2;
             let user_commenting = self.users.read(get_caller_address());
             let mut receiving_user = self.users.read(post.caller);
+            let mut _receiving_user = self.users.read(post.caller);
             let notification_id: u256 = receiving_user.notifications + 1;
+
+            
+            let token_dispatcher = IERC20Dispatcher {contract_address: contract_address_const::<
+                0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+            >()};
+
+            let amount = 5900000000000;
+            let has_transferred = token_dispatcher.transferFrom(get_caller_address(), get_contract_address(), amount);
             
             let notification: Notification  =  Notification{
                 notification_id: notification_id,
@@ -398,16 +416,25 @@ pub mod StarkZuri {
                 notification_status: 'unread',
                 timestamp: get_block_timestamp(),
             };
-            
-            self.posts.write(post_id, _post);
-            receiving_user.notifications = notification_id;
-            self.users.write(post.caller, receiving_user);
-            self.notifications.write((post.caller, notification_id), notification);
-            
-            //  update notifications storage and users storage
-            
 
-            self.post_comments.write((post_id, post.comments), comment);
+            if (has_transferred) {
+                self.posts.write(post_id, _post);
+                receiving_user.notifications = notification_id;
+                _receiving_user.notifications = notification_id;
+                self.users.write(post.caller, _receiving_user);
+                self.notifications.write((post.caller, notification_id), notification);
+                
+                //  update notifications storage and users storage
+                
+
+                self.post_comments.write((post_id, post.comments), comment);
+                self.balances.write(contract_address_const::< 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                    >(), self.balances.read(contract_address_const::< 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                        >()) + amount);
+
+            }
+            
+            
         }
 
         fn view_comments(self: @ContractState, post_id: u256) -> Array<Comment> {
