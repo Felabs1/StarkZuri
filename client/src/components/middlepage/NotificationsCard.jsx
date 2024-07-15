@@ -3,6 +3,7 @@ import styles from "./NotificationsCard.module.css";
 import profile_5 from "../../assets/profile5.jpg";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToShortStr } from "../../utils/AppUtils";
+import { BounceLoader, ClipLoader } from "react-spinners";
 
 const NotificationsCard = () => {
   const [loading, setLoading] = useState(false);
@@ -94,7 +95,12 @@ const NotificationsCard = () => {
         <div className={styles.option}>see all</div>
       </div>
       <br />
-      {notifications &&
+      {loading ? (
+        <div className="w3-center">
+          <ClipLoader loading={loading} color="#2196F3" size={50} />
+        </div>
+      ) : (
+        notifications &&
         notifications.map((notification) => {
           let word = notification.notification_message.split(" ");
           let shiftedWord = word.shift();
@@ -131,7 +137,8 @@ const NotificationsCard = () => {
               </div>
             </div>
           );
-        })}
+        })
+      )}
     </div>
   );
 };

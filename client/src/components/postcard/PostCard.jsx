@@ -23,7 +23,7 @@ const PostCard = () => {
   const [loading, setLoading] = useState(false);
 
   // two states to store the files and the urls
-  const [fileURLs, setFileURLs] = useState(null);
+  const [fileURLs, setFileURLs] = useState([]);
   const [imagesValue, setImagesValue] = useState([]);
 
   const postContent = useRef();

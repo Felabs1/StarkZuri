@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ClipLoader } from "react-spinners";
 import TopNav from "../components/navigation/TopNav";
 import SideNav from "../components/navigation/SideNav";
 import Main from "../components/middlepage/Main";

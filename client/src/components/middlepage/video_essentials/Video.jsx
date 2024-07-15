@@ -175,7 +175,7 @@ const Video = ({
       ></video>
       <div className={styles.videoFooter}>
         <div className={styles.videoFooter__text}>
-          <img className={styles.user__avatar} src={profile5} alt="" />
+          <img className={styles.user__avatar} src={user.profile_pic} alt="" />
           &nbsp;
           <h3>
             {user && bigintToShortStr(user.username)} .{"   "}

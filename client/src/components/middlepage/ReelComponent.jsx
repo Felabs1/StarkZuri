@@ -38,8 +38,11 @@ const ReelComponent = () => {
       })
         .then((res) => {
           let val = contract.callData.parse("view_reels", res?.result ?? res);
-          console.log(val);
-          setReels(val);
+          const shuffledArray = val
+            .slice()
+            .map((obj) => ({ ...obj }))
+            .sort(() => Math.random() - 0.5);
+          setReels(shuffledArray);
         })
         .catch((err) => {
           console.error("Error: ", err);

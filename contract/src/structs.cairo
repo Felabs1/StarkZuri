@@ -52,6 +52,7 @@ pub struct Community {
     pub online_members: u256,
     pub profile_image: ByteArray,
     pub cover_image: ByteArray,
+    pub zuri_points: u256,
 }
 
 #[derive(Drop, Serde, starknet::Store)]

@@ -38,23 +38,39 @@ const Post = ({
   const [loading, setLoading] = useState(false);
   const commentText = useRef();
 
-  const comment_on_post = () => {
+  const comment_on_post = async () => {
     const _comment_text = commentText.current.value;
     const myCall = contract.populate("comment_on_post", [
       postId,
       _comment_text,
     ]);
     setLoading(true);
-    contract["comment_on_post"](myCall.calldata)
-      .then((res) => {
-        console.info("Successful Response:", res);
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // contract["comment_on_post"](myCall.calldata)
+    //   .then((res) => {
+    //     console.info("Successful Response:", res);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error: ", err);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
+    const result = await provider.execute([
+      {
+        contractAddress:
+          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+        entrypoint: "approve",
+        calldata: CallData.compile({
+          spender: CONTRACT_ADDRESS,
+          amount: cairo.uint256(5900000000000n),
+        }),
+      },
+      {
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "comment_on_post",
+        calldata: myCall.calldata,
+      },
+    ]);
   };
 
   const like_post = async (e) => {
