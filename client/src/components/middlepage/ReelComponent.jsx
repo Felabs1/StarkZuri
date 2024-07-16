@@ -28,30 +28,30 @@ const ReelComponent = () => {
   const [loading, setLoading] = useState(false);
   const [reels, setReels] = useState([]);
 
-  useEffect(() => {
-    const view_reels = () => {
-      const myCall = contract.populate("view_reels", []);
-      setLoading(true);
-      contract["view_reels"](myCall.calldata, {
-        parseResponse: false,
-        parseRequest: false,
+  const view_reels = () => {
+    const myCall = contract.populate("view_reels", []);
+    setLoading(true);
+    contract["view_reels"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_reels", res?.result ?? res);
+        const shuffledArray = val
+          .slice()
+          .map((obj) => ({ ...obj }))
+          .sort(() => Math.random() - 0.5);
+        setReels(shuffledArray);
       })
-        .then((res) => {
-          let val = contract.callData.parse("view_reels", res?.result ?? res);
-          const shuffledArray = val
-            .slice()
-            .map((obj) => ({ ...obj }))
-            .sort(() => Math.random() - 0.5);
-          setReels(shuffledArray);
-        })
-        .catch((err) => {
-          console.error("Error: ", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    };
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
+  useEffect(() => {
     if (contract) {
       view_reels();
     }
@@ -73,6 +73,7 @@ const ReelComponent = () => {
                 reel_id={reel.reel_id.toString()}
                 shares={reel.shares.toString()}
                 zuri_points={reel.zuri_points.toString()}
+                view_reel={view_reels}
               />
             );
           })}

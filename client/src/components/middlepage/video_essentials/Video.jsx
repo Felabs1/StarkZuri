@@ -25,6 +25,7 @@ import { useAppContext } from "../../../providers/AppProvider";
 import { bigintToShortStr } from "../../../utils/AppUtils";
 
 const Video = ({
+  view_reel,
   video,
   description,
   caller,
@@ -110,45 +111,54 @@ const Video = ({
   };
 
   const handleDislike = async () => {
-    const myCall = await contract.populate("dislike_reel", [reel_id]);
-    setLoading(true);
-    const result = await provider.execute([
-      {
-        contractAddress:
-          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-        entrypoint: "approve",
-        calldata: CallData.compile({
-          spender: CONTRACT_ADDRESS,
-          amount: cairo.uint256(14000000000000n),
-        }),
-      },
-      {
-        contractAddress: CONTRACT_ADDRESS,
-        entrypoint: "dislike_reel",
-        calldata: myCall.calldata,
-      },
-    ]);
+    if (address) {
+      const myCall = await contract.populate("dislike_reel", [reel_id]);
+      setLoading(true);
+      const result = await provider.execute([
+        {
+          contractAddress:
+            "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+          entrypoint: "approve",
+          calldata: CallData.compile({
+            spender: CONTRACT_ADDRESS,
+            amount: cairo.uint256(14000000000000n),
+          }),
+        },
+        {
+          contractAddress: CONTRACT_ADDRESS,
+          entrypoint: "dislike_reel",
+          calldata: myCall.calldata,
+        },
+      ]);
+    } else {
+      handleWalletConnection();
+    }
   };
 
   const handleRepost = async () => {
-    const myCall = await contract.populate("repost_reel", [reel_id]);
-    setLoading(true);
-    const result = await provider.execute([
-      {
-        contractAddress:
-          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-        entrypoint: "approve",
-        calldata: CallData.compile({
-          spender: CONTRACT_ADDRESS,
-          amount: cairo.uint256(31000000000000n),
-        }),
-      },
-      {
-        contractAddress: CONTRACT_ADDRESS,
-        entrypoint: "repost_reel",
-        calldata: myCall.calldata,
-      },
-    ]);
+    if (address) {
+      const myCall = await contract.populate("repost_reel", [reel_id]);
+      setLoading(true);
+      const result = await provider.execute([
+        {
+          contractAddress:
+            "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+          entrypoint: "approve",
+          calldata: CallData.compile({
+            spender: CONTRACT_ADDRESS,
+            amount: cairo.uint256(31000000000000n),
+          }),
+        },
+        {
+          contractAddress: CONTRACT_ADDRESS,
+          entrypoint: "repost_reel",
+          calldata: myCall.calldata,
+        },
+      ]);
+      view_reel();
+    } else {
+      handleWalletConnection();
+    }
   };
 
   useEffect(() => {
