@@ -60,7 +60,7 @@ html {
 
 .videoHeader * {
   padding: 20px;
-  z-index: 200;
+  z-index: 12;
 }
 
 .videoFooter {
@@ -110,6 +110,13 @@ html {
   position: absolute;
   left: 5px;
   color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 12;
+}
+
+.videoFooter__ticker .material__icons:hover {
+  color: #2196f3 !important;
 }
 
 .videoFooter__actions {

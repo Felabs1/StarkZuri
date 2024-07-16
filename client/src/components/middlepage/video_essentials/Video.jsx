@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
+import { CallData, cairo } from "starknet";
 import styles from "../ReelComponent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CONTRACT_ADDRESS } from "../../../providers/abi";
 import {
   faMessage,
   faThumbsUp,
@@ -34,7 +36,8 @@ const Video = ({
   timestamp,
   zuri_points,
 }) => {
-  const { contract, address, handleWalletConnection } = useAppContext();
+  const { contract, address, handleWalletConnection, provider } =
+    useAppContext();
   const [playing, setPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [user, setUser] = useState({});
@@ -52,21 +55,38 @@ const Video = ({
     }
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
     // alert("working");
     if (address) {
       const myCall = contract.populate("like_reel", [reel_id]);
       setLoading(true);
-      contract["like_reel"](myCall.calldata)
-        .then((res) => {
-          console.info("Successful Response:", res);
-        })
-        .catch((err) => {
-          console.error("Error: ", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      // contract["like_reel"](myCall.calldata)
+      //   .then((res) => {
+      //     console.info("Successful Response:", res);
+      //   })
+      //   .catch((err) => {
+      //     console.error("Error: ", err);
+      //   })
+      //   .finally(() => {
+      //     setLoading(false);
+      //   });
+
+      const result = await provider.execute([
+        {
+          contractAddress:
+            "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+          entrypoint: "approve",
+          calldata: CallData.compile({
+            spender: CONTRACT_ADDRESS,
+            amount: cairo.uint256(31000000000000n),
+          }),
+        },
+        {
+          contractAddress: CONTRACT_ADDRESS,
+          entrypoint: "like_reel",
+          calldata: myCall.calldata,
+        },
+      ]);
     } else {
       handleWalletConnection();
     }
@@ -87,6 +107,48 @@ const Video = ({
           setLoading(false);
         });
     }
+  };
+
+  const handleDislike = async () => {
+    const myCall = await contract.populate("dislike_reel", [reel_id]);
+    setLoading(true);
+    const result = await provider.execute([
+      {
+        contractAddress:
+          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+        entrypoint: "approve",
+        calldata: CallData.compile({
+          spender: CONTRACT_ADDRESS,
+          amount: cairo.uint256(14000000000000n),
+        }),
+      },
+      {
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "dislike_reel",
+        calldata: myCall.calldata,
+      },
+    ]);
+  };
+
+  const handleRepost = async () => {
+    const myCall = await contract.populate("repost_reel", [reel_id]);
+    setLoading(true);
+    const result = await provider.execute([
+      {
+        contractAddress:
+          "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+        entrypoint: "approve",
+        calldata: CallData.compile({
+          spender: CONTRACT_ADDRESS,
+          amount: cairo.uint256(31000000000000n),
+        }),
+      },
+      {
+        contractAddress: CONTRACT_ADDRESS,
+        entrypoint: "repost_reel",
+        calldata: myCall.calldata,
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -194,7 +256,9 @@ const Video = ({
         <div className={styles.videoFooter__actions}>
           <div className={styles.videoFooter__actionsRight}>
             <div className={styles.videoFooter__stat}>
-              <span className={styles.material__icons}>
+              <span
+                className={`w3-hover-text-blue w3-btn w3-transparent ${styles.material__icons}`}
+              >
                 <FontAwesomeIcon
                   type="button"
                   onClick={handleLike}
@@ -204,20 +268,34 @@ const Video = ({
               <p>{likes}</p>
             </div>
             <div className={styles.videoFooter__stat}>
-              <span className={styles.material__icons}>
-                <FontAwesomeIcon icon={faThumbsDown} />
+              <span
+                className={`w3-hover-text-blue w3-btn w3-transparent ${styles.material__icons}`}
+              >
+                <FontAwesomeIcon
+                  type="button"
+                  onClick={handleDislike}
+                  icon={faThumbsDown}
+                />
               </span>
               <p>{dislikes}</p>
             </div>
             <div className={styles.videoFooter__stat}>
-              <span className={styles.material__icons}>
+              <span
+                className={`w3-hover-text-blue w3-btn w3-transparent ${styles.material__icons}`}
+              >
                 <FontAwesomeIcon icon={faMessage} />
               </span>
               <p>{comments}</p>
             </div>
             <div className={styles.videoFooter__stat}>
-              <span className={styles.material__icons}>
-                <FontAwesomeIcon icon={faArrowsRotate} />
+              <span
+                className={`w3-hover-text-blue w3-btn w3-transparent ${styles.material__icons}`}
+              >
+                <FontAwesomeIcon
+                  type="button"
+                  onClick={handleRepost}
+                  icon={faArrowsRotate}
+                />
               </span>
               <p>{shares}</p>
             </div>

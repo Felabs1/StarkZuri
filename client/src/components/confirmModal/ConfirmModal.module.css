@@ -1,0 +1,14 @@
+.modal {
+  display: block;
+}
+
+.modal_content {
+  width: 30rem;
+  z-index: 100;
+  background-color: rgb(28, 28, 30);
+  color: rgba(255, 255, 255, 0.846);
+}
+
+.modal_content h4 {
+  font-weight: 600;
+}

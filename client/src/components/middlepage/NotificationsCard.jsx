@@ -58,7 +58,7 @@ const NotificationsCard = () => {
 
           // setUsers(val);
           console.log(val);
-          setNotifications(val);
+          setNotifications(val.reverse());
         })
         .catch((err) => {
           console.error("Error: ", err);

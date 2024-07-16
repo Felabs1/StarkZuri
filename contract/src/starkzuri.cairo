@@ -398,6 +398,7 @@ pub mod StarkZuri {
             let mut receiving_user = self.users.read(post.caller);
             let mut _receiving_user = self.users.read(post.caller);
             let notification_id: u256 = receiving_user.notifications + 1;
+            
 
             
             let token_dispatcher = IERC20Dispatcher {contract_address: contract_address_const::<
@@ -813,6 +814,7 @@ pub mod StarkZuri {
         reel.zuri_points += 2;
         let user_commenting = self.users.read(get_caller_address());
         let mut receiving_user = self.users.read(reel.caller);
+        let mut _receiving_user = self.users.read(reel.caller);
 
         let notification_id: u256= receiving_user.notifications + 1;
 
@@ -826,11 +828,24 @@ pub mod StarkZuri {
             timestamp: get_block_timestamp(),
         };
 
+         
+        let token_dispatcher = IERC20Dispatcher {contract_address: contract_address_const::<
+            0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        >()};
+
+        let amount = 5900000000000;
+        let has_transferred = token_dispatcher.transferFrom(get_caller_address(), get_contract_address(), amount);
+
+        if (has_transferred) {
+
         self.reels.write(reel_id, _reel);
         receiving_user.notifications = notification_id;
-        self.users.write(reel.caller, receiving_user);
+        _receiving_user.notifications = notification_id;
+
+        self.users.write(reel.caller, _receiving_user);
         self.notifications.write((reel.caller, notification_id), notification);
         self.reel_comments.write((reel_id, reel.comments), comment);
+        }
     }
 
     fn repost_reel(ref self: ContractState, reel_id: u256){
@@ -843,6 +858,7 @@ pub mod StarkZuri {
         _reel.zuri_points += 4;
         _reel.timestamp = get_block_timestamp();
         let mut receiving_user: User = self.users.read(reel.caller);
+        let mut _receiving_user: User = self.users.read(reel.caller);
         let user_reposting: User = self.users.read(get_caller_address());
         let notification_id = receiving_user.notifications + 1;
         let notification: Notification = Notification {
@@ -855,11 +871,20 @@ pub mod StarkZuri {
             timestamp: get_block_timestamp(),
              
         };
-        self.reels.write(reel_id, _reel);
-        receiving_user.notifications = notification_id;
-        self.users.write(reel.caller, receiving_user);
-        self.notifications.write((reel.caller, notification_id), notification);
 
+        let token_dispatcher = IERC20Dispatcher {contract_address: contract_address_const::<
+            0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+        >()};
+        let amount = 31000000000000;
+        let has_transferred = token_dispatcher.transferFrom(get_caller_address(), get_contract_address(), amount);
+
+        if (has_transferred) {
+            self.reels.write(reel_id, _reel);
+            receiving_user.notifications = notification_id;
+            _receiving_user.notifications = notification_id;
+            self.users.write(reel.caller, _receiving_user);
+            self.notifications.write((reel.caller, notification_id), notification);
+        }
     }
 
     fn claim_reel_points(ref self: ContractState, reel_id: u256){
@@ -876,6 +901,8 @@ pub mod StarkZuri {
             self.users.write(get_caller_address(), claimer);
             let claimed_points = self.claimed_points.read(get_caller_address());
             self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
+
+            
         }
        
     }
