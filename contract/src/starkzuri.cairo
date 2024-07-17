@@ -848,6 +848,24 @@ pub mod StarkZuri {
         }
     }
 
+    fn view_reel_comments(self: @ContractState, reel_id: u256) -> Array<Comment> {
+        let mut comments: Array<Comment> = ArrayTrait::new();
+        let reel = self.reels.read(reel_id);
+        let comments_count = reel.comments;
+        let mut counter = 1;
+
+        while (counter <= comments_count) {
+            let comment = self.reel_comments.read((reel_id, counter));
+            comments.append(comment);
+            counter += 1;
+
+        };
+
+
+
+        comments
+    }
+
     fn repost_reel(ref self: ContractState, reel_id: u256){
         let mut reel = self.reels.read(reel_id);
         let mut _reel = self.reels.read(reel_id);
