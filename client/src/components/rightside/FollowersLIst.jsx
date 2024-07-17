@@ -51,7 +51,7 @@ const FollowersLIst = ({ profileImage, username, followText, userAddress }) => {
           );
           // console.info("success")
           // console.info("Successful Response:", val);
-          console.log(val);
+          // console.log(val);
           val.forEach((element) => {
             if (bigintToLongAddress(element.userId) == address) {
               // console.log("follows");
@@ -90,7 +90,7 @@ const FollowersLIst = ({ profileImage, username, followText, userAddress }) => {
           );
           // console.info("success")
           // console.info("Successful Response:", val);
-          console.log(val);
+          // console.log(val);
           val.forEach((element) => {
             if (bigintToLongAddress(element.userId) == userAddress) {
               setFollows("followed");
@@ -112,7 +112,7 @@ const FollowersLIst = ({ profileImage, username, followText, userAddress }) => {
     }
   }, [contract]);
 
-  console.log(isFollowing);
+  // console.log(isFollowing);
 
   return (
     <div className={styles.followers_list}>

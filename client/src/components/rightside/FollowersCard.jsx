@@ -30,7 +30,7 @@ const FollowersCard = () => {
           );
           // console.info("success")
           // console.info("Successful Response:", val);
-          console.log(val);
+          // console.log(val);
           setUsers(val);
         })
         .catch((err) => {
@@ -58,9 +58,10 @@ const FollowersCard = () => {
         </div>
       ) : (
         users &&
-        users.map((user) => {
+        users.map((user, id) => {
           return (
             <FollowersLIst
+              key={id}
               userAddress={bigintToLongAddress(user.userId)}
               profileImage={user.profile_pic}
               username={bigintToShortStr(user.username)}

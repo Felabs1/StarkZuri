@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CallData, cairo } from "starknet";
 import {
@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { useAppContext } from "../../providers/AppProvider";
 import { CONTRACT_ADDRESS } from "../../providers/abi";
 import { useNavigate } from "react-router-dom";
+import { bigintToShortStr } from "../../utils/AppUtils";
 
 const Post = ({
   username,
@@ -33,11 +34,13 @@ const Post = ({
   shares,
   comments,
   zuri_points,
+  userAddress,
   postId,
 }) => {
   const { contract, provider, address, handleWalletConnection } =
     useAppContext();
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState({});
   const commentText = useRef();
   const navigate = useNavigate();
 
@@ -116,26 +119,55 @@ const Post = ({
     }
     // await provider.waitForTransaction(result.transaction_hash);
   };
+
+  useEffect(() => {
+    const view_user = () => {
+      const myCall = contract.populate("view_user", [userAddress]);
+      setLoading(true);
+      contract["view_user"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      })
+        .then((res) => {
+          let val = contract.callData.parse("view_user", res?.result ?? res);
+          // console.log(val);
+          setUser(val);
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+
+    if (contract && userAddress) {
+      view_user();
+    }
+  }, [contract]);
   return (
     <div className={`${styles.gradient_border}`}>
-      <div
-        className={styles.post_navigation}
-        onClick={() => navigate(`/post/${postId}`)}
-      >
-        <div className={styles.profile}>
-          <img src={`${profile_pic}` ?? profile} />
-          <div className={styles.profile_details}>
-            <span>{username}</span>
-            <br />
-            <small>1 hr ago</small>
+      {user && console.log(userAddress)}
+      {user && (
+        <div
+          className={styles.post_navigation}
+          onClick={() => navigate(`/post/${postId}`)}
+        >
+          <div className={styles.profile}>
+            <img src={`${user.profile_pic}`} />
+            <div className={styles.profile_details}>
+              <span>{bigintToShortStr(user.username)}</span>
+              <br />
+              <small>1 hr ago</small>
+            </div>
+          </div>
+          <div>
+            <Link to={`/post/${postId}`}>
+              <FontAwesomeIcon icon={faEye} />
+            </Link>
           </div>
         </div>
-        <div>
-          <Link to={`/post/${postId}`}>
-            <FontAwesomeIcon icon={faEye} />
-          </Link>
-        </div>
-      </div>
+      )}
       <div className={styles.post_body}>
         <p>{content}</p>
         <div className={styles.post_media}>

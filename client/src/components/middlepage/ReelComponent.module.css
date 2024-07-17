@@ -60,7 +60,7 @@ html {
 
 .videoHeader * {
   padding: 20px;
-  z-index: 12;
+  z-index: 1;
 }
 
 .videoFooter {
@@ -154,4 +154,33 @@ html {
 .videoFooter__stat p {
   margin-left: 3px;
   color: white;
+}
+
+.comment_input {
+  display: flex;
+  position: sticky;
+}
+
+.comment_input textarea {
+  background-color: #111;
+  border: none;
+  outline: none;
+  border-radius: 20px;
+  color: white;
+  padding: 12px;
+}
+
+.comment_input button {
+  background-color: #2196f3;
+  color: white;
+  transition: 0.2s ease;
+  border: none;
+  display: inline-block;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.reel__modal__content {
+  background-color: #333;
+  z-index: 300;
 }

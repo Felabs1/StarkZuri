@@ -7,9 +7,13 @@ import { sideNavigations } from "../../utils/AppUtils";
 const SideNav = () => {
   return (
     <div className={`w3-sidebar w3-text-white w3-bar-block ${styles.sidebar}`}>
-      {sideNavigations.map(({ navName, icon, to }) => {
+      {sideNavigations.map(({ navName, icon, to }, key) => {
         return (
-          <Link to={to} className={`w3-bar-item w3-block ${styles.navname}`}>
+          <Link
+            to={to}
+            key={key}
+            className={`w3-bar-item w3-block ${styles.navname}`}
+          >
             <FontAwesomeIcon
               className={`${styles.search_font} w3-text-white`}
               icon={icon}
