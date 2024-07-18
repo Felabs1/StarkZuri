@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CallData, cairo } from "starknet";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   faListDots,
   faMessage,
@@ -62,22 +64,30 @@ const Post = ({
       //   .finally(() => {
       //     setLoading(false);
       //   });
-      const result = await provider.execute([
-        {
-          contractAddress:
-            "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-          entrypoint: "approve",
-          calldata: CallData.compile({
-            spender: CONTRACT_ADDRESS,
-            amount: cairo.uint256(5900000000000n),
-          }),
-        },
-        {
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "comment_on_post",
-          calldata: myCall.calldata,
-        },
-      ]);
+      const result = await provider
+        .execute([
+          {
+            contractAddress:
+              "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+            entrypoint: "approve",
+            calldata: CallData.compile({
+              spender: CONTRACT_ADDRESS,
+              amount: cairo.uint256(5900000000000n),
+            }),
+          },
+          {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: "comment_on_post",
+            calldata: myCall.calldata,
+          },
+        ])
+        .then((res) => {
+          console.log(res);
+          toast.info("comment written successfully", {
+            className: styles.toast_message,
+          });
+          commentText.current.value = "";
+        });
     } else {
       handleWalletConnection();
     }
@@ -98,22 +108,29 @@ const Post = ({
       //     setLoading(false);
       //   });
 
-      const result = await provider.execute([
-        {
-          contractAddress:
-            "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-          entrypoint: "approve",
-          calldata: CallData.compile({
-            spender: CONTRACT_ADDRESS,
-            amount: cairo.uint256(31000000000000n),
-          }),
-        },
-        {
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: "like_post",
-          calldata: myCall.calldata,
-        },
-      ]);
+      const result = await provider
+        .execute([
+          {
+            contractAddress:
+              "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+            entrypoint: "approve",
+            calldata: CallData.compile({
+              spender: CONTRACT_ADDRESS,
+              amount: cairo.uint256(31000000000000n),
+            }),
+          },
+          {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: "like_post",
+            calldata: myCall.calldata,
+          },
+        ])
+        .then((res) => {
+          console.log(res);
+          toast.info("content liked successfully", {
+            className: styles.toast_message,
+          });
+        });
     } else {
       handleWalletConnection();
     }
@@ -144,10 +161,10 @@ const Post = ({
     if (contract && userAddress) {
       view_user();
     }
-  }, [contract]);
+  }, [contract, userAddress]);
+  console.log(user);
   return (
     <div className={`${styles.gradient_border}`}>
-      {user && console.log(userAddress)}
       {user && (
         <div
           className={styles.post_navigation}
@@ -158,7 +175,7 @@ const Post = ({
             <div className={styles.profile_details}>
               <span>{bigintToShortStr(user.username)}</span>
               <br />
-              <small>1 hr ago</small>
+              <small>{time_posted}</small>
             </div>
           </div>
           <div>
@@ -202,7 +219,7 @@ const Post = ({
       </div>
       <hr />
       <div className={styles.comment_interaction_section}>
-        <img src={`${profile_pic}` ?? profile} />
+        <img src={`${user.profile_pic}`} />
         <div className={styles.comment_field}>
           <input
             className="w3-input"

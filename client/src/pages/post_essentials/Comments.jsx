@@ -11,7 +11,11 @@ import FollowersCard from "../../components/rightside/FollowersCard";
 import CommentContainer from "../../components/comment/CommentContainer";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "../../providers/AppProvider";
-import { bigintToLongAddress, bigintToShortStr } from "../../utils/AppUtils";
+import {
+  bigintToLongAddress,
+  bigintToShortStr,
+  timeAgo,
+} from "../../utils/AppUtils";
 
 const Comments = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -57,11 +61,39 @@ const Comments = () => {
       });
   };
 
-  console.log(posts);
+  const view_comments = () => {
+    // console.log(id);
+    const myCall = contract.populate("view_comments", [id]);
+    setLoading(true);
+    contract["view_comments"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_comments", res?.result ?? res);
+        console.log(val);
+        setCommentList(val.reverse());
+        // console.log(val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  console.log(commentList);
 
   useEffect(() => {
     if (contract) {
       view_post();
+    }
+  }, [contract]);
+
+  useEffect(() => {
+    if (contract) {
+      view_comments();
     }
   }, [contract]);
   // view_post();
@@ -80,14 +112,36 @@ const Comments = () => {
             <h4>Comments</h4>
             {posts && (
               <Post
+                postId={bigintToShortStr(posts.postId)}
                 content={posts.content}
                 comments={posts.comments?.toString()}
                 likes={posts.likes?.toString()}
                 shares={posts.shares?.toString()}
                 zuri_points={posts.zuri_points?.toString()}
-                userAddress={bigintToLongAddress(posts.caller)}
+                userAddress={
+                  posts.caller ? bigintToLongAddress(posts.caller) : ""
+                }
+                time_posted={
+                  posts.date_posted
+                    ? timeAgo(posts.date_posted.toString() * 1000)
+                    : ""
+                }
               />
             )}
+            <br />
+            {commentList &&
+              commentList.map((commentList, id) => {
+                return (
+                  <CommentContainer
+                    content={commentList.content}
+                    key={id}
+                    userAddress={bigintToLongAddress(commentList.caller)}
+                    time_commented={timeAgo(
+                      commentList.time_commented.toString() * 1000
+                    )}
+                  />
+                );
+              })}
           </div>
           <div className="w3-col l4 w3-hide-small">
             <br />

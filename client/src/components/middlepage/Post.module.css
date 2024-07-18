@@ -85,3 +85,15 @@
   width: 100%;
   box-sizing: border-box; /* Ensures padding and border are included in the width */
 }
+
+.toast_message {
+  background: linear-gradient(
+    112.1deg,
+    rgb(32, 38, 57) 11.4%,
+    rgb(63, 76, 119) 70.2%
+  );
+  color: #fff;
+  font-size: 20px;
+  width: 34vw;
+  padding: 30px 20px;
+}

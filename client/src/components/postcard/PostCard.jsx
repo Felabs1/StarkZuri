@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import styles from "./PostCard.module.css";
 import searchLogo from "../../assets/ST4.png";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -47,6 +49,10 @@ const PostCard = () => {
     contract["create_post"](myCall.calldata)
       .then((res) => {
         console.info("successful response", res);
+        toast.success("content posted successfully!", {
+          className: styles.toast_message,
+        });
+        postContent.current.value = "";
       })
       .catch((err) => {
         console.error("Error: ", err);
@@ -120,6 +126,7 @@ const PostCard = () => {
   };
   return (
     <div className={styles.postcard_border}>
+      <ToastContainer />
       <div className={styles.form_container}>
         <img src={searchLogo} className={styles.logo_image} alt="image" />
         <input
@@ -144,6 +151,7 @@ const PostCard = () => {
           id="fileInput"
           ref={fileInputRef}
           onChange={OnChangeMFile}
+          accept="image/*"
           multiple
           style={{ display: "none" }}
         />
@@ -152,9 +160,10 @@ const PostCard = () => {
           <FontAwesomeIcon icon={faImage} />
         </div>
         {uploadProgress > 0 && <span>upload progress: {uploadProgress}%</span>}
-        <div className={styles.form_helpers} onClick={handleFileClick}>
+
+        {/* <div className={styles.form_helpers} onClick={handleFileClick}>
           <FontAwesomeIcon icon={faVideo} />
-        </div>
+        </div> */}
         {/* <div className={styles.form_helpers}>
           <FontAwesomeIcon icon={faChartBar} />
         </div>
@@ -164,6 +173,11 @@ const PostCard = () => {
         <div className={styles.form_helpers}>
           <FontAwesomeIcon icon={faBucket} />
         </div> */}
+      </div>
+      <div>
+        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
+        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
+        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
       </div>
     </div>
   );

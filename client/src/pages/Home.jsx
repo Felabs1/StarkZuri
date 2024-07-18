@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BounceLoader, ClipLoader } from "react-spinners";
 import TopNav from "../components/navigation/TopNav";
@@ -19,9 +21,10 @@ import {
   bigintToShortStr,
   getUint256CalldataFromBN,
   parseInputAmountToUint256,
+  timeAgo,
 } from "../utils/AppUtils";
 
-console.log(parseInputAmountToUint256("0.1", 18));
+console.log(timeAgo(1721310913 * 1000));
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -165,6 +168,7 @@ const Home = () => {
 
   return (
     <>
+      <ToastContainer />
       <TopNav onMobileMenuClick={handleMobileMenuClick} />
       <SideNav />
 
@@ -202,6 +206,7 @@ const Home = () => {
                       shares,
                       images,
                       zuri_points,
+                      date_posted,
                     }) => {
                       const _account_address = bigintToLongAddress(caller);
                       const great_user = getUserName(_account_address);
@@ -214,6 +219,7 @@ const Home = () => {
 
                         return (
                           <Post
+                            userAddress={bigintToLongAddress(caller)}
                             key={postId}
                             postId={bigintToShortStr(postId)}
                             images={images.split(" ")}
@@ -224,14 +230,12 @@ const Home = () => {
                             likes={likes.toString()}
                             shares={shares.toString()}
                             zuri_points={zuri_points.toString()}
+                            time_posted={timeAgo(date_posted.toString() * 1000)}
                           />
                         );
                       }
                     }
                   )) || <Skeleton />}
-                <button onClick={handleButtonClick} disabled={loading}>
-                  {loading ? <BounceLoader size={20} /> : "Click Me"}
-                </button>
               </div>
             )}
           </div>

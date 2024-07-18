@@ -16,6 +16,7 @@ const CommentContainer = ({
   containsThread,
   username,
   userAddress,
+  time_commented,
   profilePic,
   content,
   likes,
@@ -65,7 +66,7 @@ const CommentContainer = ({
             ></div>
             <div className={styles.commenter_name}>
               <span>{bigintToShortStr(user.username)}</span>&nbsp;
-              <span className={styles.duration}>1 hour ago</span>
+              <span className={styles.duration}>{time_commented}</span>
             </div>
           </div>
 
