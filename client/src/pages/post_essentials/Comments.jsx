@@ -112,7 +112,7 @@ const Comments = () => {
             <h4>Comments</h4>
             {posts && (
               <Post
-                postId={bigintToShortStr(posts.postId)}
+                postId={posts.postId ? posts.postId.toString() : ""}
                 content={posts.content}
                 comments={posts.comments?.toString()}
                 likes={posts.likes?.toString()}

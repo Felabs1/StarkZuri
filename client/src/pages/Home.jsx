@@ -221,7 +221,7 @@ const Home = () => {
                           <Post
                             userAddress={bigintToLongAddress(caller)}
                             key={postId}
-                            postId={bigintToShortStr(postId)}
+                            postId={postId.toString()}
                             images={images.split(" ")}
                             content={content}
                             username={_readable_username}

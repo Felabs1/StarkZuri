@@ -186,7 +186,8 @@ const Post = ({
         </div>
       )}
       <div className={styles.post_body}>
-        <p>{content}</p>
+        {/* <p style={{ whiteSpace: "pre-wrap" }}>{content}</p> */}
+        <p dangerouslySetInnerHTML={{ __html: content }} />
         <div className={styles.post_media}>
           {images &&
             images.map((image) => {

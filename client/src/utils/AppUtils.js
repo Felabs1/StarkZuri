@@ -131,3 +131,7 @@ export function timeAgo(timestamp) {
 
   return "just now";
 }
+
+export function multilineToSingleline(multilineString) {
+  return multilineString.replace(/\n/g, "<br />");
+}

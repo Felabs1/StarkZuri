@@ -23,6 +23,7 @@ import {
 import axios from "axios";
 import { useAppContext } from "../../providers/AppProvider";
 import { uploadToIPFS } from "../../Infura";
+import { multilineToSingleline } from "../../utils/AppUtils";
 
 const PostCard = () => {
   const fileInputRef = useRef(null);
@@ -44,12 +45,13 @@ const PostCard = () => {
 
   const handleSubmitForm = () => {
     const _postContent = postContent.current.value;
+    const _formattedContent = multilineToSingleline(_postContent);
     const _postmedia = postmedia.join(" ");
     console.log(_postmedia);
     console.log(_postContent);
 
     const myCall = contract.populate("create_post", [
-      _postContent,
+      _formattedContent,
       fileURLs.join(" "),
     ]);
     setLoading(true);
@@ -141,11 +143,11 @@ const PostCard = () => {
       <ToastContainer />
       <div className={styles.form_container}>
         <img src={searchLogo} className={styles.logo_image} alt="image" />
-        <input
+        <textarea
           className="w3-input"
           ref={postContent}
           placeholder="what's on your mind"
-        />
+        ></textarea>
 
         {loading ? (
           <button className="w3-button">
