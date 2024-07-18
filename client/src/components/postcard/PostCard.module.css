@@ -43,6 +43,10 @@
   color: white;
 }
 
+.image_aligned {
+  margin-right: 5px;
+}
+
 .form_helpers_holder {
   display: flex;
 }

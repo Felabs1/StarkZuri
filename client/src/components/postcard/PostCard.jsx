@@ -3,6 +3,14 @@ import styles from "./PostCard.module.css";
 import searchLogo from "../../assets/ST4.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import "react-loading-skeleton/dist/skeleton.css";
+import {
+  BeatLoader,
+  BounceLoader,
+  ClipLoader,
+  MoonLoader,
+} from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -71,6 +79,7 @@ const PostCard = () => {
     // Placeholder logic: Upload files to IPFS
     const uploadedUrls = [];
     const selectedFiles = e.target.files;
+    setLoading(true);
 
     for (const file of selectedFiles) {
       const response = await uploadToIPFS(file); // Your actual IPFS upload function
@@ -79,7 +88,10 @@ const PostCard = () => {
 
     // Placeholder logic: Handle changes, such as updating URLs
     console.log("Uploaded URLs:", uploadedUrls);
-    setFileURLs(uploadedUrls); // Assuming you have a state to store the URLs
+    setFileURLs(uploadedUrls);
+    if (uploadedUrls) {
+      setLoading(false);
+    } // Assuming you have a state to store the URLs
   };
 
   const handleUpload = async () => {
@@ -134,9 +146,16 @@ const PostCard = () => {
           ref={postContent}
           placeholder="what's on your mind"
         />
-        <button className="w3-button" onClick={handleSubmitForm}>
-          Post
-        </button>
+
+        {loading ? (
+          <button className="w3-button">
+            <BeatLoader loading={loading} color="#fff" size={10} />
+          </button>
+        ) : (
+          <button className="w3-button" onClick={handleSubmitForm}>
+            Post
+          </button>
+        )}
       </div>
       <br />
       <div className={styles.form_helpers_holder}>
@@ -175,9 +194,18 @@ const PostCard = () => {
         </div> */}
       </div>
       <div>
-        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
-        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
-        <span className="w3-tag w3-round w3-blue">image &times;</span>&nbsp;
+        {fileURLs &&
+          fileURLs.map((file, index) => {
+            return (
+              <span
+                key={index}
+                className={`${styles.image_aligned} w3-tag w3-round w3-blue`}
+              >
+                {file.substring(0, 5)}...{file.substring(file.length - 5)}{" "}
+                &times;
+              </span>
+            );
+          })}
       </div>
     </div>
   );
