@@ -7,6 +7,7 @@ const initialData = {
   address: null,
   contract: null,
   provider: null,
+  viewUser: null,
   handleWalletConnection: null,
   handleWalletDisconnection: null,
 };
@@ -36,6 +37,22 @@ const AppProvider = (props) => {
     }
   };
 
+  const viewUser = (address) => {
+    const myCall = contract.populate("view_user", [address]);
+    contract["view_user"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_user", res?.result ?? res);
+        console.log(val);
+        return val;
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      });
+  };
+
   const connectContract = () => {
     if (address && provider) {
       const _contract = new Contract(ABI, CONTRACT_ADDRESS, provider);
@@ -57,6 +74,7 @@ const AppProvider = (props) => {
       address,
       contract,
       provider,
+      viewUser,
       handleWalletConnection: connectWallet,
       handleWalletDisconnection: disconnectWallet,
     }),

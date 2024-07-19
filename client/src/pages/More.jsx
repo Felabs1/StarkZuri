@@ -10,6 +10,8 @@ const More = () => {
     console.log("something is wrong");
     console.log(navOpen);
   };
+
+  // localhost d the buisn
   return (
     <div>
       <TopNav onMobileMenuClick={handleMobileMenuClick} />

@@ -8,11 +8,13 @@ import FollowersLIst from "./FollowersLIst";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToLongAddress, bigintToShortStr } from "../../utils/AppUtils";
 import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const FollowersCard = () => {
   const { contract } = useAppContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const view_users = () => {
@@ -66,6 +68,9 @@ const FollowersCard = () => {
               profileImage={user.profile_pic}
               username={bigintToShortStr(user.username)}
               followText="follow"
+              onNavigate={() => {
+                navigate(`/profile/${bigintToLongAddress(user.userId)}`);
+              }}
             />
           );
         })

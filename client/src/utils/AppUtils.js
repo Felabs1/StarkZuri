@@ -135,3 +135,19 @@ export function timeAgo(timestamp) {
 export function multilineToSingleline(multilineString) {
   return multilineString.replace(/\n/g, "<br />");
 }
+
+export function formatDate(timestamp) {
+  const date = new Date(timestamp);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  };
+
+  return date.toLocaleDateString("en-US", options);
+}

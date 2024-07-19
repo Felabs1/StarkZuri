@@ -19,6 +19,7 @@ import { useAppContext } from "../providers/AppProvider";
 import {
   bigintToLongAddress,
   bigintToShortStr,
+  formatDate,
   getUint256CalldataFromBN,
   parseInputAmountToUint256,
   timeAgo,
@@ -31,8 +32,35 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const { contract, address } = useAppContext();
+  const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
 
+  // console.log(
+  //   viewUser(
+  //     "0x07e868e262d6d19c181706f5f66faf730d723ebf604ecd7f5aff409f94d33516"
+  //   )
+  // );
+  const view_user = () => {
+    const myCall = contract.populate("view_user", [address]);
+    setLoading(true);
+    contract["view_user"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_user", res?.result ?? res);
+        console.log(val);
+        setUser(val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  console.log(user);
   const trytransfer = () => {
     const amount = parseInputAmountToUint256("0.0001", 18);
     const receiver =
@@ -75,7 +103,7 @@ const Home = () => {
   function getUserName(userId) {
     if (users) {
       const _user = users.find((element) => element.userId == userId);
-      console.log(_user);
+      // console.log(_user);
       return _user;
     }
   }
@@ -151,6 +179,14 @@ const Home = () => {
     }
   }, [contract]);
 
+  useEffect(() => {
+    if (contract && address) {
+      view_user();
+    }
+  }, [contract]);
+
+  // console.log(user);
+
   // console.log(contract);
   const handleMobileMenuClick = () => {
     setNavOpen(!navOpen);
@@ -215,7 +251,9 @@ const Home = () => {
                         const _readable_username = bigintToShortStr(
                           great_user.username
                         );
-                        console.log(comments.toString());
+                        {
+                          /* console.log(comments.toString()); */
+                        }
 
                         return (
                           <Post
@@ -241,7 +279,23 @@ const Home = () => {
           </div>
 
           <div className="w3-col l4 w3-hide-small">
-            {address && <ProfileCard />}
+            {address && user ? (
+              <ProfileCard
+                about={user.about}
+                name={bigintToShortStr(user.name)}
+                username={bigintToShortStr(user.username)}
+                no_following={user.number_following.toString()}
+                no_of_followers={user.no_of_followers.toString()}
+                profile_pic={user.profile_pic}
+                cover_photo={user.cover_photo}
+                zuri_points={user.zuri_points.toString()}
+                date_registered={formatDate(
+                  user.date_registered.toString() * 1000
+                )}
+              />
+            ) : (
+              ""
+            )}
             <br />
 
             <AssetsCard />

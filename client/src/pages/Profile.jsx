@@ -18,6 +18,8 @@ import {
   bigintToLongAddress,
   bigintToShortStr,
   convertToReadableNumber,
+  formatDate,
+  timeAgo,
 } from "../utils/AppUtils";
 import BigNumber from "bignumber.js";
 import { uploadToIPFS } from "../Infura";
@@ -32,9 +34,9 @@ const Profile = () => {
   const [profile, setProfile] = useState("");
   const [cover, setCover] = useState("");
   const [about, setAbout] = useState("");
-  // const []
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState(null);
 
-  // these ones will be used to display hapo let's try it
   const [coverPhoto, setCoverPhoto] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
 
@@ -49,6 +51,46 @@ const Profile = () => {
   useEffect(() => {
     console.log(profile);
   }, [profile]);
+
+  const view_user = () => {
+    const myCall = contract.populate("view_user", [address]);
+    setLoading(true);
+    contract["view_user"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("view_user", res?.result ?? res);
+        console.log(val);
+        setUser(val);
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const get_individual_posts = () => {
+    const myCall = contract.populate("filter_post", [address]);
+    setLoading(true);
+    contract["filter_post"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    })
+      .then((res) => {
+        let val = contract.callData.parse("filter_post", res?.result ?? res);
+        console.log(val);
+        setPosts(val.reverse());
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -68,59 +110,7 @@ const Profile = () => {
     setProfilePhoto(response);
   }
 
-  const handleProfileChange = async (e) => {
-    const _profile = profileImage.current.files[0];
-    if (!_profile) {
-      alert("please input file for upload");
-    } else {
-      const formdata = new FormData();
-      formdata.append("file", _profile);
-      try {
-        // const response = await fetch("http://localhost:3001/upload", {
-        //   method: "POST",
-        //   body: formdata,
-        // });
-        // if (response.ok) {
-        //   const result = await response.json();
-        //   console.log("profile image uploaded successfully");
-        //   // console.log(result);
-        //   setProfile(result.url);
-        // console.log(profile);
-        // } else {
-        //   console.log("image upload failed");
-        // }
-      } catch (error) {
-        console.error("Error", error);
-        alert("an error occured while uploading the image");
-      }
-    }
-  };
-
   const handleCoverChange = async (e) => {
-    // const _cover = coverImage.current.files[0];
-    // if (!_cover) {
-    //   alert("please input file for upload");
-    // } else {
-    //   const formdata = new FormData();
-    //   formdata.append("file", _cover);
-    //   try {
-    //     const response = await fetch("http://localhost:3001/upload", {
-    //       method: "POST",
-    //       body: formdata,
-    //     });
-    //     if (response.ok) {
-    //       const result = await response.json();
-    //       console.log("profile image uploaded successfully");
-    //       setCover(result.url);
-    //       // console.log(result);
-    //     } else {
-    //       console.log("image upload failed");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error", error);
-    //     alert("an error occured while uploading the image");
-    //   }
-
     var file = e.target.files[0];
 
     const response = await uploadToIPFS(file);
@@ -158,54 +148,15 @@ const Profile = () => {
   // let readableNo = BigNumber("1952805748").toString();
   // console.log(readableNo);
 
-  const view_users = () => {
-    const myCall = contract.populate("view_all_users", []);
-    setLoading(true);
-    contract["view_all_users"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_all_users", res?.result ?? res);
-        // console.info("success")
-        // console.info("Successful Response:", val);
-        // console.log(val);
-        val.forEach(({ cover_photo, profile_pic, userId }) => {
-          const _address = bigintToLongAddress(userId);
-          console.log(_address);
-          if (address == _address) {
-            setCoverPhoto(cover_photo);
-            setProfilePhoto(profile_pic);
-          }
-
-          // console.log(_address);
-        });
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
   const handleAboutChange = (e) => {
     setAbout(e.target.value);
   };
 
-  // console.log(coverPhoto);
-  // console.log(profilePhoto);
-
   useEffect(() => {
-    if (contract) {
-      view_users();
+    if (contract && address) {
+      view_user();
+      get_individual_posts();
     }
-    // console.log(bigintToShortStr(439788267896n));
-    // console.log(
-    //   bigintToLongAddress(
-    //     3576822344088438784960174474173613065167062044832123606782432014284400833814n
-    //   )
-    // );
   }, [contract]);
 
   const handleMobileMenuClick = () => {
@@ -269,7 +220,23 @@ const Profile = () => {
         )}
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            <ProfileCard />
+            {address && user ? (
+              <ProfileCard
+                about={user.about}
+                name={bigintToShortStr(user.name)}
+                username={bigintToShortStr(user.username)}
+                no_following={user.number_following.toString()}
+                no_of_followers={user.no_of_followers.toString()}
+                profile_pic={user.profile_pic}
+                cover_photo={user.cover_photo}
+                zuri_points={user.zuri_points.toString()}
+                date_registered={formatDate(
+                  user.date_registered.toString() * 1000
+                )}
+              />
+            ) : (
+              ""
+            )}
             <br />
             <ProfileNavigationButtons onModalOpen={() => setModalOpen(true)} />
             <SubNavigation
@@ -282,7 +249,28 @@ const Profile = () => {
               ]}
             />
             <br />
-            <Post />
+            {posts
+              ? posts.map((post) => {
+                  return (
+                    <Post
+                      key={post.postId}
+                      postId={post.postId.toString()}
+                      content={post.content ? post.content : ""}
+                      likes={post.likes ? post.likes.toString() : ""}
+                      comments={post.comments ? post.comments.toString() : ""}
+                      shares={post.shares ? post.shares.toString() : ""}
+                      zuri_points={
+                        post.zuri_points ? post.zuri_points.toString() : ""
+                      }
+                      userAddress={
+                        post.caller ? bigintToLongAddress(post.caller) : ""
+                      }
+                      images={post.images.split(" ")}
+                      time_posted={timeAgo(post.date_posted.toString() * 1000)}
+                    />
+                  );
+                })
+              : ""}
           </div>
 
           <div className="w3-col l4">

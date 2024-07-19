@@ -5,12 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import "react-loading-skeleton/dist/skeleton.css";
-import {
-  BeatLoader,
-  BounceLoader,
-  ClipLoader,
-  MoonLoader,
-} from "react-spinners";
+import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,

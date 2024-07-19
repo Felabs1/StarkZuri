@@ -3,7 +3,13 @@ import styles from "./FollowersList.module.css";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToLongAddress } from "../../utils/AppUtils";
 
-const FollowersLIst = ({ profileImage, username, followText, userAddress }) => {
+const FollowersLIst = ({
+  profileImage,
+  username,
+  followText,
+  userAddress,
+  onNavigate,
+}) => {
   const { contract, address } = useAppContext();
   const [followers, setFollowers] = useState([]);
   const [follows, setFollows] = useState("follows");
@@ -115,7 +121,7 @@ const FollowersLIst = ({ profileImage, username, followText, userAddress }) => {
   // console.log(isFollowing);
 
   return (
-    <div className={styles.followers_list}>
+    <div className={styles.followers_list} onClick={onNavigate}>
       <div className={styles.followers_details}>
         <div
           className={styles.profile_image}

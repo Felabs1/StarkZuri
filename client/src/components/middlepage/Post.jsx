@@ -3,6 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CallData, cairo } from "starknet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import "react-loading-skeleton/dist/skeleton.css";
+import { BeatLoader } from "react-spinners";
 import {
   faListDots,
   faMessage,
@@ -87,6 +90,7 @@ const Post = ({
             className: styles.toast_message,
           });
           commentText.current.value = "";
+          setLoading(false);
         });
     } else {
       handleWalletConnection();
@@ -130,6 +134,7 @@ const Post = ({
           toast.info("content liked successfully", {
             className: styles.toast_message,
           });
+          setLoading(false);
         });
     } else {
       handleWalletConnection();
@@ -162,9 +167,10 @@ const Post = ({
       view_user();
     }
   }, [contract, userAddress]);
-  console.log(user);
+  // console.log(user);
   return (
     <div className={`${styles.gradient_border}`}>
+      <ToastContainer />
       {user && (
         <div
           className={styles.post_navigation}
@@ -188,6 +194,7 @@ const Post = ({
       <div className={styles.post_body}>
         {/* <p style={{ whiteSpace: "pre-wrap" }}>{content}</p> */}
         <p dangerouslySetInnerHTML={{ __html: content }} />
+        <br />
         <div className={styles.post_media}>
           {images &&
             images.map((image) => {
@@ -215,7 +222,7 @@ const Post = ({
         </a>
         <a className="w3-bar-item">
           <FontAwesomeIcon icon={faDiamond} />
-          &nbsp;{zuri_points} ZuriTokens
+          &nbsp;{zuri_points} Zuri Points
         </a>
       </div>
       <hr />
@@ -236,9 +243,18 @@ const Post = ({
             icon={faImage}
             className={`${styles.comment_button} w3-padding`}
           /> */}
-          <button className="w3-btn w3-blue w3-round" onClick={comment_on_post}>
-            comment
-          </button>
+          {loading ? (
+            <button className="w3-btn w3-blue w3-round">
+              <BeatLoader loading={loading} color="#fff" size={10} />
+            </button>
+          ) : (
+            <button
+              className="w3-btn w3-blue w3-round"
+              onClick={comment_on_post}
+            >
+              comment
+            </button>
+          )}
         </div>
       </div>
     </div>

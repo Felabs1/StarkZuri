@@ -54,18 +54,21 @@ const FeaturedCommunityCard = () => {
         <div>
           {communities &&
             communities.map(
-              ({
-                community_id,
-                community_admin,
-                community_name,
-                description,
-                members,
-                online_members,
-                profile_image,
-                cover_image,
-              }) => {
+              (
+                {
+                  community_id,
+                  community_admin,
+                  community_name,
+                  description,
+                  members,
+                  online_members,
+                  profile_image,
+                  cover_image,
+                },
+                id
+              ) => {
                 return (
-                  <div className="w3-col l6">
+                  <div key={community_id} className="w3-col l6 w3-padding">
                     <div
                       className={` ${styles.community_card}`}
                       style={{ backgroundImage: `url(${cover_image})` }}
