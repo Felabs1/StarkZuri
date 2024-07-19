@@ -24,7 +24,7 @@ const PostCard = () => {
   const fileInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const { contract, address } = useAppContext();
+  const { contract, address, handleWalletConnection } = useAppContext();
   const [postmedia, setPostmedia] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -39,32 +39,36 @@ const PostCard = () => {
   };
 
   const handleSubmitForm = () => {
-    const _postContent = postContent.current.value;
-    const _formattedContent = multilineToSingleline(_postContent);
-    const _postmedia = postmedia.join(" ");
-    console.log(_postmedia);
-    console.log(_postContent);
+    if (contract && address) {
+      const _postContent = postContent.current.value;
+      const _formattedContent = multilineToSingleline(_postContent);
+      const _postmedia = postmedia.join(" ");
+      console.log(_postmedia);
+      console.log(_postContent);
 
-    const myCall = contract.populate("create_post", [
-      _formattedContent,
-      fileURLs.join(" "),
-    ]);
-    setLoading(true);
-    // console.log(contract);
-    contract["create_post"](myCall.calldata)
-      .then((res) => {
-        console.info("successful response", res);
-        toast.success("content posted successfully!", {
-          className: styles.toast_message,
+      const myCall = contract.populate("create_post", [
+        _formattedContent,
+        fileURLs.join(" "),
+      ]);
+      setLoading(true);
+      // console.log(contract);
+      contract["create_post"](myCall.calldata)
+        .then((res) => {
+          console.info("successful response", res);
+          toast.success("content posted successfully!", {
+            className: styles.toast_message,
+          });
+          postContent.current.value = "";
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
         });
-        postContent.current.value = "";
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    } else {
+      handleWalletConnection();
+    }
   };
 
   const handleFileChange = (event) => {
