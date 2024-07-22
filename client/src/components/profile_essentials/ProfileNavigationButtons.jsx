@@ -7,15 +7,15 @@ const ProfileNavigationButtons = ({ onModalOpen }) => {
   return (
     <div className={`w3-bar ${styles.profile_button_container}`}>
       <button
-        className={`w3-bar-item ${styles.profile_navigation_buttons}`}
+        className={`w3-bar-item w3-border w3-border-white w3-round-large ${styles.profile_navigation_buttons}`}
         onClick={onModalOpen}
       >
         <FontAwesomeIcon icon={faEdit} />
-        &nbsp; edit
+        &nbsp; Register Profile
       </button>
       <button className={`w3-bar-item ${styles.profile_navigation_buttons}`}>
         <FontAwesomeIcon icon={faCoins} />
-        &nbsp; Buy
+        &nbsp; Buy Zuri Points
       </button>
     </div>
   );

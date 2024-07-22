@@ -147,7 +147,7 @@ pub mod StarkZuri {
                     self.user_addresses.write(assigned_user_number, caller);
                     self.notifications.write((caller, 1), notification);
 
-            }
+            } 
             
         }
 
@@ -929,17 +929,19 @@ pub mod StarkZuri {
         let mut claimer = self.users.read(get_caller_address());
         let mut post = self.posts.read(post_id);
         let mut _post = self.posts.read(post_id);
-
-        if get_caller_address() == post.caller {
-            claimer.zuri_points += post.zuri_points;
-            post.zuri_points -= post.zuri_points;
-            _post.zuri_points -= post.zuri_points;
-            self.posts.write(post_id, _post);
-            self.users.write(get_caller_address(), claimer);
-            let claimed_points = self.claimed_points.read(get_caller_address());
-            self.claimed_points.write(get_caller_address(), claimed_points + post.zuri_points);
-        }
+       
+        assert(post.caller == get_caller_address(), 'only post owner');
+        assert(post.zuri_points > 0, 'no enough zuri');
+        
+        claimer.zuri_points += post.zuri_points;
+        post.zuri_points = 0;
+        _post.zuri_points = 0;
+        self.posts.write(post_id, _post);
+        self.users.write(get_caller_address(), claimer);
+        let claimed_points = self.claimed_points.read(get_caller_address());
+        self.claimed_points.write(get_caller_address(), claimed_points + post.zuri_points);
     }
+    
 
         // repost reel
         

@@ -127,13 +127,11 @@ const UserProfile = () => {
                     <Post
                       key={post.postId}
                       postId={post.postId.toString()}
-                      content={post.content ? post.content : ""}
-                      likes={post.likes ? post.likes.toString() : ""}
-                      comments={post.comments ? post.comments.toString() : ""}
-                      shares={post.shares ? post.shares.toString() : ""}
-                      zuri_points={
-                        post.zuri_points ? post.zuri_points.toString() : ""
-                      }
+                      content={post.content}
+                      likes={post.likes.toString()}
+                      comments={post.comments.toString()}
+                      shares={post.shares.toString()}
+                      zuri_points={post.zuri_points.toString()}
                       userAddress={
                         post.caller ? bigintToLongAddress(post.caller) : ""
                       }

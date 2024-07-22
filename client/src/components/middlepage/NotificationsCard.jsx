@@ -2,14 +2,22 @@ import React, { useState, useEffect } from "react";
 import styles from "./NotificationsCard.module.css";
 import profile_5 from "../../assets/profile5.jpg";
 import { useAppContext } from "../../providers/AppProvider";
-import { bigintToShortStr } from "../../utils/AppUtils";
+import { bigintToShortStr, timeAgo } from "../../utils/AppUtils";
 import { BounceLoader, ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const NotificationsCard = () => {
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const { contract, address } = useAppContext();
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+
+  const handleNavigation = (e) => {
+    console.log(e.target.value);
+    const notification_type = e.target.value;
+    console.log(notification_type);
+  };
 
   useEffect(() => {
     const view_users = () => {
@@ -74,11 +82,11 @@ const NotificationsCard = () => {
   return (
     <div className={`${styles.notifications_card}`}>
       <h3>Notifications</h3>
-      <div className={`w3-bar ${styles.notifications_bar}`}>
+      {/* <div className={`w3-bar ${styles.notifications_bar}`}>
         <a>Unread</a>
         <a>read</a>
         <a>archieved</a>
-      </div>
+      </div> */}
       <br />
 
       <div className={styles.sub_notification_header}>
@@ -108,7 +116,12 @@ const NotificationsCard = () => {
           let profilePhoto = users.find(
             (user) => user.userId == notification.caller
           );
-          console.log();
+          const notification_type = bigintToShortStr(
+            notification.notification_type
+          );
+          const time_ago = timeAgo(notification.timestamp.toString() * 1000);
+          console.log(notification_type);
+
           return (
             <div className={styles.notification_content}>
               <div className={styles.profile}>
@@ -127,13 +140,46 @@ const NotificationsCard = () => {
                   <b>{bigintToShortStr(shiftedWord)}</b> {newSentence}
                 </span>
                 <br />
-                <small>2 hrs ago</small>
+                <small>{time_ago}</small>
                 <br />
                 <br />
-                <button className={`${styles.ignore} w3-button`}>Ignore</button>
-                <button className={`${styles.respond} w3-button`}>
-                  Respond
-                </button>
+                {/* <button className={`${styles.ignore} w3-button`}>Ignore</button> */}
+
+                {/* {notification_type == "like" ? (
+                  <button
+                    className={`${styles.respond} w3-button`}
+                    onClick={handleNavigation}
+                    value={notification}
+                  >
+                    view post
+                  </button>
+                ) : notification_type == "follow!" ? (
+                  <button
+                    className={`${styles.respond} w3-button`}
+                    onClick={handleNavigation}
+                    value={notification}
+                  >
+                    view_profile
+                  </button>
+                ) : notification_type == "comment" ? (
+                  <button
+                    className={`${styles.respond} w3-button`}
+                    onClick={handleNavigation}
+                    value={notification}
+                  >
+                    view post
+                  </button>
+                ) : notification_type == "repost" ? (
+                  <button
+                    className={`${styles.respond} w3-button`}
+                    onClick={handleNavigation}
+                    value={notification}
+                  >
+                    View Post
+                  </button>
+                ) : (
+                  ""
+                )} */}
               </div>
             </div>
           );

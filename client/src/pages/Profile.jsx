@@ -23,6 +23,7 @@ import {
 } from "../utils/AppUtils";
 import BigNumber from "bignumber.js";
 import { uploadToIPFS } from "../Infura";
+import ConnectWallet from "./login_page/ConnectWallet";
 
 const Profile = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -220,57 +221,65 @@ const Profile = () => {
         )}
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            {address && user ? (
-              <ProfileCard
-                about={user.about}
-                name={bigintToShortStr(user.name)}
-                username={bigintToShortStr(user.username)}
-                no_following={user.number_following.toString()}
-                no_of_followers={user.no_of_followers.toString()}
-                profile_pic={user.profile_pic}
-                cover_photo={user.cover_photo}
-                zuri_points={user.zuri_points.toString()}
-                date_registered={formatDate(
-                  user.date_registered.toString() * 1000
+            {address ? (
+              <>
+                {address && user ? (
+                  <ProfileCard
+                    about={user.about}
+                    name={bigintToShortStr(user.name)}
+                    username={bigintToShortStr(user.username)}
+                    no_following={user.number_following.toString()}
+                    no_of_followers={user.no_of_followers.toString()}
+                    profile_pic={user.profile_pic}
+                    cover_photo={user.cover_photo}
+                    zuri_points={user.zuri_points.toString()}
+                    date_registered={formatDate(
+                      user.date_registered.toString() * 1000
+                    )}
+                  />
+                ) : (
+                  ""
                 )}
-              />
+                <br />
+                <ProfileNavigationButtons
+                  onModalOpen={() => setModalOpen(true)}
+                />
+                <SubNavigation
+                  borderData={[
+                    { linkName: "posts" },
+                    { linkName: "blog" },
+                    { linkName: "Zuri Coin" },
+                    { linkName: "Diamonds" },
+                    { linkName: "NFTs" },
+                  ]}
+                />
+                <br />
+                {posts
+                  ? posts.map((post) => {
+                      return (
+                        <Post
+                          key={post.postId}
+                          postId={post.postId.toString()}
+                          content={post.content}
+                          likes={post.likes.toString()}
+                          comments={post.comments.toString()}
+                          shares={post.shares.toString()}
+                          zuri_points={post.zuri_points.toString()}
+                          userAddress={
+                            post.caller ? bigintToLongAddress(post.caller) : ""
+                          }
+                          images={post.images.split(" ")}
+                          time_posted={timeAgo(
+                            post.date_posted.toString() * 1000
+                          )}
+                        />
+                      );
+                    })
+                  : ""}
+              </>
             ) : (
-              ""
+              <ConnectWallet />
             )}
-            <br />
-            <ProfileNavigationButtons onModalOpen={() => setModalOpen(true)} />
-            <SubNavigation
-              borderData={[
-                { linkName: "posts" },
-                { linkName: "blog" },
-                { linkName: "Zuri Coin" },
-                { linkName: "Diamonds" },
-                { linkName: "NFTs" },
-              ]}
-            />
-            <br />
-            {posts
-              ? posts.map((post) => {
-                  return (
-                    <Post
-                      key={post.postId}
-                      postId={post.postId.toString()}
-                      content={post.content ? post.content : ""}
-                      likes={post.likes ? post.likes.toString() : ""}
-                      comments={post.comments ? post.comments.toString() : ""}
-                      shares={post.shares ? post.shares.toString() : ""}
-                      zuri_points={
-                        post.zuri_points ? post.zuri_points.toString() : ""
-                      }
-                      userAddress={
-                        post.caller ? bigintToLongAddress(post.caller) : ""
-                      }
-                      images={post.images.split(" ")}
-                      time_posted={timeAgo(post.date_posted.toString() * 1000)}
-                    />
-                  );
-                })
-              : ""}
           </div>
 
           <div className="w3-col l4">

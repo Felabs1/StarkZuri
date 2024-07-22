@@ -14,6 +14,7 @@ import {
   bigintToShortStr,
   formatDate,
 } from "../utils/AppUtils";
+import ConnectWallet from "./login_page/ConnectWallet";
 
 const Notifications = () => {
   const { contract, address } = useAppContext();
@@ -63,7 +64,7 @@ const Notifications = () => {
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
             <br />
-            <NotificationsCard />
+            {address ? <NotificationsCard /> : <ConnectWallet />}
           </div>
           <div className="w3-col l4 w3-hide-small">
             {address && user ? (

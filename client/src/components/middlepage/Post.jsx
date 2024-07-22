@@ -224,6 +224,11 @@ const Post = ({
           <FontAwesomeIcon icon={faDiamond} />
           &nbsp;{zuri_points} Zuri Points
         </a>
+        {address == userAddress ? (
+          <button className="w3-button w3-blue w3-round">Claim</button>
+        ) : (
+          ""
+        )}
       </div>
       <hr />
       <div className={styles.comment_interaction_section}>

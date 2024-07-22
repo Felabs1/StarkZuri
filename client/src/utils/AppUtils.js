@@ -27,7 +27,7 @@ export const sideNavigations = [
   { navName: "reels", icon: faVideoCamera, to: "/reels" },
 
   { navName: "profile", icon: faUser, to: "/profile" },
-  { navName: "Wallet", icon: faWallet, to: "/wallet" },
+  // { navName: "Wallet", icon: faWallet, to: "/wallet" },
   { navName: "More", icon: faListDots, to: "/more" },
 ];
 
