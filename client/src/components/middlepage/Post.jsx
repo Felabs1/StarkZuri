@@ -49,6 +49,26 @@ const Post = ({
   const commentText = useRef();
   const navigate = useNavigate();
 
+  const claimPoints = () => {
+    if (address) {
+      const myCall = contract.populate("claim_post_points", [postId]);
+      setLoading(true);
+      contract["claim_post_points"](myCall.calldata)
+        .then((res) => {
+          console.info("Successful Response:", res);
+          toast.info("post claimed successfully", {
+            className: styles.toast_message,
+          });
+        })
+        .catch((err) => {
+          console.error("Error: ", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  };
+
   const comment_on_post = async () => {
     if (address) {
       const _comment_text = commentText.current.value;
@@ -224,8 +244,10 @@ const Post = ({
           <FontAwesomeIcon icon={faDiamond} />
           &nbsp;{zuri_points} Zuri Points
         </a>
-        {address == userAddress ? (
-          <button className="w3-button w3-blue w3-round">Claim</button>
+        {address == userAddress && zuri_points > 0 ? (
+          <button className="w3-button w3-blue w3-round" onClick={claimPoints}>
+            Claim
+          </button>
         ) : (
           ""
         )}

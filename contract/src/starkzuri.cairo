@@ -1,6 +1,8 @@
 
 #[starknet::contract]
 pub mod StarkZuri {
+
+    
     // importing dependancies into the starknet contract;
     // use super::IStarkZuriContract;
     use core::option::OptionTrait;
@@ -139,6 +141,7 @@ pub mod StarkZuri {
                 // let token_dispatcher = IERC20Dispatcher {contract_address:eth_address};
                 // let amount = 100000000000000;
                 // let has_transferred = token_dispatcher.transferFrom(sender: caller, recipient: get_contract_address(), amount: amount);
+                
 
                 
                     // self.balances.write(eth_address, self.balances.read(eth_address) + amount);
