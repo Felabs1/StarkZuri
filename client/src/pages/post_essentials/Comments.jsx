@@ -116,6 +116,7 @@ const Comments = () => {
                 content={posts.content}
                 comments={posts.comments?.toString()}
                 likes={posts.likes?.toString()}
+                images={posts.images?.split(" ")}
                 shares={posts.shares?.toString()}
                 zuri_points={posts.zuri_points?.toString()}
                 userAddress={

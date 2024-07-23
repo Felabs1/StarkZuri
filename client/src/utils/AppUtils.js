@@ -132,8 +132,15 @@ export function timeAgo(timestamp) {
   return "just now";
 }
 
+// export function multilineToSingleline(multilineString) {
+//   return multilineString.replace(/\n/g, "<br />");
+// }
+
 export function multilineToSingleline(multilineString) {
-  return multilineString.replace(/\n/g, "<br />");
+  return multilineString
+    .replace(/\n/g, "<br />")
+    .replace(/\*(.*?)\*/g, "<b>$1</b>") // bold text
+    .replace(/^\s*-\s*(.*?)$/gm, "<li>$1</li>"); // lists
 }
 
 export function formatDate(timestamp) {
@@ -150,4 +157,11 @@ export function formatDate(timestamp) {
   };
 
   return date.toLocaleDateString("en-US", options);
+}
+
+export function isWithinOneDay(previousTimestamp) {
+  const currentTime = Date.now(); // get current timestamp
+  const oneDayInMs = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+  const diffInMs = currentTime - previousTimestamp;
+  return diffInMs <= oneDayInMs;
 }

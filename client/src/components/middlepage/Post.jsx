@@ -77,16 +77,7 @@ const Post = ({
         _comment_text,
       ]);
       setLoading(true);
-      // contract["comment_on_post"](myCall.calldata)
-      //   .then((res) => {
-      //     console.info("Successful Response:", res);
-      //   })
-      //   .catch((err) => {
-      //     console.error("Error: ", err);
-      //   })
-      //   .finally(() => {
-      //     setLoading(false);
-      //   });
+
       const result = await provider
         .execute([
           {

@@ -142,6 +142,7 @@ pub mod StarkZuri {
                 // let amount = 100000000000000;
                 // let has_transferred = token_dispatcher.transferFrom(sender: caller, recipient: get_contract_address(), amount: amount);
                 
+                
 
                 
                     // self.balances.write(eth_address, self.balances.read(eth_address) + amount);
@@ -913,18 +914,19 @@ pub mod StarkZuri {
         let mut reel = self.reels.read(reel_id);
         let mut _reel = self.reels.read(reel_id);
 
+        assert(get_caller_address() == reel.caller, 'only reel owner');
+        assert(reel.zuri_points > 0, 'no enough zuri');
 
-        if get_caller_address() == reel.caller {
-            claimer.zuri_points += reel.zuri_points;
-            reel.zuri_points -= reel.zuri_points;
-            _reel.zuri_points -= _reel.zuri_points;
-            self.reels.write(reel_id, _reel);
-            self.users.write(get_caller_address(), claimer);
-            let claimed_points = self.claimed_points.read(get_caller_address());
-            self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
+        claimer.zuri_points += reel.zuri_points;
+        reel.zuri_points -= reel.zuri_points;
+        _reel.zuri_points -= _reel.zuri_points;
+        self.reels.write(reel_id, _reel);
+        self.users.write(get_caller_address(), claimer);
+        let claimed_points = self.claimed_points.read(get_caller_address());
+        self.claimed_points.write(get_caller_address(),claimed_points + reel.zuri_points);
 
             
-        }
+        
        
     }
 

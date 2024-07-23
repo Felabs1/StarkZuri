@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import styles from "./NotificationsCard.module.css";
 import profile_5 from "../../assets/profile5.jpg";
 import { useAppContext } from "../../providers/AppProvider";
-import { bigintToShortStr, timeAgo } from "../../utils/AppUtils";
+import {
+  bigintToShortStr,
+  isWithinOneDay,
+  timeAgo,
+} from "../../utils/AppUtils";
 import { BounceLoader, ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 
@@ -94,9 +98,8 @@ const NotificationsCard = () => {
           <span className={styles.today}>Today</span>&nbsp;
           <span className="w3-tag w3-dark-gray w3-round-large">
             {notifications &&
-              notifications.filter(
-                (notification) =>
-                  bigintToShortStr(notification.notification_status) == "unread"
+              notifications.filter((notification) =>
+                isWithinOneDay(notification.timestamp.toString() * 1000)
               ).length}
           </span>
         </div>
