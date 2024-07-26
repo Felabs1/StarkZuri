@@ -108,6 +108,10 @@ pub mod StarkZuri {
             
             self.balances.read(address)
         }
+
+        fn get_total_posts(self: @ContractState) -> u256 {
+            self.posts_count.read()
+        }
         
         fn add_user(ref self: ContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();
@@ -456,20 +460,39 @@ pub mod StarkZuri {
             comments
         }
 
-        fn view_posts(self: @ContractState)->Array<Post> {
-            let post_count: u256 = self.posts_count.read();
-            let mut counter: u256 = 1;
-            let mut posts = ArrayTrait::new();
+        // fn view_posts(self: @ContractState, page: u32)->Array<Post> {
+        //     let post_count: u256 = self.posts_count.read();
+        //     let mut counter: u256 = 1;
+        //     let mut posts = ArrayTrait::new();
+        //     let posts_per_page = 25_u32;
 
-            while (counter <= post_count) {
-                let post:  Post = self.posts.read(counter);
+        //     while (counter <= post_count) {
+        //         let post:  Post = self.posts.read(counter);
+        //         posts.append(post);
+        //         counter += 1;
+
+        //     };
+
+        //     posts
+
+        // }
+
+        fn view_posts(self: @ContractState, page: u256) -> Array<Post> {
+            let post_count: u256 = self.posts_count.read();
+            let posts_per_page = 10_u256;
+            let start_index = (page - 1) * posts_per_page;
+            let end_index = start_index + posts_per_page;
+        
+            let mut posts = ArrayTrait::new();
+            let mut counter: u256 = start_index + 1;
+        
+            while (counter <= end_index && counter <= post_count) {
+                let post: Post = self.posts.read(counter);
                 posts.append(post);
                 counter += 1;
-
             };
-
+        
             posts
-
         }
 
         fn filter_post(self: @ContractState, user: ContractAddress) -> Array<Post> {

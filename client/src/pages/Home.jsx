@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { ToastContainer, toast } from "react-toastify";
+import InfiniteScroll from "react-infinite-scroll-component";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BounceLoader, ClipLoader } from "react-spinners";
@@ -24,8 +25,9 @@ import {
   parseInputAmountToUint256,
   timeAgo,
 } from "../utils/AppUtils";
+import BigNumber from "bignumber.js";
 
-console.log(timeAgo(1721310913 * 1000));
+// console.log(timeAgo(1721310913 * 1000));
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -34,6 +36,8 @@ const Home = () => {
   const { contract, address } = useAppContext();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(null);
+  const [page, setPage] = useState(1);
 
   // console.log(
   //   viewUser(
@@ -60,7 +64,7 @@ const Home = () => {
       });
   };
 
-  console.log(user);
+  // console.log(user);
   const trytransfer = () => {
     const amount = parseInputAmountToUint256("0.0001", 18);
     const receiver =
@@ -110,9 +114,18 @@ const Home = () => {
 
   // console.log(users);
 
-  const view_posts = () => {
-    const myCall = contract.populate("view_posts", []);
+  const get_total_pages = async () => {
+    const totalPosts = await contract.get_total_posts();
+    const readable_posts = BigNumber(totalPosts).toNumber();
+    const totalPages = Math.ceil(readable_posts / 10);
+    setTotalPages(totalPages);
+  };
+
+  const view_posts = async () => {
+    console.log("Triggered: ", page);
+    const myCall = contract.populate("view_posts", [page]);
     setLoading(true);
+
     contract["view_posts"](myCall.calldata, {
       parseResponse: false,
       parseRequest: false,
@@ -122,7 +135,9 @@ const Home = () => {
         // console.info("success")
         // console.info("Successful Response:", val);
         console.log(val);
-        setPosts(val.reverse());
+        setPosts((curr) => val.reverse().concat(curr));
+        console.log(`Loaded page: ${page} of ${totalPages}`);
+        setPage((curr) => curr + 1);
       })
       .catch((err) => {
         console.error("Error: ", err);
@@ -132,46 +147,10 @@ const Home = () => {
       });
   };
 
-  const view_posts2 = () => {
-    const myCall = contract.populate("view_posts", []);
-    const callPromises = [
-      contract["view_posts"](myCall.calldata, {
-        parseResponse: false,
-        parseRequest: false,
-      }),
-    ];
-
-    setLoading(true);
-    Promise.all(callPromises)
-      .then((responses) => {
-        const results = responses.map((res) => {
-          if (!res || !res.result) {
-            console.error("Error: Invalid response from contract");
-            return null;
-          }
-          return contract.callData.parse("view_posts", res.result);
-        });
-        const validResults = results.filter((result) => result !== null);
-        if (validResults.length === 0) {
-          console.error("Error: No valid responses from contract");
-          return;
-        }
-        const posts = validResults.reduce(
-          (acc, result) => [...acc, ...result],
-          []
-        );
-        console.log(posts);
-        setPosts(posts.reverse());
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  console.log(totalPages);
 
   useEffect(() => {
+    get_total_pages();
     if (contract) {
       view_posts();
       // view_posts2();
@@ -184,6 +163,7 @@ const Home = () => {
       view_user();
     }
   }, [contract]);
+  console.log(posts);
 
   // console.log(user);
 
@@ -224,26 +204,41 @@ const Home = () => {
               ]}
             />
 
-            {loading ? (
+            {/* {loading ? (
               <div className="w3-center">
                 <ClipLoader loading={loading} color="#2196F3" size={50} />
               </div>
-            ) : (
-              <div>
-                <br />
-                {(posts &&
-                  posts.map(
-                    ({
-                      postId,
-                      caller,
-                      content,
-                      likes,
-                      comments,
-                      shares,
-                      images,
-                      zuri_points,
-                      date_posted,
-                    }) => {
+            ) : ( */}
+            <div>
+              <br />
+              {totalPages ? (
+                <InfiniteScroll
+                  dataLength={totalPages}
+                  next={view_posts}
+                  hasMore={page <= totalPages + 1}
+                  loader={
+                    <div className="w3-center">
+                      <ClipLoader loading={loading} color="#2196F3" size={50} />
+                    </div>
+                  }
+                  endMessage={<p>No more characters to load!</p>}
+                  scrollThreshold={0.5}
+                >
+                  {posts?.map(
+                    (
+                      {
+                        postId,
+                        caller,
+                        content,
+                        likes,
+                        comments,
+                        shares,
+                        images,
+                        zuri_points,
+                        date_posted,
+                      },
+                      index
+                    ) => {
                       const _account_address = bigintToLongAddress(caller);
                       const great_user = getUserName(_account_address);
 
@@ -273,9 +268,11 @@ const Home = () => {
                         );
                       }
                     }
-                  )) || <Skeleton />}
-              </div>
-            )}
+                  )}
+                </InfiniteScroll>
+              ) : null}
+            </div>
+            {/* )} */}
           </div>
 
           <div className="w3-col l4 w3-hide-small">

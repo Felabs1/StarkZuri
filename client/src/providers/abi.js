@@ -543,7 +543,12 @@ export const ABI = [
       {
         type: "function",
         name: "view_posts",
-        inputs: [],
+        inputs: [
+          {
+            name: "page",
+            type: "core::integer::u256",
+          },
+        ],
         outputs: [
           {
             type: "core::array::Array::<contract::structs::Post>",
@@ -866,6 +871,17 @@ export const ABI = [
             type: "core::starknet::contract_address::ContractAddress",
           },
         ],
+        outputs: [
+          {
+            type: "core::integer::u256",
+          },
+        ],
+        state_mutability: "view",
+      },
+      {
+        type: "function",
+        name: "get_total_posts",
+        inputs: [],
         outputs: [
           {
             type: "core::integer::u256",

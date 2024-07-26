@@ -208,8 +208,8 @@ const Post = ({
         <br />
         <div className={styles.post_media}>
           {images &&
-            images.map((image) => {
-              return <img src={`${image}`} /> || "";
+            images.map((image, index) => {
+              return <img key={`${postId}_${index}`} src={`${image}`} /> || "";
             })}
         </div>
       </div>

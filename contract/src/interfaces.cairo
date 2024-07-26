@@ -21,7 +21,8 @@ pub trait IStarkZuriContract<TContractState> {
     fn view_likes(self: @TContractState, post_id: u256)->Array<User>;
     fn comment_on_post(ref self: TContractState, post_id: u256, content: ByteArray);
     fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
-    fn view_posts(self: @TContractState)->Array<Post>;
+    // fn view_posts(self: @TContractState)->Array<Post>;
+    fn view_posts(self: @TContractState, page: u256) -> Array<Post>;
     fn filter_post(self: @TContractState, user: ContractAddress) -> Array<Post>;
     fn view_post(self: @TContractState, post_id: u256) -> Post;
     fn create_community(ref self: TContractState, community_name: felt252, description: ByteArray, profile_image: ByteArray, cover_image: ByteArray);
@@ -44,6 +45,7 @@ pub trait IStarkZuriContract<TContractState> {
     fn add_token_address(ref self: TContractState, token_name: felt252, token_address: ContractAddress);
     fn deposit_fee(ref self: TContractState, receiver: ContractAddress);
     fn view_contract_balance(self: @TContractState, address: ContractAddress) -> u256;
+    fn get_total_posts(self: @TContractState) -> u256;
 }
 
 
