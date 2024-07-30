@@ -37,16 +37,35 @@ const Profile = () => {
   const [about, setAbout] = useState("");
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [sellZuriModalOpen, setSellZuriModalOpen] = useState(false);
 
   const [coverPhoto, setCoverPhoto] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
 
   const profileImage = useRef();
+  const zuriPoints = useRef();
   const coverImage = useRef();
+
+  const handleSellZuriPoints = () => {
+    const _zuriPoints = zuriPoints.current.value;
+
+    const myCall = contract.populate("withdraw_zuri_points", [_zuriPoints]);
+    setLoading(true);
+    contract["withdraw_zuri_points"](myCall.calldata)
+      .then((res) => {
+        console.info("Successful Response:", res);
+        zuriPoints.current.value = "";
+      })
+      .catch((err) => {
+        console.error("Error: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     console.log(cover);
-    // console.log(address)
   }, [cover]);
 
   useEffect(() => {
@@ -172,6 +191,23 @@ const Profile = () => {
       {navOpen && <MobileSidenav />}
 
       <Main>
+        {sellZuriModalOpen && (
+          <ModalContainer closeModal={() => setSellZuriModalOpen(false)}>
+            <h3>Sell zuri Points</h3>
+            <label>Enter Amount</label>
+            <input
+              className="w3-input w3-text-white w3-border w3-transparent w3-round"
+              ref={zuriPoints}
+            />
+            <br />
+            <button
+              className="w3-button w3-border w3-round"
+              onClick={handleSellZuriPoints}
+            >
+              Sell
+            </button>
+          </ModalContainer>
+        )}
         {modalOpen && (
           <ModalContainer closeModal={() => setModalOpen(false)}>
             <h3>Edit profile</h3>
@@ -242,6 +278,7 @@ const Profile = () => {
                 )}
                 <br />
                 <ProfileNavigationButtons
+                  onSellZuriModalOpen={() => setSellZuriModalOpen(true)}
                   onModalOpen={() => setModalOpen(true)}
                 />
                 <SubNavigation

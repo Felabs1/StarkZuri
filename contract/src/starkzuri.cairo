@@ -112,6 +112,30 @@ pub mod StarkZuri {
         fn get_total_posts(self: @ContractState) -> u256 {
             self.posts_count.read()
         }
+
+        fn withdraw_zuri_points(ref self: ContractState, amount: u256){
+            let caller = get_caller_address();
+            let total_amount = amount * 3100000000000;
+            let token_dispatcher = IERC20Dispatcher { contract_address: contract_address_const::<
+                0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+            >()};
+            let balance = self.balances.read(contract_address_const::<0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7>());
+            assert(balance > total_amount, 'not enough eth in the vault');
+            let mut user = self.users.read(caller);
+            assert(user.zuri_points >= amount, 'insufficient points');
+            user.zuri_points = user.zuri_points - amount;
+            let has_transferred = token_dispatcher.transfer(recipient: get_caller_address(), amount: total_amount);
+            if has_transferred {
+                self.balances.write(contract_address_const::<
+                    0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                >(), self.balances.read(contract_address_const::<
+                    0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+                >()) - total_amount);
+                self.users.write(caller, user);
+            }
+
+        }
+
         
         fn add_user(ref self: ContractState, name: felt252, username: felt252,about: ByteArray, profile_pic: ByteArray, cover_photo: ByteArray) {
             let caller: ContractAddress = get_caller_address();

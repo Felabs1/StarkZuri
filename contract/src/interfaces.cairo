@@ -46,6 +46,7 @@ pub trait IStarkZuriContract<TContractState> {
     fn deposit_fee(ref self: TContractState, receiver: ContractAddress);
     fn view_contract_balance(self: @TContractState, address: ContractAddress) -> u256;
     fn get_total_posts(self: @TContractState) -> u256;
+    fn withdraw_zuri_points(ref self: TContractState, amount: u256);
 }
 
 

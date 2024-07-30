@@ -889,6 +889,18 @@ export const ABI = [
         ],
         state_mutability: "view",
       },
+      {
+        type: "function",
+        name: "withdraw_zuri_points",
+        inputs: [
+          {
+            name: "amount",
+            type: "core::integer::u256",
+          },
+        ],
+        outputs: [],
+        state_mutability: "external",
+      },
     ],
   },
   {
