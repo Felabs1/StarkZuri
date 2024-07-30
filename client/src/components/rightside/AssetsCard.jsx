@@ -4,7 +4,7 @@ import styles from "./AssetsCard.module.css";
 const AssetsCard = () => {
   return (
     <>
-      <div className={styles.asset_card}>
+      {/* <div className={styles.asset_card}>
         <table className={`${styles.table}`}>
           <tr>
             <td className={styles.key}>$Zuri Points value</td>
@@ -34,7 +34,7 @@ const AssetsCard = () => {
             <td className={`${styles.value} w3-right-align`}>&#x3d; 900</td>
           </tr>
         </table>
-      </div>
+      </div> */}
     </>
   );
 };

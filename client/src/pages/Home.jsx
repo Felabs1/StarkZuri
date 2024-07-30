@@ -196,12 +196,14 @@ const Home = () => {
             <PostCard />
             <br />
             <SubNavigation
-              borderData={[
-                { linkName: "following" },
-                { linkName: "Hot" },
-                { linkName: "New" },
-                { linkName: "explore" },
-              ]}
+              borderData={
+                [
+                  // { linkName: "following" },
+                  // { linkName: "Hot" },
+                  // { linkName: "New" },
+                  // { linkName: "explore" },
+                ]
+              }
             />
 
             {/* {loading ? (
