@@ -37,7 +37,7 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   // console.log(
   //   viewUser(
@@ -119,32 +119,59 @@ const Home = () => {
     const readable_posts = BigNumber(totalPosts).toNumber();
     const totalPages = Math.ceil(readable_posts / 10);
     setTotalPages(totalPages);
+    setPage(totalPages);
   };
 
   const view_posts = async () => {
+    console.log(page)
+
+    if (page < 1) return;
+
     console.log("Triggered: ", page);
     const myCall = contract.populate("view_posts", [page]);
     setLoading(true);
 
-    contract["view_posts"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_posts", res?.result ?? res);
-        // console.info("success")
-        // console.info("Successful Response:", val);
-        console.log(val);
-        setPosts((curr) => val.reverse().concat(curr));
-        console.log(`Loaded page: ${page} of ${totalPages}`);
-        setPage((curr) => curr + 1);
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
+
+    try {
+      const res = await contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
       });
+      
+      let val = contract.callData.parse("view_posts", res?.result ?? res);
+      const sortedPosts = val.sort((a, b) => {
+        const dateA = BigInt(a.date_posted);
+        const dateB = BigInt(b.date_posted);
+        return dateB > dateA ? 1 : dateB < dateA ? -1 : 0;
+      });
+      
+     
+      setPage(curr => curr - 1);
+    } catch (err) {
+      console.error("Error: ", err);
+    } finally {
+      setLoading(false);
+    }
+
+    // contract["view_posts"](myCall.calldata, {
+    //   parseResponse: false,
+    //   parseRequest: false,
+    // })
+    //   .then((res) => {
+    //     let val = contract.callData.parse("view_posts", res?.result ?? res);
+    //     // console.info("success")
+    //     // console.info("Successful Response:", val);
+    //     console.log(val);
+    //     setPosts((curr) => val.reverse().concat(curr));
+    //     console.log(`Loaded page: ${page} of ${totalPages}`);
+    //     setPage((curr) => curr + 1);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error: ", err);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
   };
 
   console.log(totalPages);
@@ -213,66 +240,58 @@ const Home = () => {
             ) : ( */}
             <div>
               <br />
+              <>
               {totalPages ? (
                 <InfiniteScroll
-                  dataLength={totalPages}
+                  dataLength={posts.length}
                   next={view_posts}
-                  hasMore={page <= totalPages + 1}
+                  hasMore={page >= 1}
                   loader={
                     <div className="w3-center">
                       <ClipLoader loading={loading} color="#2196F3" size={50} />
                     </div>
                   }
-                  endMessage={<p>No more characters to load!</p>}
+                  endMessage={<p>No more posts to load!</p>}
                   scrollThreshold={0.5}
                 >
-                  {posts?.map(
-                    (
-                      {
-                        postId,
-                        caller,
-                        content,
-                        likes,
-                        comments,
-                        shares,
-                        images,
-                        zuri_points,
-                        date_posted,
-                      },
-                      index
-                    ) => {
-                      const _account_address = bigintToLongAddress(caller);
-                      const great_user = getUserName(_account_address);
-
-                      if (great_user) {
-                        const _readable_username = bigintToShortStr(
-                          great_user.username
-                        );
-                        {
-                          /* console.log(comments.toString()); */
-                        }
-
-                        return (
-                          <Post
-                            userAddress={bigintToLongAddress(caller)}
-                            key={postId}
-                            postId={postId.toString()}
-                            images={images.split(" ")}
-                            content={content}
-                            username={_readable_username}
-                            comments={comments.toString()}
-                            profile_pic={great_user.profile_pic}
-                            likes={likes.toString()}
-                            shares={shares.toString()}
-                            zuri_points={zuri_points.toString()}
-                            time_posted={timeAgo(date_posted.toString() * 1000)}
-                          />
-                        );
-                      }
-                    }
-                  )}
+                  {posts?.map(({
+                    postId,
+                    caller,
+                    content,
+                    likes,
+                    comments,
+                    shares,
+                    images,
+                    zuri_points,
+                    date_posted
+                  }) => {
+                    const account_address = bigintToLongAddress(caller);
+                    const great_user = getUserName(account_address);
+                    
+                    if (!great_user) return null;
+                    
+                    const readable_username = bigintToShortStr(great_user.username);
+                    
+                    return (
+                      <Post
+                        key={postId}
+                        userAddress={account_address}
+                        postId={postId.toString()}
+                        images={images.split(" ")}
+                        content={content}
+                        username={readable_username}
+                        comments={comments.toString()}
+                        profile_pic={great_user.profile_pic}
+                        likes={likes.toString()}
+                        shares={shares.toString()}
+                        zuri_points={zuri_points.toString()}
+                        time_posted={timeAgo(date_posted.toString() * 1000)}
+                      />
+                    );
+                  })}
                 </InfiniteScroll>
               ) : null}
+            </>
             </div>
             {/* )} */}
           </div>
