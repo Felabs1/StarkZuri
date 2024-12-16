@@ -24,9 +24,11 @@
     "react-router-dom": "^6.23.1",
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
-    "starknet": "^6.9.0",
-    "starknetkit": "^1.1.9",
-    "w3-css": "^4.1.0"
+    "starknet": "^6.11.0",
+    "starknetkit": "^2.6.1",
+    "starknetkit-latest": "npm:starknetkit@^1.1.9",
+    "w3-css": "^4.1.0",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

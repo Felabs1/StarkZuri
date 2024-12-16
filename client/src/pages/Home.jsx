@@ -25,43 +25,52 @@ import {
   parseInputAmountToUint256,
   timeAgo,
 } from "../utils/AppUtils";
-import BigNumber from "bignumber.js";
+import usePaginationStore from '../stores/usePaginationStore';
 
 // console.log(timeAgo(1721310913 * 1000));
 
 const Home = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const { contract, address } = useAppContext();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
-  const [totalPages, setTotalPages] = useState(null);
-  const [page, setPage] = useState(0);
 
+  const { 
+    page, 
+    totalPages, 
+    hasError, 
+    loading,
+    setLoading,
+    setHasError,
+    initializePagination,
+    decrementPage
+  } = usePaginationStore();
   // console.log(
   //   viewUser(
   //     "0x07e868e262d6d19c181706f5f66faf730d723ebf604ecd7f5aff409f94d33516"
   //   )
   // );
-  const view_user = () => {
-    const myCall = contract.populate("view_user", [address]);
-    setLoading(true);
-    contract["view_user"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    })
-      .then((res) => {
-        let val = contract.callData.parse("view_user", res?.result ?? res);
-        console.log(val);
-        setUser(val);
-      })
-      .catch((err) => {
-        console.error("Error: ", err);
-      })
-      .finally(() => {
-        setLoading(false);
+  
+  const view_user = async () => {
+    
+    try {
+      const myCall = contract.populate("view_user", [address]);
+      setLoading(true);
+      
+      const res = await contract["view_user"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
       });
+      console.log(res)
+      const val = contract.callData.parse("view_user", res?.result ?? res);
+      console.log(val);
+      setUser(val);
+    } catch (err) {
+      console.error("Error: ", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // console.log(user);
@@ -114,82 +123,79 @@ const Home = () => {
 
   // console.log(users);
 
-  const get_total_pages = async () => {
-    const totalPosts = await contract.get_total_posts();
-    const readable_posts = BigNumber(totalPosts).toNumber();
-    const totalPages = Math.ceil(readable_posts / 10);
-    setTotalPages(totalPages);
-    setPage(totalPages);
-  };
+// Initialize total pages and starting page
 
-  const view_posts = async () => {
-    console.log(page)
+// Fetch posts for current page
+const fetchPosts = async () => {
+  console.log("fetching", page, loading)
+  if (page < 1) return;
 
-    if (page < 1) return;
-
-    console.log("Triggered: ", page);
-    const myCall = contract.populate("view_posts", [page]);
+  try {
     setLoading(true);
+    console.log("fetching")
+    const myCall = contract.populate("view_posts", [page]);
+    
+    const response = await contract["view_posts"](myCall.calldata, {
+      parseResponse: false,
+      parseRequest: false,
+    });
 
+    const newPosts = contract.callData.parse("view_posts", response?.result ?? response);
+    
+    // Sort posts by date (newest first)
+    const sortedPosts = newPosts.sort((a, b) => {
+      const dateA = BigInt(a.date_posted);
+      const dateB = BigInt(b.date_posted);
+      return dateB > dateA ? 1 : -1;
+    });
 
-    try {
-      const res = await contract["view_posts"](myCall.calldata, {
-        parseResponse: false,
-        parseRequest: false,
-      });
-      
-      let val = contract.callData.parse("view_posts", res?.result ?? res);
-      const sortedPosts = val.sort((a, b) => {
-        const dateA = BigInt(a.date_posted);
-        const dateB = BigInt(b.date_posted);
-        return dateB > dateA ? 1 : dateB < dateA ? -1 : 0;
-      });
-      
-     
-      setPage(curr => curr - 1);
-    } catch (err) {
-      console.error("Error: ", err);
-    } finally {
-      setLoading(false);
-    }
+    setPosts(currentPosts => {
+      // Remove any duplicates when combining old and new posts
+      const uniquePosts = [...currentPosts, ...sortedPosts].reduce((acc, current) => {
+        const x = acc.find(item => item.postId === current.postId);
+        if (!x) {
+          return acc.concat([current]);
+        }
+        return acc;
+      }, []);
+      return uniquePosts;
+    });
 
-    // contract["view_posts"](myCall.calldata, {
-    //   parseResponse: false,
-    //   parseRequest: false,
-    // })
-    //   .then((res) => {
-    //     let val = contract.callData.parse("view_posts", res?.result ?? res);
-    //     // console.info("success")
-    //     // console.info("Successful Response:", val);
-    //     console.log(val);
-    //     setPosts((curr) => val.reverse().concat(curr));
-    //     console.log(`Loaded page: ${page} of ${totalPages}`);
-    //     setPage((curr) => curr + 1);
-    //   })
-    //   .catch((err) => {
-    //     console.error("Error: ", err);
-    //   })
-    //   .finally(() => {
-    //     setLoading(false);
-    //   });
-  };
-
-  console.log(totalPages);
-
+    decrementPage();
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    setHasError(true);
+  } finally {
+    setLoading(false);
+  }
+};
+  // Initialize on component mount
   useEffect(() => {
-    get_total_pages();
-    if (contract) {
-      view_posts();
-      // view_posts2();
-      view_users();
+    if (contract){
+      initializePagination(contract);
     }
-  }, [contract]);
-
-  useEffect(() => {
     if (contract && address) {
+     
       view_user();
     }
   }, [contract]);
+
+  // Fetch initial posts when pagination is initialized
+  useEffect(() => {
+    if (page !== null && totalPages !== null && user) {
+      fetchPosts();
+    }
+  }, [totalPages, user]);
+
+
+  console.log(totalPages);
+
+
+  // useEffect(() => {
+  //   if (contract && address) {
+  //     view_user();
+  //   }
+  // }, [contract]);
   console.log(posts);
 
   // console.log(user);
@@ -240,11 +246,16 @@ const Home = () => {
             ) : ( */}
             <div>
               <br />
+              <div>
+        <br />
+
+        <div>
+              <br />
               <>
               {totalPages ? (
                 <InfiniteScroll
                   dataLength={posts.length}
-                  next={view_posts}
+                  next={fetchPosts}
                   hasMore={page >= 1}
                   loader={
                     <div className="w3-center">
@@ -266,12 +277,12 @@ const Home = () => {
                     date_posted
                   }) => {
                     const account_address = bigintToLongAddress(caller);
-                    const great_user = getUserName(account_address);
                     
-                    if (!great_user) return null;
                     
-                    const readable_username = bigintToShortStr(great_user.username);
+                    if (!user) return null;
                     
+                  
+                
                     return (
                       <Post
                         key={postId}
@@ -279,9 +290,9 @@ const Home = () => {
                         postId={postId.toString()}
                         images={images.split(" ")}
                         content={content}
-                        username={readable_username}
+                        username={user.username}
                         comments={comments.toString()}
-                        profile_pic={great_user.profile_pic}
+                        profile_pic={user.profile_pic}
                         likes={likes.toString()}
                         shares={shares.toString()}
                         zuri_points={zuri_points.toString()}
@@ -292,6 +303,8 @@ const Home = () => {
                 </InfiniteScroll>
               ) : null}
             </>
+            </div>
+      </div>
             </div>
             {/* )} */}
           </div>

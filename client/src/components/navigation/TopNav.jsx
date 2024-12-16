@@ -24,6 +24,7 @@ const TopNav = ({ onMobileMenuClick }) => {
   // const [navOpen, setNavOpen] = useState(false);
   const { address, handleWalletConnection, handleWalletDisconnection } =
     useAppContext();
+
   return (
     <div className={`w3-bar ${styles.top_nav} w3-padding`}>
       {confirm && (
