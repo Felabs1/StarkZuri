@@ -17,6 +17,7 @@ import AppProvider from "./providers/AppProvider";
 import NewCommunity from "./pages/community_essentials/NewCommunity";
 import NewVideo from "./components/middlepage/video_essentials/NewVideo";
 import UserProfile from "./pages/profile_essentials/UserProfile";
+import Communities from "./pages/Communities";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<Home />}></Route>
             <Route path="/home" element={<Home />}></Route>
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/communities/:id" element={<Communities />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/more" element={<More />} />
