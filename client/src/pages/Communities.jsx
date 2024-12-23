@@ -7,6 +7,7 @@ import MobileSidenav from "../components/navigation/MobileSidenav";
 import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
+import ExploreHeader from "../components/middlepage/ExploreHeader";
 
 const Communities = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -55,14 +56,19 @@ const Communities = () => {
       <Main>
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            <div className="w3-bar">
+            <ExploreHeader
+              paragraph="Core supporters of the product. we value your prescence"
+              heading="Zuri Pioneers Community"
+              datecreated="created December 2024"
+            />
+            {/* <div className="w3-bar">
               <button className="w3-button w3-border w3-round-xlarge">
-                Sports
+                Posts
               </button>
               <button className="w3-button w3-border w3-round-xlarge">
-                Family
+                replies
               </button>
-            </div>
+            </div> */}
           </div>
           <div className="w3-col l4 w3-hide-small">
             {address && user ? (

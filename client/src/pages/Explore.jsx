@@ -65,7 +65,7 @@ const Explore = () => {
       <Main>
         <div className="w3-row-padding w3-stretch">
           <div className="w3-col l8">
-            <ExploreHeader />
+            <ExploreHeader heading="what you're missing at stark zuri" />
             <ExploreSubHeader name="Featured Community" />
             <FeaturedCommunityCard />
             <ExploreSubHeader name="Popular" />
