@@ -8,8 +8,13 @@ import ProfileCard from "../components/rightside/ProfileCard";
 import AssetsCard from "../components/rightside/AssetsCard";
 import FollowersCard from "../components/rightside/FollowersCard";
 import ExploreHeader from "../components/middlepage/ExploreHeader";
+import PostCard from "../components/postcard/PostCard";
+import { bigintToShortStr, formatDate } from "../utils/AppUtils";
+import Post from "../components/middlepage/Post";
+import crystals from "../assets/crystals.jpg";
 
 const Communities = () => {
+  console.log(crystals);
   const [navOpen, setNavOpen] = useState(false);
   const { contract, address } = useAppContext();
   const [loading, setLoading] = useState(false);
@@ -61,6 +66,13 @@ const Communities = () => {
               heading="Zuri Pioneers Community"
               datecreated="created December 2024"
             />
+            <span>
+              <b>2k</b>
+            </span>{" "}
+            Members &nbsp;
+            <button className="w3-button w3-border w3-round-xlarge">
+              Join
+            </button>
             {/* <div className="w3-bar">
               <button className="w3-button w3-border w3-round-xlarge">
                 Posts
@@ -69,6 +81,21 @@ const Communities = () => {
                 replies
               </button>
             </div> */}
+            <br />
+            <br />
+            <br />
+            <Post
+              comments={1}
+              likes={1}
+              shares={1}
+              zuri_points={14}
+              profile_pic={crystals}
+              images={[crystals]}
+              user_image={crystals ? crystals : ""}
+              postId={1}
+              content="just a post"
+              username="felabs"
+            />
           </div>
           <div className="w3-col l4 w3-hide-small">
             {address && user ? (

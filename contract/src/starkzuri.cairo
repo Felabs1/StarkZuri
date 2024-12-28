@@ -15,14 +15,15 @@ pub mod StarkZuri {
     use starknet::SyscallResultTrait;
     use contract::structs::{User, Post, Comment, Community, Notification, Reel};
     use contract::erc20::{IERC20DispatcherTrait, IERC20Dispatcher};
-    use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
-    use openzeppelin::access::ownable::OwnableComponent;
+    // use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
+    // use openzeppelin::access::ownable::OwnableComponent;
+    use starknet::storage::{Map, StorageMapReadAccess, StorageMapWriteAccess};
 
-    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+    // component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
-    #[abi(embed_v0)]
-    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
-    impl InternalImpl = OwnableComponent::InternalImpl<ContractState>;
+    // #[abi(embed_v0)]
+    // impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    // impl InternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
     #[storage]
     struct Storage {
@@ -31,41 +32,41 @@ pub mod StarkZuri {
         version: u256,
         users_count: u256,
         posts_count: u256,
-        users: LegacyMap::<ContractAddress, User>,
-        posts: LegacyMap::<u256, Post>,
-        user_addresses: LegacyMap::<u256, ContractAddress>,
+        users: Map::<ContractAddress, User>,
+        posts: Map::<u256, Post>,
+        user_addresses: Map::<u256, ContractAddress>,
         // followers and following profiles
-        followers: LegacyMap::<(ContractAddress, u8), ContractAddress>,
-        post_comments: LegacyMap::<(u256, u256), Comment>,
-        post_likes: LegacyMap::<(ContractAddress, u256), felt252>,
+        followers: Map::<(ContractAddress, u8), ContractAddress>,
+        post_comments: Map::<(u256, u256), Comment>,
+        post_likes: Map::<(ContractAddress, u256), felt252>,
         comment_count: u256,
 
         // communities
         community_count: u256,
-        communities: LegacyMap::<u256, Community>,
+        communities: Map::<u256, Community>,
 
         // community_joins
         // a user can join more than one community
-        community_members: LegacyMap::<(u256, u256), User>,
+        community_members: Map::<(u256, u256), User>,
 
         // we are supposed to store notification based on the caller address
-        notifications: LegacyMap::<(ContractAddress, u256), Notification>,
+        notifications: Map::<(ContractAddress, u256), Notification>,
 
         // time to create a reel
         reel_count: u256,
-        reels: LegacyMap::<u256, Reel>,
-        reel_likes: LegacyMap::<(ContractAddress, u256), felt252>,
-        reel_dislikes: LegacyMap::<(ContractAddress, u256), felt252>,
-        reel_comments: LegacyMap::<(u256, u256), Comment>,
+        reels: Map::<u256, Reel>,
+        reel_likes: Map::<(ContractAddress, u256), felt252>,
+        reel_dislikes: Map::<(ContractAddress, u256), felt252>,
+        reel_comments: Map::<(u256, u256), Comment>,
 
         // now we need to claim the points so that they can appear on the profile
-        claimed_points: LegacyMap::<ContractAddress, u256>,
+        claimed_points: Map::<ContractAddress, u256>,
 
         // we are going to create a 
-        token_addresses: LegacyMap::<felt252, ContractAddress>,
-        balances: LegacyMap::<ContractAddress, u256>,
-        #[substorage(v0)]
-        pub ownable: OwnableComponent::Storage,
+        token_addresses: Map::<felt252, ContractAddress>,
+        balances: Map::<ContractAddress, u256>,
+        // #[substorage(v0)]
+        // pub ownable: OwnableComponent::Storage,
         
 
     }
@@ -76,7 +77,7 @@ pub mod StarkZuri {
     fn constructor(ref self: ContractState, address: ContractAddress) {
         let deployer: ContractAddress = address;
         self.deployer.write(deployer);
-        self.ownable.initializer(deployer);
+        // self.ownable.initializer(deployer);
 
     }
 
@@ -87,8 +88,8 @@ pub mod StarkZuri {
     #[derive(Drop, starknet::Event)]
     pub enum Event {
         Upgraded: Upgraded,
-        #[flat]
-        OwnableEvent: OwnableComponent::Event
+        // #[flat]
+        // OwnableEvent: OwnableComponent::Event
     }
 
     #[derive(Copy, Drop, Debug, PartialEq, starknet::Event)]
@@ -184,7 +185,7 @@ pub mod StarkZuri {
         }
 
         fn deposit_fee(ref self: ContractState, receiver: ContractAddress){
-            let eth_dispatcher = ERC20ABIDispatcher {
+            let eth_dispatcher = IERC20Dispatcher {
                 contract_address: contract_address_const::<
                     0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
                 >() // ETH Contract Address            
@@ -192,7 +193,7 @@ pub mod StarkZuri {
 
             eth_dispatcher.approve(get_caller_address(), 1000000000000000);
              
-            eth_dispatcher.transfer_from(get_caller_address(), receiver, 1000000000000000);
+            eth_dispatcher.transferFrom(get_caller_address(), receiver, 1000000000000000);
 
         }
 

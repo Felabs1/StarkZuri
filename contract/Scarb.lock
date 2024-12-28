@@ -5,16 +5,20 @@ version = 1
 name = "contract"
 version = "0.1.0"
 dependencies = [
- "openzeppelin",
  "snforge_std",
 ]
 
 [[package]]
-name = "openzeppelin"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.15.0-rc.0#6869190bbc3eef90f49651a42e0b44dcc4bec842"
+name = "snforge_scarb_plugin"
+version = "0.33.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:b4dd6088372decd367652827091e0589bbf6bc550dfc3957baa3e9c61d6eb449"
 
 [[package]]
 name = "snforge_std"
-version = "0.22.0"
-source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.22.0#9b215944c6c5871c738381b4ded61bbf06e7ba35"
+version = "0.33.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:f7dc3349f8a6ef4915c93df447a00bd5a53a31129fd0990a00afa0ad31d91b06"
+dependencies = [
+ "snforge_scarb_plugin",
+]
