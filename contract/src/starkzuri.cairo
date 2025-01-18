@@ -508,7 +508,7 @@ pub mod StarkZuri {
             let start_index = (page - 1) * posts_per_page;
             let end_index = start_index + posts_per_page;
         
-            let mut posts = ArrayTrait::<PostView>::new();
+            let mut posts = ArrayTrait::new();
             let mut counter: u256 = start_index + 1;
         
             while (counter <= end_index && counter <= post_count) {
@@ -516,7 +516,7 @@ pub mod StarkZuri {
                 let user = self.users.read(post.caller);
                 let post_view: PostView =  PostView {
                     postId: post.postId,
-                    author: post.LightUser{
+                    author: LightUser{
                         userId: user.userId,
                         name: user.name,
                         username: user.username,

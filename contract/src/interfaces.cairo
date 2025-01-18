@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 use core::array::{Array, ArrayTrait};
 use starknet::class_hash::ClassHash;
-use contract::structs::{Reel, User, Comment, Post, Community, Notification};
+use contract::structs::{Reel, User, Comment, Post, Community, Notification, PostView};
 
 #[starknet::interface]
 pub trait IStarkZuriContract<TContractState> {
@@ -22,7 +22,7 @@ pub trait IStarkZuriContract<TContractState> {
     fn comment_on_post(ref self: TContractState, post_id: u256, content: ByteArray);
     fn view_comments(self: @TContractState, post_id: u256)->Array<Comment>;
     // fn view_posts(self: @TContractState)->Array<Post>;
-    fn view_posts(self: @TContractState, page: u256) -> Array<Post>;
+    fn view_posts(self: @TContractState, page: u256) -> Array<PostView>;
     fn filter_post(self: @TContractState, user: ContractAddress) -> Array<Post>;
     fn view_post(self: @TContractState, post_id: u256) -> Post;
     fn create_community(ref self: TContractState, community_name: felt252, description: ByteArray, profile_image: ByteArray, cover_image: ByteArray);
