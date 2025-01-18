@@ -13,7 +13,7 @@ pub mod StarkZuri {
     use starknet::{ContractAddress, get_caller_address,get_contract_address, get_block_timestamp, contract_address_const, syscalls};
     use starknet::class_hash::ClassHash;
     use starknet::SyscallResultTrait;
-    use contract::structs::{User, Post, Comment, Community, Notification, Reel};
+    use contract::structs::{User, Post, Comment, Community, Notification, Reel, PostView, LightUser};
     use contract::erc20::{IERC20DispatcherTrait, IERC20Dispatcher};
     // use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
     // use openzeppelin::access::ownable::OwnableComponent;
@@ -502,19 +502,37 @@ pub mod StarkZuri {
 
         // }
 
-        fn view_posts(self: @ContractState, page: u256) -> Array<Post> {
+        fn view_posts(self: @ContractState, page: u256) -> Array<PostView> {
             let post_count: u256 = self.posts_count.read();
             let posts_per_page = 10_u256;
             let start_index = (page - 1) * posts_per_page;
             let end_index = start_index + posts_per_page;
         
-            let mut posts = ArrayTrait::new();
+            let mut posts = ArrayTrait::<PostView>::new();
             let mut counter: u256 = start_index + 1;
         
             while (counter <= end_index && counter <= post_count) {
                 let post: Post = self.posts.read(counter);
-                posts.append(post);
-                counter += 1;
+                let user = self.users.read(post.caller);
+                let post_view: PostView =  PostView {
+                    postId: post.postId,
+                    author: post.LightUser{
+                        userId: user.userId,
+                        name: user.name,
+                        username: user.username,
+                        profile_pic: user.profile_pic,
+                        zuri_points: user.zuri_points
+                    },
+                    content: post.content,
+                    likes: post.likes,
+                    comments: post.comments,
+                    shares: post.shares,
+                    images: post.images,
+                    zuri_points: post.zuri_points,
+                    date_posted: post.date_posted
+                    };
+                    posts.append(post_view);
+                    counter += 1;
             };
         
             posts

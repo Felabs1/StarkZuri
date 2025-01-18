@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { connect, disconnect } from "starknetkit-latest";
 import { Contract, Provider, constants } from "starknet";
 import { ABI, CONTRACT_ADDRESS } from "./abi";
-import { provider as SProvider } from "../utils/constants";
+import { NODE_URL, provider as SProvider } from "../utils/constants";
 
 const initialData = {
   address: null,
@@ -23,19 +23,17 @@ const AppProvider = (props) => {
 
   const connectWallet = async () => {
     try {
-    
-        const { wallet } = await connect({
-          provider: SProvider,
-          modalMode: "alwaysAsk",
-          webWalletUrl: "https://web.argent.xyz",
-          argentMobileOptions: {
-            dappName: "Starknetkit example dapp",
-            url: window.location.hostname,
-            chainId: "SN_SEPOLIA",
-            icons: [],
-          },
-        })
-
+      const { wallet } = await connect({
+        provider: SProvider,
+        modalMode: "alwaysAsk",
+        webWalletUrl: "https://web.argent.xyz",
+        argentMobileOptions: {
+          dappName: "Starknetkit example dapp",
+          url: window.location.hostname,
+          chainId: "SN_SEPOLIA",
+          icons: [],
+        },
+      });
 
       if (wallet && wallet.isConnected) {
         setProvider(wallet.account);
@@ -82,18 +80,26 @@ const AppProvider = (props) => {
 
   const connectContract = () => {
     try {
-      if (address && provider) {
-        const _contract = new Contract(ABI, CONTRACT_ADDRESS, provider);
-        if (_contract) {
-          setContract(_contract);
-        }
-      } else {
-        const _provider = new Provider({
-          sequencer: { network: constants.NetworkName.SN_SEPOLIA },
-        });
-        const _contract = new Contract(ABI, CONTRACT_ADDRESS, _provider);
-        setContract(_contract);
-      }
+      // if (address && provider) {
+      //   const _contract = new Contract(ABI, CONTRACT_ADDRESS, provider);
+      //   if (_contract) {
+      //     setContract(_contract);
+      //   }
+      // } else {
+      //   const _provider = new Provider({
+      //     // sequencer: { network: constants.NetworkName.SN_SEPOLIA },
+      //     nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_7",
+      //   });
+      //   const _contract = new Contract(ABI, CONTRACT_ADDRESS, _provider);
+      //   setContract(_contract);
+      // }
+      const _provider = new Provider({
+        // sequencer: { network: constants.NetworkName.SN_SEPOLIA },
+        nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_7",
+      });
+      const _contract = new Contract(ABI, CONTRACT_ADDRESS, _provider);
+      setContract(_contract);
+      console.log(_contract);
     } catch (error) {
       console.error("Error connecting to contract:", error);
     }
@@ -113,24 +119,23 @@ const AppProvider = (props) => {
 
   useEffect(() => {
     const connectToStarknet = async () => {
-      const { wallet, connectorData } = await connect({ modalMode: "neverAsk" })
-      console.log(wallet,".....................")
-   
+      const { wallet, connectorData } = await connect({
+        modalMode: "neverAsk",
+      });
+      console.log(wallet, ".....................");
+
       if (wallet && wallet.isConnected) {
         setProvider(wallet.account);
         setAddress(wallet.account.address);
       }
-    }
-   
-    connectToStarknet()
+    };
+
+    // connectToStarknet();
     connectContract();
   }, [address]);
 
-
   return (
-    <AppContext.Provider value={appValue}>
-      {props.children}
-    </AppContext.Provider>
+    <AppContext.Provider value={appValue}>{props.children}</AppContext.Provider>
   );
 };
 

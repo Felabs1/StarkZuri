@@ -25,7 +25,7 @@ import {
   parseInputAmountToUint256,
   timeAgo,
 } from "../utils/AppUtils";
-import usePaginationStore from '../stores/usePaginationStore';
+import usePaginationStore from "../stores/usePaginationStore";
 
 // console.log(timeAgo(1721310913 * 1000));
 
@@ -36,33 +36,32 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
 
-  const { 
-    page, 
-    totalPages, 
-    hasError, 
+  const {
+    page,
+    totalPages,
+    hasError,
     loading,
     setLoading,
     setHasError,
     initializePagination,
-    decrementPage
+    decrementPage,
   } = usePaginationStore();
   // console.log(
   //   viewUser(
   //     "0x07e868e262d6d19c181706f5f66faf730d723ebf604ecd7f5aff409f94d33516"
   //   )
   // );
-  
+
   const view_user = async () => {
-    
     try {
       const myCall = contract.populate("view_user", [address]);
       setLoading(true);
-      
+
       const res = await contract["view_user"](myCall.calldata, {
         parseResponse: false,
         parseRequest: false,
       });
-      console.log(res)
+      console.log(res);
       const val = contract.callData.parse("view_user", res?.result ?? res);
       console.log(val);
       setUser(val);
@@ -123,73 +122,76 @@ const Home = () => {
 
   // console.log(users);
 
-// Initialize total pages and starting page
+  // Initialize total pages and starting page
 
-// Fetch posts for current page
-const fetchPosts = async () => {
-  console.log("fetching", page, loading)
-  if (page < 1) return;
+  // Fetch posts for current page
+  const fetchPosts = async () => {
+    console.log("fetching", page, loading);
+    if (page < 1) return;
 
-  try {
-    setLoading(true);
-    console.log("fetching")
-    const myCall = contract.populate("view_posts", [page]);
-    
-    const response = await contract["view_posts"](myCall.calldata, {
-      parseResponse: false,
-      parseRequest: false,
-    });
+    try {
+      setLoading(true);
+      console.log("fetching");
+      const myCall = contract.populate("view_posts", [page]);
 
-    const newPosts = contract.callData.parse("view_posts", response?.result ?? response);
-    
-    // Sort posts by date (newest first)
-    const sortedPosts = newPosts.sort((a, b) => {
-      const dateA = BigInt(a.date_posted);
-      const dateB = BigInt(b.date_posted);
-      return dateB > dateA ? 1 : -1;
-    });
+      const response = await contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      });
 
-    setPosts(currentPosts => {
-      // Remove any duplicates when combining old and new posts
-      const uniquePosts = [...currentPosts, ...sortedPosts].reduce((acc, current) => {
-        const x = acc.find(item => item.postId === current.postId);
-        if (!x) {
-          return acc.concat([current]);
-        }
-        return acc;
-      }, []);
-      return uniquePosts;
-    });
+      const newPosts = contract.callData.parse(
+        "view_posts",
+        response?.result ?? response
+      );
 
-    decrementPage();
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    setHasError(true);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Sort posts by date (newest first)
+      const sortedPosts = newPosts.sort((a, b) => {
+        const dateA = BigInt(a.date_posted);
+        const dateB = BigInt(b.date_posted);
+        return dateB > dateA ? 1 : -1;
+      });
+
+      setPosts((currentPosts) => {
+        // Remove any duplicates when combining old and new posts
+        const uniquePosts = [...currentPosts, ...sortedPosts].reduce(
+          (acc, current) => {
+            const x = acc.find((item) => item.postId === current.postId);
+            if (!x) {
+              return acc.concat([current]);
+            }
+            return acc;
+          },
+          []
+        );
+        return uniquePosts;
+      });
+
+      decrementPage();
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setHasError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
   // Initialize on component mount
   useEffect(() => {
-    if (contract){
+    if (contract) {
       initializePagination(contract);
     }
     if (contract && address) {
-     
       view_user();
     }
   }, [contract]);
 
   // Fetch initial posts when pagination is initialized
   useEffect(() => {
-    if (page !== null && totalPages !== null && user) {
+    if (page !== null && totalPages !== null) {
       fetchPosts();
     }
-  }, [totalPages, user]);
-
+  }, [totalPages, user, contract]);
 
   console.log(totalPages);
-
 
   // useEffect(() => {
   //   if (contract && address) {
@@ -247,64 +249,71 @@ const fetchPosts = async () => {
             <div>
               <br />
               <div>
-        <br />
+                <br />
 
-        <div>
-              <br />
-              <>
-              {totalPages ? (
-                <InfiniteScroll
-                  dataLength={posts.length}
-                  next={fetchPosts}
-                  hasMore={page >= 1}
-                  loader={
-                    <div className="w3-center">
-                      <ClipLoader loading={loading} color="#2196F3" size={50} />
-                    </div>
-                  }
-                  endMessage={<p>No more posts to load!</p>}
-                  scrollThreshold={0.5}
-                >
-                  {posts?.map(({
-                    postId,
-                    caller,
-                    content,
-                    likes,
-                    comments,
-                    shares,
-                    images,
-                    zuri_points,
-                    date_posted
-                  }) => {
-                    const account_address = bigintToLongAddress(caller);
-                    
-                    
-                    if (!user) return null;
-                    
-                  
-                
-                    return (
-                      <Post
-                        key={postId}
-                        userAddress={account_address}
-                        postId={postId.toString()}
-                        images={images.split(" ")}
-                        content={content}
-                        username={user.username}
-                        comments={comments.toString()}
-                        profile_pic={user.profile_pic}
-                        likes={likes.toString()}
-                        shares={shares.toString()}
-                        zuri_points={zuri_points.toString()}
-                        time_posted={timeAgo(date_posted.toString() * 1000)}
-                      />
-                    );
-                  })}
-                </InfiniteScroll>
-              ) : null}
-            </>
-            </div>
-      </div>
+                <div>
+                  <br />
+                  <>
+                    {totalPages ? (
+                      <InfiniteScroll
+                        dataLength={posts.length}
+                        next={fetchPosts}
+                        hasMore={page >= 1}
+                        loader={
+                          <div className="w3-center">
+                            <ClipLoader
+                              loading={loading}
+                              color="#2196F3"
+                              size={50}
+                            />
+                          </div>
+                        }
+                        endMessage={<p>No more posts to load!</p>}
+                        scrollThreshold={0.5}
+                      >
+                        {posts?.map(
+                          ({
+                            postId,
+                            caller,
+                            content,
+                            likes,
+                            comments,
+                            shares,
+                            images,
+                            zuri_points,
+                            date_posted,
+                          }) => {
+                            const account_address = bigintToLongAddress(caller);
+
+                            {
+                              /* if (!user) return null; */
+                            }
+
+                            return (
+                              <Post
+                                key={postId}
+                                userAddress={account_address}
+                                postId={postId.toString()}
+                                images={images.split(" ")}
+                                content={content}
+                                username={`Starkzuri`}
+                                comments={comments.toString()}
+                                profile_pic={user?.profile_pic}
+                                likes={likes.toString()}
+                                shares={shares.toString()}
+                                zuri_points={zuri_points.toString()}
+                                time_posted={timeAgo(
+                                  date_posted.toString() * 1000
+                                )}
+                              />
+                            );
+                          }
+                        )}
+                      </InfiniteScroll>
+                    ) : null}
+                  </>
+                </div>
+              </div>
             </div>
             {/* )} */}
           </div>

@@ -14,12 +14,36 @@ pub struct User {
     pub zuri_points: u256,
 }
 
+#[derive(Drop, Serde)]
+pub struct LightUser {
+    pub userId: ContractAddress,
+    pub name: felt252,
+    pub username: felt252,
+    pub profile_pic: ByteArray,
+    pub zuri_points: u256,
+}
+
 
 #[derive(Drop, Serde, starknet::Store)]
 pub struct Post {
     #[key]
     pub postId: u256,
     pub caller: ContractAddress,
+    pub content: ByteArray,
+    pub likes: u8,
+    pub comments: u256,
+    pub shares: u8,
+    pub images: ByteArray,
+    pub zuri_points: u256,
+    pub date_posted: u64
+    // images and video links will be stored in Legacy Maps for now
+}
+
+#[derive(Drop, Serde)]
+pub struct PostView {
+    #[key]
+    pub postId: u256,
+    pub author: LightUser,
     pub content: ByteArray,
     pub likes: u8,
     pub comments: u256,
