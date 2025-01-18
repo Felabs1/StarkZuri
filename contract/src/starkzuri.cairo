@@ -82,12 +82,18 @@ pub mod StarkZuri {
     }
 
    
-
+    #[derive(Drop, starknet::Event)]
+    struct NewUserRegistered {
+        #[key]
+        userId: ContractAddress,
+        name: felt252
+    }
 
     #[event]
     #[derive(Drop, starknet::Event)]
     pub enum Event {
         Upgraded: Upgraded,
+        NewUserRegistered: NewUserRegistered,
         // #[flat]
         // OwnableEvent: OwnableComponent::Event
     }
@@ -180,6 +186,7 @@ pub mod StarkZuri {
                     self.user_addresses.write(assigned_user_number, caller);
                     self.notifications.write((caller, 1), notification);
 
+                    self.emit(Event::NewUserRegistered(NewUserRegistered { userId: caller, name: name }));
             } 
             
         }
