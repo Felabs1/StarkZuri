@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import styles from "./PostCard.module.css";
+import styles from "../../components/postcard/PostCard.module.css";
 import searchLogo from "../../assets/ST4.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,7 +20,7 @@ import { useAppContext } from "../../providers/AppProvider";
 import { uploadToIPFS } from "../../Infura";
 import { multilineToSingleline } from "../../utils/AppUtils";
 
-const PostCard = ({ buttonText, onClick }) => {
+const CommunityPostCard = ({ buttonText, onClick }) => {
   const fileInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -154,7 +154,7 @@ const PostCard = ({ buttonText, onClick }) => {
           </button>
         ) : (
           <button className="w3-button" onClick={handleSubmitForm}>
-            Post
+            shout
           </button>
         )}
       </div>
@@ -212,4 +212,4 @@ const PostCard = ({ buttonText, onClick }) => {
   );
 };
 
-export default PostCard;
+export default CommunityPostCard;

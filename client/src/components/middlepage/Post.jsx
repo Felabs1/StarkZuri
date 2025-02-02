@@ -188,7 +188,7 @@ const Post = ({
           onClick={() => navigate(`/post/${postId}`)}
         >
           <div className={styles.profile}>
-            <img src={`${user.profile_pic}`} />
+            <img src={`${user.profile_pic || profile_pic}`} />
             <div className={styles.profile_details}>
               <span>{bigintToShortStr(user.username)}</span>
               <br />

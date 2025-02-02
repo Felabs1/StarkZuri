@@ -226,7 +226,7 @@ pub mod StarkZuri {
             };
 
             users
-        }
+        }   
 
         fn follow_user(ref self: ContractState, user: ContractAddress){
             let mut user_following: ContractAddress = get_caller_address();

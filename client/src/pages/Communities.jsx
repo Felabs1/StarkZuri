@@ -10,15 +10,22 @@ import FollowersCard from "../components/rightside/FollowersCard";
 import ExploreHeader from "../components/middlepage/ExploreHeader";
 import PostCard from "../components/postcard/PostCard";
 import { bigintToShortStr, formatDate } from "../utils/AppUtils";
-import Post from "../components/middlepage/Post";
+
 import crystals from "../assets/crystals.jpg";
+import CommunityPosts from "./community_essentials/community_tabs/CommunityPosts";
 
 const Communities = () => {
-  console.log(crystals);
+  const tabs = [
+    { name: "Posts", content: <CommunityPosts /> },
+    { name: "Polls", content: "this is polls" },
+    { name: "Events", content: "this is event" },
+    { name: "Leaderboard", content: "this is leaderboard" },
+  ];
   const [navOpen, setNavOpen] = useState(false);
   const { contract, address } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   const view_user = () => {
     const myCall = contract.populate("view_user", [address]);
@@ -66,36 +73,37 @@ const Communities = () => {
               heading="Zuri Pioneers Community"
               datecreated="created December 2024"
             />
+            <br />
+            <br />
             <span>
               <b>2k</b>
             </span>{" "}
             Members &nbsp;
-            <button className="w3-button w3-border w3-round-xlarge">
-              Join
-            </button>
-            {/* <div className="w3-bar">
-              <button className="w3-button w3-border w3-round-xlarge">
-                Posts
-              </button>
-              <button className="w3-button w3-border w3-round-xlarge">
-                replies
-              </button>
-            </div> */}
+            {tabs.map((tab, index) => {
+              return (
+                <>
+                  &nbsp;
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setActiveTab(index);
+                      console.log(index);
+                    }}
+                    className={`w3-button w3-border w3-round-xlarge ${
+                      activeTab === index ? "w3-border-blue" : ""
+                    }`}
+                  >
+                    {tab.name}
+                  </button>
+                </>
+              );
+            })}
+            &nbsp;
             <br />
             <br />
             <br />
-            <Post
-              comments={1}
-              likes={1}
-              shares={1}
-              zuri_points={14}
-              profile_pic={crystals}
-              images={[crystals]}
-              user_image={crystals ? crystals : ""}
-              postId={1}
-              content="just a post"
-              username="felabs"
-            />
+            {tabs[activeTab].content}
+            <div className="w3-container"></div>
           </div>
           <div className="w3-col l4 w3-hide-small">
             {address && user ? (
