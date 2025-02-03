@@ -13,13 +13,16 @@ import { bigintToShortStr, formatDate } from "../utils/AppUtils";
 
 import crystals from "../assets/crystals.jpg";
 import CommunityPosts from "./community_essentials/community_tabs/CommunityPosts";
+import CommunityPolls from "./community_essentials/community_tabs/CommunityPolls";
+import CommunityEvents from "./community_essentials/community_tabs/CommunityEvents";
+import CommunityLeaderboard from "./community_essentials/community_tabs/CommunityLeaderboard";
 
 const Communities = () => {
   const tabs = [
     { name: "Posts", content: <CommunityPosts /> },
-    { name: "Polls", content: "this is polls" },
-    { name: "Events", content: "this is event" },
-    { name: "Leaderboard", content: "this is leaderboard" },
+    { name: "Polls", content: <CommunityPolls /> },
+    { name: "Events", content: <CommunityEvents /> },
+    { name: "Leaderboard", content: <CommunityLeaderboard /> },
   ];
   const [navOpen, setNavOpen] = useState(false);
   const { contract, address } = useAppContext();

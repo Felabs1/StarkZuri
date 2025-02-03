@@ -7,11 +7,13 @@ import profile_4 from "../../assets/profile3.jpg";
 import { useAppContext } from "../../providers/AppProvider";
 import { bigintToShortStr } from "../../utils/AppUtils";
 import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const FeaturedCommunityCard = () => {
   const { contract } = useAppContext();
   const [communities, setCommunities] = useState();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const viewCommunities = () => {
@@ -68,7 +70,13 @@ const FeaturedCommunityCard = () => {
                 id
               ) => {
                 return (
-                  <div key={community_id} className="w3-col l6 w3-padding">
+                  <div
+                    key={community_id}
+                    onClick={() => {
+                      navigate(`/communities/${community_id}`);
+                    }}
+                    className="w3-col l6 w3-padding"
+                  >
                     <div
                       className={` ${styles.community_card}`}
                       style={{ backgroundImage: `url(${cover_image})` }}
