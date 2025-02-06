@@ -126,7 +126,7 @@ const NotificationsCard = () => {
           console.log(notification_type);
 
           return (
-            <div className={styles.notification_content}>
+            <div key={notification.id || notification.timestamp} className={styles.notification_content}>
               <div className={styles.profile}>
                 <div className={styles.online}></div>
                 <div
