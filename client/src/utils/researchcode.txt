@@ -1,0 +1,52 @@
+ const view_posts = useCallback(async () => {
+    console.log(page);
+
+    if (page < 1) return;
+
+    console.log("Triggered: ", page);
+    const myCall = contract.populate("view_posts", [page]);
+    setLoading(true);
+
+    try {
+      const res = await contract["view_posts"](myCall.calldata, {
+        parseResponse: false,
+        parseRequest: false,
+      });
+
+      let val = contract.callData.parse("view_posts", res?.result ?? res);
+      const sortedPosts = val.sort((a, b) => {
+        const dateA = BigInt(a.date_posted);
+        const dateB = BigInt(b.date_posted);
+        return dateB > dateA ? 1 : dateB < dateA ? -1 : 0;
+      });
+
+      setPosts((curr) => [...curr, ...sortedPosts]);
+      console.log(sortedPosts);
+
+      setPage((curr) => curr - 1);
+    } catch (err) {
+      console.error("Error: ", err);
+    } finally {
+      setLoading(false);
+    }
+
+    // contract["view_posts"](myCall.calldata, {
+    //   parseResponse: false,
+    //   parseRequest: false,
+    // })
+    //   .then((res) => {
+    //     let val = contract.callData.parse("view_posts", res?.result ?? res);
+    //     // console.info("success")
+    //     // console.info("Successful Response:", val);
+    //     console.log(val);
+    //     setPosts((curr) => val.reverse().concat(curr));
+    //     console.log(`Loaded page: ${page} of ${totalPages}`);
+    //     setPage((curr) => curr + 1);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error: ", err);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
+  }, []);

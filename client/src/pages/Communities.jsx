@@ -184,7 +184,7 @@ const Communities = () => {
             <br />
             <br />
             <br />
-            {tabs[activeTab].content}
+            {/* {tabs[activeTab].content} */}
             <div className="w3-container"></div>
           </div>
           <div className="w3-col l4 w3-hide-small">
